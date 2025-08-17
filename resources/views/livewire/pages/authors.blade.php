@@ -11,8 +11,9 @@
                 $photo = $a->photo
                     ? (Str::startsWith($a->photo, ['http://', 'https://'])
                         ? $a->photo
-                        : asset($a->photo))
+                        : asset('storage/' . ltrim($a->photo, '/')))
                     : asset('storage/authors/default.jpg');
+
             @endphp
 
             <article class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition text-center" itemscope

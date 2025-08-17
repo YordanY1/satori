@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Str; @endphp
+
 <section aria-labelledby="media-section" class="my-8">
     <h2 id="media-section" class="text-xl sm:text-2xl font-semibold text-primary mb-4">Видео / Аудио</h2>
 
@@ -6,6 +8,7 @@
             @if ($m['type'] === 'youtube')
                 <article class="bg-background rounded-2xl p-4 shadow-sm hover:shadow-md transition" itemscope
                     itemtype="https://schema.org/VideoObject">
+
                     <h3 class="font-medium mb-2 text-text" itemprop="name">{{ $m['title'] }}</h3>
                     <meta itemprop="thumbnailUrl" content="https://i.ytimg.com/vi/{{ $m['id'] }}/hqdefault.jpg">
                     <meta itemprop="embedUrl" content="https://www.youtube.com/embed/{{ $m['id'] }}">
@@ -30,18 +33,25 @@
                     </a>
                 </article>
             @elseif ($m['type'] === 'audio')
+                @php
+                    $src = Str::startsWith($m['src'], ['http://', 'https://'])
+                        ? $m['src']
+                        : asset('storage/' . ltrim($m['src'], '/'));
+                @endphp
+
                 <article class="bg-background rounded-2xl p-4 shadow-sm hover:shadow-md transition" itemscope
                     itemtype="https://schema.org/AudioObject">
+
                     <h3 class="font-medium mb-4 text-text text-center" itemprop="name">
                         {{ $m['title'] }}
                     </h3>
                     <meta itemprop="encodingFormat" content="audio/mpeg">
-                    <link itemprop="contentUrl" href="{{ asset($m['src']) }}">
+                    <link itemprop="contentUrl" href="{{ $src }}">
 
                     <div class="flex justify-center mt-4">
                         <audio controls class="w-full max-w-md rounded-lg border border-neutral/30 bg-white p-1"
                             preload="none">
-                            <source src="{{ asset($m['src']) }}" type="audio/mpeg">
+                            <source src="{{ $src }}" type="audio/mpeg">
                         </audio>
                     </div>
                 </article>

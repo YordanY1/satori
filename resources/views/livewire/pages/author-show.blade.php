@@ -8,15 +8,14 @@
                     $photo = $author['photo'];
 
                     if (!Str::startsWith($photo, ['http://', 'https://'])) {
-
-                        $photo = 'storage/' . ltrim($photo, '/');
-                        $photo = asset($photo);
+                        $photo = asset('storage/' . ltrim($photo, '/'));
                     }
                 @endphp
 
                 <img src="{{ $photo }}" alt="Снимка на {{ $author['name'] }}"
                     class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
             @endif
+
 
 
             <h1 id="author-name" class="text-3xl font-bold" itemprop="name">

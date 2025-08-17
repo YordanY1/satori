@@ -32,10 +32,11 @@
                 <div>
                     <label class="block text-sm font-medium mb-1">Телефон</label>
                     <input type="tel" wire:model.lazy="phone" autocomplete="tel" inputmode="tel"
-                        pattern="[0-9 +()-]{8,}"
+                        pattern="[0-9 +()\-\s]{8,}"
                         class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
-                                  focus:outline-none focus:ring-4 focus:ring-black/10 @error('phone') border-red-500 @enderror"
-                        aria-invalid="@error('phone') true @else false @enderror">
+         focus:outline-none focus:ring-4 focus:ring-black/10 @error('phone') border-red-500 @enderror"
+                        aria-invalid="@error('phone') true @else false @enderror" />
+
                     @error('phone')
                         <span class="text-red-600 text-xs">{{ $message }}</span>
                     @enderror

@@ -4,7 +4,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-1">
             @if (!empty($author['photo']))
-                <img src="{{ $author['photo'] }}" alt="Снимка на {{ $author['name'] }}"
+                <img src="{{ asset('storage/' . ltrim($author['photo'], '/')) }}" alt="Снимка на {{ $author['name'] }}"
                     class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
             @endif
 
@@ -12,7 +12,6 @@
                 {{ $author['name'] }}
             </h1>
 
-            {{-- Компактна статистика, показва се само ако има данни --}}
             <ul class="mt-4 text-sm text-neutral-600 space-y-1">
                 @if (!empty($author['books']))
                     <li>📚 Книги: {{ count($author['books']) }}</li>
@@ -30,7 +29,7 @@
         </div>
 
         <div class="md:col-span-2">
-            {{-- БИО (само ако има текст) --}}
+
             @if (!empty($author['bio']))
                 <h2 class="text-2xl font-semibold mb-3">Биография</h2>
                 <div class="prose max-w-none text-text" itemprop="description">
@@ -38,7 +37,7 @@
                 </div>
             @endif
 
-            {{-- ЦИТАТИ --}}
+
             @if (!empty($author['quotes']))
                 <h2 class="text-2xl font-semibold mt-8 mb-3">
                     Цитати <span class="text-neutral-500">({{ count($author['quotes']) }})</span>
@@ -55,7 +54,7 @@
                 </ul>
             @endif
 
-            {{-- ВИДЕА --}}
+
             @if (!empty($author['videos']))
                 <h2 class="text-2xl font-semibold mt-8 mb-3">
                     Видео представяне <span class="text-neutral-500">({{ count($author['videos']) }})</span>
@@ -93,7 +92,7 @@
                 </div>
             @endif
 
-            {{-- ИНТЕРВЮТА / ЛИНКОВЕ --}}
+
             @if (!empty($author['interviews']))
                 <h2 class="text-2xl font-semibold mt-8 mb-3">
                     Интервюта и участия <span class="text-neutral-500">({{ count($author['interviews']) }})</span>
@@ -114,7 +113,6 @@
         </div>
     </div>
 
-    {{-- КНИГИ --}}
     @if (!empty($author['books']))
         <section class="mt-12" aria-labelledby="author-books">
             <div class="flex items-end justify-between mb-4">

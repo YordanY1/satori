@@ -4,11 +4,14 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-1">
             @if (!empty($author['photo']))
-                <img src="{{ asset('storage/authors/' . ltrim($author['photo'], '/')) }}"
-                    alt="Снимка на {{ $author['name'] }}" class="w-full h-auto rounded-2xl shadow-md mb-4"
-                    itemprop="image">
-            @endif
+                @php
+                    $filename = basename($author['photo']);
+                    $photo = asset('storage/authors/' . $filename);
+                @endphp
 
+                <img src="{{ $photo }}" alt="Снимка на {{ $author['name'] }}"
+                    class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
+            @endif
 
             <h1 id="author-name" class="text-3xl font-bold" itemprop="name">
                 {{ $author['name'] }}

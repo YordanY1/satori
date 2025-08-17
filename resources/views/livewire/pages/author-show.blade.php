@@ -4,12 +4,10 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-1">
             @if (!empty($author['photo']))
-                <img src="{{ Str::startsWith($author['photo'], 'http')
-                    ? $author['photo']
-                    : asset('storage/' . ltrim(str_replace('storage/', '', $author['photo']), '/')) }}"
-                    alt="Снимка на {{ $author['name'] }}" class="w-full h-auto rounded-2xl shadow-md mb-4"
-                    itemprop="image">
+                <img src="{{ asset('storage/' . ltrim($author['photo'], '/')) }}" alt="Снимка на {{ $author['name'] }}"
+                    class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
             @endif
+
 
             <h1 id="author-name" class="text-3xl font-bold" itemprop="name">
                 {{ $author['name'] }}

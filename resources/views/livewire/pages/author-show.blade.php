@@ -3,18 +3,16 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-1">
-            @if (!empty($author['photo']))
-                @php
-                    $photo = $author['photo'];
+            @php
+                $photo = $a->photo
+                    ? (Str::startsWith($a->photo, ['http://', 'https://'])
+                        ? $a->photo
+                        : asset('storage/' . ltrim($a->photo, '/')))
+                    : asset('storage/authors/default.jpg');
+            @endphp
 
-                    if (!Str::startsWith($photo, ['http://', 'https://'])) {
-                        $photo = asset('storage/' . ltrim($photo, '/'));
-                    }
-                @endphp
-
-                <img src="{{ $photo }}" alt="Снимка на {{ $author['name'] }}"
-                    class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
-            @endif
+            <img src="{{ $photo }}" alt="Снимка на {{ $a->name }}"
+                class="w-full h-40 object-cover rounded-xl mb-3" loading="lazy" itemprop="image">
 
 
 

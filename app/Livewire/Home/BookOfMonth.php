@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Livewire\Home;
+
+use Livewire\Component;
+use App\Models\Book;
+
+class BookOfMonth extends Component
+{
+    public array $book = [];
+
+    public function mount(): void
+    {
+        $bom = Book::where('is_book_of_month', true)
+            ->latest('updated_at')
+            ->first();
+
+        if (!$bom) {
+            $this->book = [
+                'id' => 0,
+                'title' => 'Скоро очаквайте!',
+                'description' => 'Новата „Книга на месеца“ е на път.',
+                'price' => 0.00,
+                'cover' => asset('storage/images/hero-1.jpg'),
+                'excerpt_url' => null,
+                'slug' => null,
+            ];
+            return;
+        }
+
+        $this->book = [
+            'id'          => $bom->id,
+            'title'       => $bom->title,
+            'description' => $bom->description ?? '',
+            'price'       => (float) $bom->price,
+            'cover'       => str($bom->cover)->startsWith(['http://', 'https://']) ? $bom->cover : asset($bom->cover),
+            'excerpt_url' => $bom->excerpt ? (str($bom->excerpt)->startsWith(['http://', 'https://']) ? $bom->excerpt : asset($bom->excerpt)) : null,
+            'slug'        => $bom->slug,
+        ];
+    }
+
+    public function render()
+    {
+        return view('livewire.home.book-of-month');
+    }
+}

@@ -1,0 +1,126 @@
+<?php
+
+namespace App\Livewire\Pages;
+
+use Livewire\Component;
+use Livewire\WithPagination;
+use App\Models\Book;
+use App\Models\Author;
+use App\Models\Genre;
+use Illuminate\Support\Str;
+
+class Catalog extends Component
+{
+    use WithPagination;
+
+    public array $filters = [
+        'author' => null,
+        'genre'  => null,
+        'format' => null,
+        'price'  => null,
+    ];
+
+    public string $sort = 'popular';
+
+    public $authorOptions = [];
+    public $genreOptions  = [];
+
+    protected $queryString = [
+        'filters',
+        'sort' => ['except' => 'popular'],
+        'page' => ['except' => 1],
+    ];
+
+    public function mount(): void
+    {
+
+        $this->authorOptions = Author::orderBy('name')->get(['id', 'name']);
+        $this->genreOptions  = Genre::orderBy('name')->get(['id', 'name', 'slug']);
+    }
+
+
+    public function updatedFilters(): void
+    {
+        $this->resetPage();
+    }
+    public function updatedSort(): void
+    {
+        $this->resetPage();
+    }
+
+    public function addToCart(int $bookId): void
+    {
+        $cart = session()->get('cart', ['count' => 0, 'items' => []]);
+        $cart['count'] += 1;
+        $cart['items'][] = ['id' => $bookId, 'qty' => 1];
+        session(['cart' => $cart, 'cart.count' => $cart['count']]);
+        $this->dispatch('cart:updated');
+    }
+
+    public function render()
+    {
+        $q = Book::query()
+            ->with(['author:id,name,slug', 'genres:id,name,slug'])
+            ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id']);
+
+
+        if (!empty($this->filters['author'])) {
+            $q->where('author_id', (int)$this->filters['author']);
+        }
+
+
+        if (!empty($this->filters['genre'])) {
+            $q->whereHas('genres', function ($g) {
+                $g->where('genres.id', (int)$this->filters['genre']);
+            });
+        }
+
+
+        if (!empty($this->filters['format'])) {
+            $q->where('format', $this->filters['format']);
+        }
+
+
+        switch ($this->sort) {
+            case 'new':
+                $q->latest();
+                break;
+            case 'price_asc':
+                $q->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $q->orderBy('price', 'desc');
+                break;
+            case 'popular':
+            default:
+
+                $q->latest();
+                break;
+        }
+
+        $booksPaginator = $q->paginate(12)->withQueryString();
+
+        $books = $booksPaginator->through(function (Book $b) {
+            $cover = $b->cover
+                ? (Str::startsWith($b->cover, ['http://', 'https://']) ? $b->cover : asset($b->cover))
+                : asset('storage/images/default-book.jpg');
+
+            return [
+                'id'    => $b->id,
+                'title' => $b->title,
+                'price' => (float)$b->price,
+                'slug'  => $b->slug,
+                'cover' => $cover,
+            ];
+        });
+
+        return view('livewire.pages.catalog', [
+            'books'        => $books,
+            'booksPaginator' => $booksPaginator,
+            'authorOptions' => $this->authorOptions,
+            'genreOptions' => $this->genreOptions,
+        ])->layout('layouts.app', [
+            'title' => 'Каталог — Сатори Ко',
+        ]);
+    }
+}

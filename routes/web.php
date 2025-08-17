@@ -17,8 +17,11 @@ use App\Livewire\Pages\{
     Checkout,
     OrderShow,
     Genres,
-    GenreShow
+    GenreShow,
+    ThankYou
 };
+
+
 
 Route::get('/', Home::class)->name('home');
 
@@ -40,3 +43,4 @@ Route::get('/order/{id}', OrderShow::class)->name('order.show');
 
 Route::get('/genres', Genres::class)->name('genres');
 Route::get('/genre/{slug}', GenreShow::class)->name('genre.show');
+Route::get('/thank-you/{order}', ThankYou::class)->name('thankyou');

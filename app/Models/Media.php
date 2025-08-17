@@ -7,18 +7,7 @@ use Illuminate\Support\Str;
 
 class Media extends Model
 {
-    protected $fillable = [
-        'type',
-        'title',
-        'slug',
-        'youtube_id',
-        'audio_src',
-        'thumbnail',
-        'external_url',
-        'is_published',
-        'position',
-        'published_at',
-    ];
+    protected $guarded = ['id'];
 
     protected $casts = [
         'is_published' => 'boolean',

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class AuthorQuote extends Model
 {
     use HasFactory;
-    protected $fillable = ['author_id', 'quote', 'is_published', 'position'];
+    protected $guarded = ['id'];
 
     public function author()
     {

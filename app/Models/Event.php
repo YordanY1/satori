@@ -9,16 +9,5 @@ class Event extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'slug',
-        'date',
-        'location',
-        'program',
-        'is_paid',
-        'payment_link',
-        'registration_link',
-        'video_url',
-        'cover',
-    ];
+    protected $guarded = ['id'];
 }

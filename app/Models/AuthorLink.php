@@ -9,7 +9,7 @@ class AuthorLink extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['author_id', 'title', 'url', 'is_published', 'position'];
+    protected $guarded = ['id'];
 
     public function author()
     {

@@ -5,6 +5,7 @@ namespace App\Livewire\Pages;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Stripe\StripeClient;
 use App\Support\Cart;
 use App\Models\Book;
 use App\Models\Order;
@@ -23,7 +24,7 @@ class Checkout extends Component
         'email' => 'required|email',
         'phone' => 'required|string|min:8',
         'address' => 'required|string|min:5',
-        'payment_method' => 'required|in:cod,paypal,stripe',
+        'payment_method' => 'required|in:cod,stripe',
     ];
 
     public function placeOrder()
@@ -31,36 +32,31 @@ class Checkout extends Component
         $this->validate();
 
         if (Cart::count() === 0) {
-            $this->dispatch('notify', message: 'Количката е празна.');
+            $this->addError('cart', 'Количката е празна.');
             return;
         }
 
-        DB::transaction(function () {
-            $items = Cart::all();
+        return DB::transaction(function () {
+            $items   = Cart::all();
             $bookIds = array_keys($items);
+            $books   = Book::whereIn('id', $bookIds)->get(['id', 'title', 'price']);
 
-            $books = Book::whereIn('id', $bookIds)->get(['id', 'title', 'price']);
-
-            $subtotal = 0.00;
+            $subtotal   = 0.00;
             $normalized = [];
 
             foreach ($books as $book) {
-                $qty       = max(1, (int)($items[$book->id]['quantity'] ?? 1));
-                $unitPrice = (float) $book->price;
-                $lineTotal = $unitPrice * $qty;
+                $qty       = max(1, (int) ($items[$book->id]['quantity'] ?? 1));
+                $unit      = (float) $book->price;
+                $line      = $unit * $qty;
 
-                $subtotal += $lineTotal;
+                $subtotal += $line;
 
                 $normalized[] = [
                     'book_id'    => $book->id,
                     'title'      => $book->title,
-                    'unit_price' => $unitPrice,
+                    'unit_price' => $unit,
                     'quantity'   => $qty,
-                    'line_total' => $lineTotal,
-                    'sku'        => null,
-                    'isbn'       => null,
-                    'tax_rate'   => 0.00,
-                    'tax_amount' => 0.00,
+                    'line_total' => $line,
                 ];
             }
 
@@ -85,10 +81,6 @@ class Checkout extends Component
                 'status'           => 'pending',
                 'payment_method'   => $this->payment_method,
                 'payment_status'   => 'pending',
-                'paid_at'          => null,
-                'notes'            => null,
-                'shipping_method'  => null,
-                'tracking_number'  => null,
             ]);
 
             foreach ($normalized as $n) {
@@ -99,11 +91,45 @@ class Checkout extends Component
                     'unit_price' => round($n['unit_price'], 2),
                     'quantity'   => $n['quantity'],
                     'line_total' => round($n['line_total'], 2),
-                    'sku'        => $n['sku'],
-                    'isbn'       => $n['isbn'],
-                    'tax_rate'   => $n['tax_rate'],
-                    'tax_amount' => $n['tax_amount'],
                 ]);
+            }
+
+            if ($this->payment_method === 'cod') {
+                Cart::clear();
+                $this->dispatch('notify', message: 'Благодарим! Поръчката е приета.');
+                return $this->redirectRoute('thankyou', $order->id);
+            }
+
+            if ($this->payment_method === 'stripe') {
+                $stripe = new StripeClient(config('services.stripe.secret'));
+
+                $lineItems = array_map(function ($n) {
+                    return [
+                        'price_data' => [
+                            'currency'     => 'bgn',
+                            'product_data' => ['name' => $n['title']],
+                            'unit_amount'  => (int) round($n['unit_price'] * 100),
+                        ],
+                        'quantity' => $n['quantity'],
+                    ];
+                }, $normalized);
+
+                $session = $stripe->checkout->sessions->create([
+                    'mode'                 => 'payment',
+                    'payment_method_types' => ['card'],
+                    'line_items'           => $lineItems,
+                    'currency'             => 'bgn',
+                    'customer_email'       => $this->email,
+                    'metadata'             => [
+                        'order_number' => $order->order_number,
+                        'order_id'     => (string) $order->id,
+                    ],
+                    'success_url'          => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url'           => route('checkout'),
+                ]);
+
+
+                return $this->redirect($session->url);
             }
 
             Cart::clear();

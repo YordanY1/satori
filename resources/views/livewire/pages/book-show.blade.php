@@ -41,17 +41,11 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                <button wire:click="addToCart(1)"
+                <button wire:click="addToCart({{ $book['id'] }}, 1)"
                     class="rounded-xl bg-white text-black border border-black font-semibold px-5 py-3 shadow-sm
-                               hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
+           hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
                     Добави в количка
                 </button>
-
-                <a href="{{ route('checkout') }}"
-                    class="rounded-xl bg-accent text-black font-semibold px-5 py-3 shadow-sm border border-accent/70
-                          hover:bg-accent/90 focus-visible:ring-2 focus-visible:ring-accent/40 transition">
-                    Поръчай сега
-                </a>
 
                 @if (!empty($book['excerpt_url']))
                     <button x-data @click="$dispatch('open-excerpt')"

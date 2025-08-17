@@ -4,9 +4,12 @@ namespace App\Livewire\Home;
 
 use Livewire\Component;
 use App\Models\Book;
+use App\Livewire\Concerns\UsesCart;
 
 class RecommendedBooks extends Component
 {
+    use UsesCart;
+
     public $books;
 
     public function mount()

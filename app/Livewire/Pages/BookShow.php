@@ -3,52 +3,63 @@
 namespace App\Livewire\Pages;
 
 use Livewire\Component;
+use App\Models\Book;
+use Illuminate\Support\Str;
+use App\Livewire\Concerns\UsesCart;
 
 class BookShow extends Component
 {
+    use UsesCart;
+
     public string $slug;
     public array $book = [];
 
-    public function mount(string $slug)
+    public function mount(string $slug): void
     {
         $this->slug = $slug;
 
-        // TODO: замени с реален Book::whereSlug($slug)->with('author','reviews.user')->firstOrFail()
+        $b = Book::query()
+            ->where('slug', $slug)
+            ->with([
+                'author:id,name,slug',
+                'reviews.user:id,name',
+            ])
+            ->firstOrFail();
+
+        // cover
+        $cover = $b->cover
+            ? (Str::startsWith($b->cover, ['http://', 'https://']) ? $b->cover : asset($b->cover))
+            : asset('storage/images/default-book.jpg');
+
+        // excerpt
+        $excerptUrl = $b->excerpt
+            ? (Str::startsWith($b->excerpt, ['http://', 'https://']) ? $b->excerpt : asset($b->excerpt))
+            : null;
+
+        // reviews
+        $reviews = $b->reviews->map(fn($r) => [
+            'user'    => $r->user?->name ?? 'Анонимен',
+            'rating'  => $r->rating,
+            'content' => $r->content,
+        ])->toArray();
+
         $this->book = [
-            'id' => 1,
-            'slug' => $slug,
-            'title' => 'Присъствие – Специално издание',
-            'author' => ['name' => 'Екхарт Толе', 'slug' => 'eckhart-tolle'],
-            'price' => 26.90,
-            'format' => 'paper', // 'paper' | 'ebook'
-            'cover' => asset('storage/images/hero-1.jpg'),
-            'description' => str_repeat('Дълбоко, практично ръководство за осъзнатост и вътрешен мир. ', 40),
-            'excerpt_url' => asset('storage/excerpts/presence.pdf'),
-            'rating_avg' => 4.6,
-            'rating_count' => 37,
-            'reviews' => [
-                ['user' => 'Мария', 'rating' => 5, 'content' => 'Страхотна книга, много ми помогна!'],
-                ['user' => 'Иван', 'rating' => 4, 'content' => 'Много добра, бих препоръчал.'],
+            'id'           => $b->id,
+            'slug'         => $b->slug,
+            'title'        => $b->title,
+            'author'       => [
+                'name' => $b->author->name,
+                'slug' => $b->author->slug,
             ],
+            'price'        => (float) $b->price,
+            'format'       => $b->format,
+            'cover'        => $cover,
+            'description'  => $b->description ?? '',
+            'excerpt_url'  => $excerptUrl,
+            'rating_avg'   => round($b->reviews_avg_rating ?? 0, 1),
+            'rating_count' => $b->reviews_count ?? 0,
+            'reviews'      => $reviews,
         ];
-    }
-
-    public function addToCart(int $qty = 1): void
-    {
-        $cart = session()->get('cart', ['count' => 0, 'items' => []]);
-
-        $cart['count'] += max(1, $qty);
-        $cart['items'][] = [
-            'id' => $this->book['id'],
-            'title' => $this->book['title'],
-            'price' => $this->book['price'],
-            'qty' => max(1, $qty),
-        ];
-
-        session(['cart' => $cart, 'cart.count' => $cart['count']]);
-
-        $this->dispatch('cart:updated');
-        $this->dispatch('notify', message: 'Книгата е добавена в количката.');
     }
 
     public function render()

@@ -17,11 +17,12 @@
                     <meta itemprop="priceCurrency" content="BGN">
                     <span itemprop="price">{{ number_format($b['price'], 2) }}</span> лв.
                 </p>
-                <button wire:click="addToCart({{ $b['id'] }})"
+                <button wire:click="addToCart({{ (int) $b['id'] }})"
                     class="mt-auto w-full rounded-xl bg-white text-black py-2 text-sm font-bold shadow-sm border border-black
-                               focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
+           focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
                     Добави в количка
                 </button>
+
             </article>
         @endforeach
     </div>

@@ -164,9 +164,9 @@
                         @endif
 
                         @if (!empty($b['id']))
-                            <button wire:click="addToCart({{ (int) $b['id'] }})"
+                            <button wire:click="addToCart({{ (int) $b['id'] }})" :key="'author-book-btn-'.$b['id']"
                                 class="mt-auto w-full rounded-xl bg-white text-black py-2 text-sm font-bold shadow-sm
-                                       focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer border border-black">
+           focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer border border-black">
                                 Добави в количка
                             </button>
                         @endif

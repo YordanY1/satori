@@ -68,6 +68,7 @@
                         aria-label="Добави {{ $book['title'] }} в количката">
                         Добави в количка
                     </button>
+
                 </div>
             </article>
         @endforeach

@@ -9,6 +9,21 @@
     @livewireStyles
 </head>
 
+{{-- Toasts --}}
+<div x-data="{
+    show: false,
+    text: '',
+    open(msg) { this.text = msg;
+        this.show = true;
+        setTimeout(() => this.show = false, 2000); }
+}" @notify.window="open($event.detail.message)" class="fixed bottom-6 right-6 z-[9999]"
+    aria-live="polite" aria-atomic="true">
+    <div x-show="show" x-transition.duration.200ms
+        class="rounded-xl border border-black bg-white text-black shadow-xl px-4 py-2 text-sm font-medium">
+        <span x-text="text"></span>
+    </div>
+</div>
+
 <body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
     <x-header />
 

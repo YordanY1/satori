@@ -1,14 +1,16 @@
 <?php
 
-// app/Livewire/Pages/AuthorShow.php
 namespace App\Livewire\Pages;
 
 use Livewire\Component;
 use App\Models\Author;
 use Illuminate\Support\Str;
+use App\Livewire\Concerns\UsesCart;
 
 class AuthorShow extends Component
 {
+    use UsesCart;
+
     public string $slug;
     public array $author = [];
 
@@ -64,17 +66,8 @@ class AuthorShow extends Component
             'quotes'     => $quotes,
             'videos'     => $videos,
             'interviews' => $interviews,
-            'books'      => $books,     
+            'books'      => $books,
         ];
-    }
-
-    public function addToCart(int $bookId): void
-    {
-        $cart = session()->get('cart', ['count' => 0, 'items' => []]);
-        $cart['count'] += 1;
-        $cart['items'][] = ['id' => $bookId, 'qty' => 1];
-        session(['cart' => $cart, 'cart.count' => $cart['count']]);
-        $this->dispatch('cart:updated');
     }
 
     public function render()

@@ -8,10 +8,12 @@ use App\Models\Book;
 use App\Models\Author;
 use App\Models\Genre;
 use Illuminate\Support\Str;
+use App\Livewire\Concerns\UsesCart;
 
 class Catalog extends Component
 {
     use WithPagination;
+    use UsesCart;
 
     public array $filters = [
         'author' => null,
@@ -33,28 +35,18 @@ class Catalog extends Component
 
     public function mount(): void
     {
-
         $this->authorOptions = Author::orderBy('name')->get(['id', 'name']);
         $this->genreOptions  = Genre::orderBy('name')->get(['id', 'name', 'slug']);
     }
-
 
     public function updatedFilters(): void
     {
         $this->resetPage();
     }
+
     public function updatedSort(): void
     {
         $this->resetPage();
-    }
-
-    public function addToCart(int $bookId): void
-    {
-        $cart = session()->get('cart', ['count' => 0, 'items' => []]);
-        $cart['count'] += 1;
-        $cart['items'][] = ['id' => $bookId, 'qty' => 1];
-        session(['cart' => $cart, 'cart.count' => $cart['count']]);
-        $this->dispatch('cart:updated');
     }
 
     public function render()
@@ -63,11 +55,9 @@ class Catalog extends Component
             ->with(['author:id,name,slug', 'genres:id,name,slug'])
             ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id']);
 
-
         if (!empty($this->filters['author'])) {
             $q->where('author_id', (int)$this->filters['author']);
         }
-
 
         if (!empty($this->filters['genre'])) {
             $q->whereHas('genres', function ($g) {
@@ -75,11 +65,9 @@ class Catalog extends Component
             });
         }
 
-
         if (!empty($this->filters['format'])) {
             $q->where('format', $this->filters['format']);
         }
-
 
         switch ($this->sort) {
             case 'new':
@@ -93,7 +81,6 @@ class Catalog extends Component
                 break;
             case 'popular':
             default:
-
                 $q->latest();
                 break;
         }
@@ -115,10 +102,10 @@ class Catalog extends Component
         });
 
         return view('livewire.pages.catalog', [
-            'books'        => $books,
+            'books'          => $books,
             'booksPaginator' => $booksPaginator,
-            'authorOptions' => $this->authorOptions,
-            'genreOptions' => $this->genreOptions,
+            'authorOptions'  => $this->authorOptions,
+            'genreOptions'   => $this->genreOptions,
         ])->layout('layouts.app', [
             'title' => 'Каталог — Сатори Ко',
         ]);

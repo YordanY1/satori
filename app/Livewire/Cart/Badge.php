@@ -3,20 +3,22 @@
 namespace App\Livewire\Cart;
 
 use Livewire\Component;
+use App\Support\Cart;
 
 class Badge extends Component
 {
     public int $count = 0;
 
-    public function mount()
+    protected $listeners = ['cart:updated' => 'refreshCount'];
+
+    public function mount(): void
     {
-        $this->count = session('cart.count', 0);
+        $this->refreshCount();
     }
 
-    protected $listeners = ['cart:updated' => 'refreshCount'];
-    public function refreshCount()
+    public function refreshCount(int $count = null): void
     {
-        $this->count = session('cart.count', 0);
+        $this->count = $count ?? Cart::count();
     }
 
     public function render()

@@ -3,13 +3,16 @@
 namespace App\Livewire\Pages;
 
 use Livewire\Component;
+use App\Livewire\Concerns\UsesCart;
 
 class GenreShow extends Component
 {
+    use UsesCart;
+
     public string $slug;
     public array $genre = [];
 
-    public function mount(string $slug)
+    public function mount(string $slug): void
     {
         $this->slug = $slug;
 
@@ -33,15 +36,6 @@ class GenreShow extends Component
                 ],
             ],
         ];
-    }
-
-    public function addToCart(int $bookId): void
-    {
-        $cart = session()->get('cart', ['count' => 0, 'items' => []]);
-        $cart['count'] += 1;
-        $cart['items'][] = ['id' => $bookId, 'qty' => 1];
-        session(['cart' => $cart, 'cart.count' => $cart['count']]);
-        $this->dispatch('cart:updated');
     }
 
     public function render()

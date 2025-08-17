@@ -47,12 +47,12 @@
                     </p>
                 </div>
 
-                <button
-                    class="mt-3 w-full rounded-xl bg-accent text-primary py-2 font-bold shadow-md
-                           hover:bg-accent/90 focus:ring-4 focus:ring-accent/40
-                           active:scale-95 transition cursor-pointer border border-accent/70">
+                <button wire:click="addToCart({{ $b->id }})"
+                    class="mt-3 w-full rounded-xl bg-white text-black border border-black font-semibold px-3 py-2
+           cursor-pointer active:translate-y-[1px] focus:outline-none focus:ring-2 focus:ring-accent/30">
                     Добави в количка
                 </button>
+
             </article>
         @endforeach
     </div>

@@ -20,11 +20,19 @@ class Signup extends Component
             $service->subscribe($this->email);
             $this->ok = true;
             $this->reset('email');
+
+            $this->dispatch('notify', message: '✅ Абонаментът е приет! Провери имейла си.');
         } catch (\Throwable $e) {
             report($e);
             $this->errorMessage = 'Възникна грешка. Опитай пак малко по-късно.';
+
+            $this->dispatch('notify', message: '❌ Възникна грешка. Опитай пак.');
         }
     }
 
-    public function render() { return view('livewire.newsletter.signup'); }
+
+    public function render()
+    {
+        return view('livewire.newsletter.signup');
+    }
 }

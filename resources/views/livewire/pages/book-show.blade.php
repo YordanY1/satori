@@ -6,36 +6,32 @@
     </h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-
         <div>
-            <img src="{{ $book['cover'] }}" alt="Корицата на книгата {{ $book['title'] }}"
+            <img src="{{ $book['cover'] }}"
+                alt="{{ __('book.cover_alt', ['title' => $book['title']]) ?? 'Корицата на книгата ' . $book['title'] }}"
                 class="w-full h-auto rounded-xl shadow-md" itemprop="image">
         </div>
 
         <div class="flex flex-col gap-5">
-
-
             <p class="text-lg text-text">
-                Автор:
+                {{ __('book.author') }}
                 <a href="{{ route('author.show', $book['author']['slug']) }}"
                     class="font-semibold underline hover:no-underline" itemprop="author">
                     {{ $book['author']['name'] }}
                 </a>
             </p>
 
-
             <div class="flex items-center gap-6">
                 <p class="text-2xl font-bold text-accent" itemprop="offers" itemscope
                     itemtype="https://schema.org/Offer">
                     <meta itemprop="priceCurrency" content="BGN">
-                    <span itemprop="price">{{ number_format($book['price'], 2) }}</span> лв.
+                    <span itemprop="price">{{ number_format($book['price'], 2) }}</span> {{ __('book.price_currency') }}
                 </p>
 
                 <p class="text-text">
-                    Формат:
+                    {{ __('book.format') }}
                     <span class="font-medium">
-                        {{ $book['format'] === 'paper' ? 'Хартиена' : 'Електронна' }}
+                        {{ $book['format'] === 'paper' ? __('book.format_paper') : __('book.format_ebook') }}
                     </span>
                 </p>
             </div>
@@ -43,22 +39,21 @@
             <div class="flex flex-wrap gap-3">
                 <button wire:click="addToCart({{ $book['id'] }}, 1)"
                     class="rounded-xl bg-white text-black border border-black font-semibold px-5 py-3 shadow-sm
-           hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
-                    Добави в количка
+                               hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
+                    {{ __('book.add_to_cart') }}
                 </button>
 
                 @if (!empty($book['excerpt_url']))
                     <button x-data @click="$dispatch('open-excerpt')"
                         class="rounded-xl bg-white text-black border border-black font-medium px-5 py-3
                                    hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition">
-                        Прочети откъс
+                        {{ __('book.read_excerpt') }}
                     </button>
                 @endif
             </div>
 
-
             <div class="flex items-center gap-3 pt-2">
-                <span class="text-neutral-600">Сподели:</span>
+                <span class="text-neutral-600">{{ __('book.share') }}</span>
                 <a class="underline hover:no-underline"
                     href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
                     target="_blank" rel="noopener">Facebook</a>
@@ -70,11 +65,13 @@
                     target="_blank" rel="noopener">Pinterest</a>
             </div>
 
-
             <div class="flex items-center gap-2 text-neutral-700">
                 <div aria-hidden="true">⭐</div>
                 <span>
-                    {{ number_format($book['rating_avg'], 1) }}/5 ({{ $book['rating_count'] }} оценки)
+                    {{ __('book.rating', [
+                        'rating' => number_format($book['rating_avg'], 1),
+                        'count' => $book['rating_count'],
+                    ]) }}
                 </span>
                 <meta itemprop="aggregateRating"
                     content="{{ json_encode(['@type' => 'AggregateRating', 'ratingValue' => $book['rating_avg'], 'reviewCount' => $book['rating_count']], JSON_UNESCAPED_UNICODE) }}">
@@ -82,16 +79,15 @@
         </div>
     </div>
 
-
     <section class="mt-10" aria-labelledby="desc-title">
-        <h2 id="desc-title" class="text-2xl font-semibold mb-3">Описание</h2>
+        <h2 id="desc-title" class="text-2xl font-semibold mb-3">{{ __('book.description') }}</h2>
         <div class="prose max-w-none text-text" itemprop="description">
             {!! nl2br(e($book['description'])) !!}
         </div>
     </section>
 
     <section class="mt-10" aria-labelledby="reviews-title">
-        <h2 id="reviews-title" class="text-2xl font-semibold mb-4">Ревюта и оценки</h2>
+        <h2 id="reviews-title" class="text-2xl font-semibold mb-4">{{ __('book.reviews') }}</h2>
 
         @forelse($book['reviews'] as $review)
             <article class="border-b border-neutral-200 py-4">
@@ -102,7 +98,7 @@
                 <p class="text-neutral-800">{{ $review['content'] }}</p>
             </article>
         @empty
-            <p class="text-neutral-600">Все още няма ревюта за тази книга.</p>
+            <p class="text-neutral-600">{{ __('book.no_reviews') }}</p>
         @endforelse
     </section>
 
@@ -114,15 +110,15 @@
             <div x-show="open" x-transition
                 class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[80vh] flex flex-col">
                 <div class="flex items-center justify-between p-4 border-b">
-                    <h3 class="font-semibold text-lg">Откъс: {{ $book['title'] }}</h3>
+                    <h3 class="font-semibold text-lg">{{ __('book.excerpt', ['title' => $book['title']]) }}</h3>
                     <button class="p-2 rounded hover:bg-neutral-100" @click="open = false"
-                        aria-label="Затвори">✖</button>
+                        aria-label="{{ __('book.close') }}">✖</button>
                 </div>
                 <div class="flex-1">
-                    <iframe src="{{ $book['excerpt_url'] }}" class="w-full h-full" title="Откъс (PDF)"></iframe>
+                    <iframe src="{{ $book['excerpt_url'] }}" class="w-full h-full"
+                        title="{{ __('book.excerpt', ['title' => $book['title']]) }}"></iframe>
                 </div>
             </div>
         </div>
     @endif
-
 </section>

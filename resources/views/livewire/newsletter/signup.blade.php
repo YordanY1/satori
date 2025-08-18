@@ -1,8 +1,12 @@
 <form wire:submit.prevent="subscribe" class="flex flex-col sm:flex-row gap-2"
-    aria-label="Абонамент за бюлетин – получавайте новини и безплатни откъси">
+    aria-label="{{ __('newsletter.form_aria') }}">
 
-    <label for="newsletter-email" class="sr-only">Имейл адрес</label>
-    <input type="email" id="newsletter-email" wire:model="email" placeholder="имейл@пример.com" required
+    <label for="newsletter-email" class="sr-only">
+        {{ __('newsletter.email_label') }}
+    </label>
+
+    <input type="email" id="newsletter-email" wire:model="email" placeholder="{{ __('newsletter.email_placeholder') }}"
+        required
         class="w-full rounded-lg border border-neutral-300 px-3 py-1.5
                   focus:outline-none focus:ring-2 focus:ring-accent
                   placeholder:text-neutral-400 text-text text-sm">
@@ -10,7 +14,7 @@
     <button type="submit"
         class="rounded-lg border border-accent text-text px-3 py-1.5 text-sm font-medium
                    active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-accent cursor-pointer">
-        Абонирай ме
+        {{ __('newsletter.submit') }}
     </button>
 </form>
 
@@ -20,6 +24,6 @@
 
 @if ($ok)
     <div class="text-sm text-green-700 mt-2" role="status">
-        Готово! Провери имейла си за безплатния откъс.
+        {{ __('newsletter.success') }}
     </div>
 @endif

@@ -20,7 +20,8 @@ trait UsesCart
         ]);
 
         $this->dispatch('cart:updated', count: Cart::count())->to('cart.badge');
-        $this->dispatch('notify', message: 'Добавено в количката 🛒');
+        $this->dispatch('notify', message: __('cart.added'));
+
         $this->dispatch('cart-updated');
     }
 }

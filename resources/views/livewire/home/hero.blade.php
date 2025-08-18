@@ -18,7 +18,7 @@
 }" x-init="start();
 window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave="start()"
     class="relative overflow-hidden rounded-2xl bg-primary text-background h-[300px] sm:h-[460px]"
-    aria-label="Слайдер с промоции">
+    aria-label="{{ __('slider.section_aria') }}">
 
     @if (!empty($slides) && isset($slides[$active]))
         @php $slide = $slides[$active]; @endphp
@@ -29,8 +29,9 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
                     $img = Str::startsWith($slide['image'] ?? '', ['http://', 'https://'])
                         ? $slide['image']
                         : asset($slide['image'] ?? 'storage/images/hero-1.jpg');
+                    $alt = $slide['alt'] ?? ($slide['title'] ?? __('slider.slide_fallback'));
                 @endphp
-                <img src="{{ $img }}" alt="{{ $slide['alt'] ?? ($slide['title'] ?? 'Слайд') }}" loading="lazy"
+                <img src="{{ $img }}" alt="{{ $alt }}" loading="lazy"
                     class="w-full h-full object-cover">
             </figure>
 
@@ -48,7 +49,9 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
                     @if (is_string($subtitle) && Str::endsWith(Str::lower($subtitle), '.pdf'))
                         <a href="{{ Str::startsWith($subtitle, ['http://', 'https://']) ? $subtitle : asset($subtitle) }}"
                             class="mt-2 inline-block underline underline-offset-4 text-background/90 text-xs sm:text-base"
-                            target="_blank" rel="noopener">Изтегли откъс (PDF)</a>
+                            target="_blank" rel="noopener">
+                            {{ __('slider.download_pdf') }}
+                        </a>
                     @else
                         <p class="mt-2 text-background/90 text-xs sm:text-base">{{ $subtitle }}</p>
                     @endif
@@ -74,27 +77,25 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
         </div>
     @endif
 
-
     <button wire:click="prev"
         class="grid absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full
                bg-accent text-white border border-accent/20 shadow-lg hover:bg-accent/90 hover:border-accent
                focus:outline-none focus:ring-4 focus:ring-accent/50 transition z-30"
-        aria-label="Предишен слайд">‹</button>
+        aria-label="{{ __('slider.prev') }}">‹</button>
 
     <button wire:click="next"
         class="grid absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full
                bg-accent text-white border border-accent/20 shadow-lg hover:bg-accent/90 hover:border-accent
                focus:outline-none focus:ring-4 focus:ring-accent/50 transition z-30"
-        aria-label="Следващ слайд">›</button>
+        aria-label="{{ __('slider.next') }}">›</button>
 
     <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4 z-30">
         @foreach ($slides as $i => $_)
             <button wire:key="dot-{{ $i }}" wire:click="goTo({{ $i }})"
                 class="h-1.5 rounded-full transition-all duration-300
                        {{ $i === $active ? 'w-8 bg-accent shadow-lg' : 'w-4 bg-background/70 hover:bg-background/90' }}"
-                aria-label="Премини към слайд {{ $i + 1 }}">
+                aria-label="{{ __('slider.goto', ['n' => $i + 1]) }}">
             </button>
         @endforeach
     </div>
-
 </section>

@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Str; @endphp
+
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-labelledby="author-name" itemscope
     itemtype="https://schema.org/Person">
 
@@ -9,7 +11,7 @@
                     $photo = asset('storage/authors/' . $filename);
                 @endphp
 
-                <img src="{{ $photo }}" alt="Снимка на {{ $author['name'] }}"
+                <img src="{{ $photo }}" alt="{{ __('author.alt.photo', ['name' => $author['name']]) }}"
                     class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
             @endif
 
@@ -19,33 +21,33 @@
 
             <ul class="mt-4 text-sm text-neutral-600 space-y-1">
                 @if (!empty($author['books']))
-                    <li>📚 Книги: {{ count($author['books']) }}</li>
+                    <li>📚 {{ __('author.books') }}: {{ count($author['books']) }}</li>
                 @endif
                 @if (!empty($author['quotes']))
-                    <li>💬 Цитати: {{ count($author['quotes']) }}</li>
+                    <li>💬 {{ __('author.quotes') }}: {{ count($author['quotes']) }}</li>
                 @endif
                 @if (!empty($author['videos']))
-                    <li>🎬 Видеа: {{ count($author['videos']) }}</li>
+                    <li>🎬 {{ __('author.videos') }}: {{ count($author['videos']) }}</li>
                 @endif
                 @if (!empty($author['interviews']))
-                    <li>🎙 Интервюта: {{ count($author['interviews']) }}</li>
+                    <li>🎙 {{ __('author.interviews') }}: {{ count($author['interviews']) }}</li>
                 @endif
             </ul>
+
         </div>
 
         <div class="md:col-span-2">
-
             @if (!empty($author['bio']))
-                <h2 class="text-2xl font-semibold mb-3">Биография</h2>
+                <h2 class="text-2xl font-semibold mb-3">{{ __('author.bio') }}</h2>
                 <div class="prose max-w-none text-text" itemprop="description">
                     {!! nl2br(e($author['bio'])) !!}
                 </div>
             @endif
 
-
             @if (!empty($author['quotes']))
                 <h2 class="text-2xl font-semibold mt-8 mb-3">
-                    Цитати <span class="text-neutral-500">({{ count($author['quotes']) }})</span>
+                    {{ __('author.quotes') }}
+                    <span class="text-neutral-500">({{ count($author['quotes']) }})</span>
                 </h2>
                 <ul class="space-y-3">
                     @foreach ($author['quotes'] as $q)
@@ -59,17 +61,18 @@
                 </ul>
             @endif
 
-
             @if (!empty($author['videos']))
                 <h2 class="text-2xl font-semibold mt-8 mb-3">
-                    Видео представяне <span class="text-neutral-500">({{ count($author['videos']) }})</span>
+                    {{ __('author.video_section') }}
+                    <span class="text-neutral-500">({{ count($author['videos']) }})</span>
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     @foreach ($author['videos'] as $v)
                         @if (($v['type'] ?? null) === 'youtube' && !empty($v['id']))
                             <article class="bg-white rounded-2xl p-3 shadow-sm" itemscope
                                 itemtype="https://schema.org/VideoObject">
-                                <h3 class="font-medium mb-2" itemprop="name">{{ $v['title'] ?? 'Видео' }}</h3>
+                                <h3 class="font-medium mb-2" itemprop="name">{{ $v['title'] ?? __('author.videos') }}
+                                </h3>
                                 <meta itemprop="thumbnailUrl"
                                     content="https://i.ytimg.com/vi/{{ $v['id'] }}/hqdefault.jpg">
                                 <meta itemprop="embedUrl" content="https://www.youtube.com/embed/{{ $v['id'] }}">
@@ -78,14 +81,14 @@
                                 <div class="aspect-video rounded-lg overflow-hidden">
                                     <iframe class="w-full h-full"
                                         src="https://www.youtube.com/embed/{{ $v['id'] }}?rel=0&modestbranding=1"
-                                        title="{{ $v['title'] ?? 'Видео' }}" loading="lazy"
+                                        title="{{ $v['title'] ?? __('author.videos') }}" loading="lazy"
                                         allow="accelerometer; autoplay; encrypted-media; picture-in-picture; web-share"
                                         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                                 </div>
                                 <a href="https://www.youtube.com/watch?v={{ $v['id'] }}"
                                     class="mt-3 inline-flex items-center gap-2 text-accent hover:underline"
                                     target="_blank" rel="noopener" itemprop="url">
-                                    Гледай в YouTube
+                                    {{ __('author.watch_youtube') }}
                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round" />
@@ -97,10 +100,10 @@
                 </div>
             @endif
 
-
             @if (!empty($author['interviews']))
                 <h2 class="text-2xl font-semibold mt-8 mb-3">
-                    Интервюта и участия <span class="text-neutral-500">({{ count($author['interviews']) }})</span>
+                    {{ __('author.interview_section') }}
+                    <span class="text-neutral-500">({{ count($author['interviews']) }})</span>
                 </h2>
                 <ul class="list-disc ml-6 space-y-2">
                     @foreach ($author['interviews'] as $i)
@@ -122,9 +125,12 @@
         <section class="mt-12" aria-labelledby="author-books">
             <div class="flex items-end justify-between mb-4">
                 <h2 id="author-books" class="text-2xl font-semibold text-primary">
-                    Книги <span class="text-neutral-500">({{ count($author['books']) }})</span>
+                    {{ __('author.books') }}
+                    <span class="text-neutral-500">({{ count($author['books']) }})</span>
                 </h2>
-                <a href="{{ route('catalog') }}" class="text-sm text-accent hover:underline transition">Виж всички</a>
+                <a href="{{ route('catalog') }}" class="text-sm text-accent hover:underline transition">
+                    {{ __('author.view_all') }}
+                </a>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -132,16 +138,19 @@
                     @continue(empty($b['slug']) || empty($b['title']))
                     <article class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition flex flex-col"
                         itemscope itemtype="https://schema.org/Book">
-                        <a href="{{ route('book.show', $b['slug']) }}" aria-label="Виж {{ $b['title'] }}"
-                            itemprop="url">
+
+                        <a href="{{ route('book.show', $b['slug']) }}"
+                            aria-label="{{ __('author.aria.view_book', ['title' => $b['title']]) }}" itemprop="url">
                             @if (!empty($b['cover']))
-                                <img src="{{ $b['cover'] }}" alt="Корица на {{ $b['title'] }}"
+                                <img src="{{ $b['cover'] }}"
+                                    alt="{{ __('author.alt.cover', ['title' => $b['title']]) }}"
                                     class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy"
                                     itemprop="image">
                             @else
                                 <div
-                                    class="w-full h-40 sm:h-48 bg-neutral-100 rounded-xl mb-3 grid place-items-center text-neutral-400">
-                                    Няма корица
+                                    class="w-full h-40 sm:h-48 bg-neutral-100 rounded-xl mb-3
+                                            grid place-items-center text-neutral-400">
+                                    {{ __('author.no_cover') }}
                                 </div>
                             @endif
                         </a>
@@ -154,15 +163,16 @@
                             <p class="text-secondary text-sm mb-2" itemprop="offers" itemscope
                                 itemtype="https://schema.org/Offer">
                                 <meta itemprop="priceCurrency" content="BGN">
-                                <span itemprop="price">{{ number_format((float) $b['price'], 2) }}</span> лв.
+                                <span itemprop="price">{{ number_format((float) $b['price'], 2) }}</span>
+                                {{ __('shop.currency') }}
                             </p>
                         @endif
 
                         @if (!empty($b['id']))
                             <button wire:click="addToCart({{ (int) $b['id'] }})" :key="'author-book-btn-'.$b['id']"
                                 class="mt-auto w-full rounded-xl bg-white text-black py-2 text-sm font-bold shadow-sm
-           focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer border border-black">
-                                Добави в количка
+                                           focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer border border-black">
+                                {{ __('shop.add_to_cart') }}
                             </button>
                         @endif
                     </article>
@@ -170,5 +180,4 @@
             </div>
         </section>
     @endif
-
 </section>

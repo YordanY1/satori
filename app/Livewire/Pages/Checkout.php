@@ -6,6 +6,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Stripe\StripeClient;
+use App\Support\PayPal;
 use App\Support\Cart;
 use App\Models\Book;
 use App\Models\Order;
@@ -17,14 +18,14 @@ class Checkout extends Component
     public string $email = '';
     public string $phone = '';
     public string $address = '';
-    public string $payment_method = 'cod';
+    public string $payment_method = 'cod'; // cod | stripe | paypal
 
     protected $rules = [
         'name' => 'required|string|min:3',
         'email' => 'required|email',
         'phone' => 'required|string|min:8',
         'address' => 'required|string|min:5',
-        'payment_method' => 'required|in:cod,stripe',
+        'payment_method' => 'required|in:cod,stripe,paypal',
     ];
 
     public function placeOrder()
@@ -45,9 +46,9 @@ class Checkout extends Component
             $normalized = [];
 
             foreach ($books as $book) {
-                $qty       = max(1, (int) ($items[$book->id]['quantity'] ?? 1));
-                $unit      = (float) $book->price;
-                $line      = $unit * $qty;
+                $qty  = max(1, (int) ($items[$book->id]['quantity'] ?? 1));
+                $unit = (float) $book->price;
+                $line = $unit * $qty;
 
                 $subtotal += $line;
 
@@ -94,44 +95,89 @@ class Checkout extends Component
                 ]);
             }
 
+            // COD
             if ($this->payment_method === 'cod') {
                 Cart::clear();
                 $this->dispatch('notify', message: 'Благодарим! Поръчката е приета.');
                 return $this->redirectRoute('thankyou', $order->id);
             }
 
+            // STRIPE (Checkout Session, redirect)
             if ($this->payment_method === 'stripe') {
-                $stripe = new StripeClient(config('services.stripe.secret'));
+                try {
+                    $stripe = new StripeClient(config('services.stripe.secret'));
 
-                $lineItems = array_map(function ($n) {
-                    return [
-                        'price_data' => [
-                            'currency'     => 'bgn',
-                            'product_data' => ['name' => $n['title']],
-                            'unit_amount'  => (int) round($n['unit_price'] * 100),
+                    $lineItems = array_map(function ($n) {
+                        return [
+                            'price_data' => [
+                                'currency'     => 'bgn',
+                                'product_data' => ['name' => $n['title']],
+                                'unit_amount'  => (int) round($n['unit_price'] * 100),
+                            ],
+                            'quantity' => $n['quantity'],
+                        ];
+                    }, $normalized);
+
+                    $session = $stripe->checkout->sessions->create([
+                        'mode'                 => 'payment',
+                        'payment_method_types' => ['card'],
+                        'line_items'           => $lineItems,
+                        'currency'             => 'bgn',
+                        'customer_email'       => $this->email,
+                        'metadata'             => [
+                            'order_number' => $order->order_number,
+                            'order_id'     => (string) $order->id,
                         ],
-                        'quantity' => $n['quantity'],
-                    ];
-                }, $normalized);
+                        'success_url'          => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
+                        'cancel_url'           => route('checkout'),
+                    ]);
 
-                $session = $stripe->checkout->sessions->create([
-                    'mode'                 => 'payment',
-                    'payment_method_types' => ['card'],
-                    'line_items'           => $lineItems,
-                    'currency'             => 'bgn',
-                    'customer_email'       => $this->email,
-                    'metadata'             => [
-                        'order_number' => $order->order_number,
-                        'order_id'     => (string) $order->id,
-                    ],
-                    'success_url'          => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
-                    'cancel_url'           => route('checkout'),
-                ]);
-
-
-                return $this->redirect($session->url);
+                    return $this->redirect($session->url);
+                } catch (\Throwable $e) {
+                    report($e);
+                    $this->addError('cart', 'Stripe временно е недостъпен. Опитайте по-късно или изберете друг метод.');
+                    return;
+                }
             }
 
+            // PAYPAL (Checkout – redirect)
+            // ...
+            if ($this->payment_method === 'paypal') {
+                try {
+                    $pp = new PayPal();
+
+                    // Convert BGN to EUR for PayPal
+                    $eurTotal = round($order->total / 1.95583, 2);
+
+                    $created = $pp->createOrder(
+                        currency: 'EUR',
+                        amount: $eurTotal,
+                        returnUrl: route('thankyou', $order->id),
+                        cancelUrl: route('checkout'),
+                        metadata: [
+                            'order_number' => $order->order_number,
+                            'orig_currency' => 'BGN',
+                            'orig_total'    => number_format($order->total, 2, '.', ''),
+                        ],
+                        brandName: config('app.name', 'Store')
+                    );
+
+                    $approveUrl = PayPal::extractApproveLink($created);
+                    if (!$approveUrl) {
+                        $this->addError('cart', 'PayPal временно е недостъпен.');
+                        return;
+                    }
+
+                    return $this->redirect($approveUrl);
+                } catch (\Throwable $e) {
+                    report($e);
+                    $this->addError('cart', 'PayPal временно е недостъпен. Опитайте по-късно или изберете друг метод.');
+                    return;
+                }
+            }
+
+
+            // fallback
             Cart::clear();
             $this->dispatch('notify', message: 'Благодарим! Поръчката е приета.');
             return $this->redirectRoute('thankyou', $order->id);

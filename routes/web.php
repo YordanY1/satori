@@ -21,6 +21,9 @@ use App\Livewire\Pages\{
     ThankYou
 };
 
+use App\Http\Controllers\Http\Newsletter\ConfirmController;
+use App\Http\Controllers\Http\Newsletter\UnsubscribeController;
+use App\Http\Controllers\Http\Newsletter\ExcerptController;
 
 
 Route::get('/', Home::class)->name('home');
@@ -44,3 +47,8 @@ Route::get('/order/{id}', OrderShow::class)->name('order.show');
 Route::get('/genres', Genres::class)->name('genres');
 Route::get('/genre/{slug}', GenreShow::class)->name('genre.show');
 Route::get('/thank-you/{order}', ThankYou::class)->name('thankyou');
+
+
+Route::get('/newsletter/confirm/{token}', ConfirmController::class)->name('newsletter.confirm');
+Route::get('/newsletter/unsubscribe/{token}', UnsubscribeController::class)->name('newsletter.unsubscribe');
+Route::get('/newsletter/excerpt/{token}', ExcerptController::class)->name('newsletter.excerpt');

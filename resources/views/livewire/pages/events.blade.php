@@ -5,7 +5,6 @@
         @foreach ($events as $event)
             <article
                 class="border rounded-xl shadow-sm hover:shadow-md transition bg-white p-4 flex flex-col justify-between">
-                {{-- Корица (ако има) --}}
                 <a wire:navigate href="{{ route('event.show', $event['slug']) }}" class="block">
                     @if (!empty($event['cover']))
                         <img src="{{ $event['cover'] }}" alt="Корица на събитието: {{ $event['title'] }}" loading="lazy"

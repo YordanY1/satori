@@ -36,7 +36,8 @@
         </nav>
 
         <div class="flex items-center gap-3">
-            @livewire('search.mini')
+            <livewire:search.mini />
+
 
             <a href="{{ route('cart') }}"
                 class="relative p-2 rounded-lg hover:bg-background focus:ring-2 focus:ring-accent transition"
@@ -59,6 +60,7 @@
     </div>
 
     <div x-show="open" x-cloak x-transition.origin.top class="md:hidden bg-white border-t shadow-lg z-50">
+
         <nav class="flex flex-col" aria-label="{{ __('navigation.mobile_menu') }}">
             @foreach ($items as $item)
                 <a wire:navigate href="{{ route($item['route']) }}" @click="open = false"

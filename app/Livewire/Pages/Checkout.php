@@ -294,11 +294,54 @@ class Checkout extends Component
                 ]);
             }
 
-            // Handle payment methods
             if ($this->payment_method === 'cod') {
-                Cart::clear();
-                $this->dispatch('notify', message: 'Thank you! Your order has been placed.');
-                return $this->redirectRoute('thankyou', $order->id);
+                try {
+                    $labelService = app(\App\Services\Shipping\EcontLabelService::class);
+
+                    $labelInput = [
+                        'sender' => [
+                            'name'      => config('shipping.econt.sender_name'),
+                            'phone'     => config('shipping.econt.sender_phone'),
+                            'city_name' => config('shipping.econt.sender_city'),
+                            'post_code' => config('shipping.econt.sender_post'),
+                            'street'    => config('shipping.econt.sender_street'),
+                            'num'       => config('shipping.econt.sender_num'),
+                        ],
+                        'receiver' => [
+                            'name'        => $this->name,
+                            'phone'       => preg_replace('/\s+/', '', $this->phone),
+                            'city_id'     => $this->shipping_method === 'address' ? $this->cityId : null,
+                            'office_code' => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
+                            'street_label' => $this->streetLabel,
+                            'street_num'  => $this->streetNum,
+                            'address_note' => $this->address,
+                        ],
+                        'pack_count'   => 1,
+                        'weight'       => 1.0,
+                        'description'  => 'Книги',
+                        'cod' => [
+                            'amount'   => $order->total,
+                            'type'     => 'get',
+                            'currency' => 'BGN',
+                        ],
+                    ];
+
+
+                    $label = $labelService->submit($labelInput);
+
+                    $order->update([
+                        'shipping_provider' => 'econt',
+                        'shipping_payload'  => json_encode($label),
+                    ]);
+
+                    Cart::clear();
+                    $this->dispatch('notify', message: 'Thank you! Your order has been placed. Econt label created.');
+                    return $this->redirectRoute('thankyou', $order->id);
+                } catch (\Throwable $e) {
+                    report($e);
+                    $this->addError('cart', 'Order placed, but Econt label failed: ' . $e->getMessage());
+                    return;
+                }
             }
 
             if ($this->payment_method === 'stripe') {

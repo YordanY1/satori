@@ -33,18 +33,26 @@ class PayPal
             $headers[] = 'Authorization: Bearer ' . $bearer;
         }
 
+        if (!empty($opts['headers']) && is_array($opts['headers'])) {
+            $headers = array_merge($headers, $opts['headers']);
+        }
+
         $payload = isset($opts['json']) ? json_encode($opts['json'], JSON_UNESCAPED_UNICODE) : null;
 
-        curl_setopt_array($ch, [
+        $curlOpts = [
             CURLOPT_CUSTOMREQUEST   => $method,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_HTTPHEADER      => $headers,
-            CURLOPT_POSTFIELDS      => $payload,
             CURLOPT_CONNECTTIMEOUT  => 8,
             CURLOPT_TIMEOUT         => 20,
             CURLOPT_SSL_VERIFYPEER  => true,
             CURLOPT_SSL_VERIFYHOST  => 2,
-        ]);
+        ];
+        if ($payload !== null) {
+            $curlOpts[CURLOPT_POSTFIELDS] = $payload;
+        }
+
+        curl_setopt_array($ch, $curlOpts);
 
         $res  = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -74,47 +82,62 @@ class PayPal
         return $data;
     }
 
+
     public function token(): string
     {
-        return Cache::remember('paypal_access_token', 8 * 60, function () {
-            $ch = curl_init($this->base . '/v1/oauth2/token');
+        $cacheKey = 'paypal_access_token:' . sha1($this->base . '|' . $this->id);
 
-            curl_setopt_array($ch, [
-                CURLOPT_POST            => true,
-                CURLOPT_RETURNTRANSFER  => true,
-                CURLOPT_USERPWD         => $this->id . ':' . $this->secret,
-                CURLOPT_POSTFIELDS      => 'grant_type=client_credentials',
-                CURLOPT_HTTPHEADER      => [
-                    'Accept: application/json',
-                    'Accept-Language: bg-BG',
-                    'User-Agent: Satori/1.0',
-                ],
-                CURLOPT_CONNECTTIMEOUT  => 8,
-                CURLOPT_TIMEOUT         => 20,
-                CURLOPT_SSL_VERIFYPEER  => true,
-                CURLOPT_SSL_VERIFYHOST  => 2,
-            ]);
+        if ($tok = Cache::get($cacheKey)) {
+            return $tok;
+        }
 
-            $res  = curl_exec($ch);
-            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $ch = curl_init($this->base . '/v1/oauth2/token');
 
-            if ($res === false) {
-                $err = curl_error($ch);
-                curl_close($ch);
-                throw new RuntimeException("PayPal token cURL error: {$err}");
-            }
+        curl_setopt_array($ch, [
+            CURLOPT_POST            => true,
+            CURLOPT_RETURNTRANSFER  => true,
+            CURLOPT_USERPWD         => $this->id . ':' . $this->secret,
+            CURLOPT_POSTFIELDS      => 'grant_type=client_credentials',
+            CURLOPT_HTTPHEADER      => [
+                'Accept: application/json',
+                'Accept-Language: bg-BG',
+                'User-Agent: Satori/1.0',
+                'Content-Type: application/x-www-form-urlencoded',
+            ],
+            CURLOPT_CONNECTTIMEOUT  => 8,
+            CURLOPT_TIMEOUT         => 20,
+            CURLOPT_SSL_VERIFYPEER  => true,
+            CURLOPT_SSL_VERIFYHOST  => 2,
+        ]);
 
+        $res  = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($res === false) {
+            $err = curl_error($ch);
             curl_close($ch);
+            throw new RuntimeException("PayPal token cURL error: {$err}");
+        }
 
-            $data = json_decode($res, true) ?? [];
+        curl_close($ch);
 
-            if ($code >= 400) {
-                throw new RuntimeException("PayPal token HTTP {$code}: " . ($data['error_description'] ?? $res));
-            }
+        $data = json_decode($res, true) ?? [];
 
-            return (string) ($data['access_token'] ?? '');
-        });
+        if ($code >= 400) {
+            throw new RuntimeException("PayPal token HTTP {$code}: " . ($data['error_description'] ?? $res));
+        }
+
+        $access = (string)($data['access_token'] ?? '');
+        if ($access === '') {
+            throw new RuntimeException('PayPal token: missing access_token');
+        }
+
+        $ttl = max(60, (int)($data['expires_in'] ?? 3000) - 120);
+        Cache::put($cacheKey, $access, $ttl);
+
+        return $access;
     }
+
 
     public function createOrder(string $currency, float $amount, string $returnUrl, string $cancelUrl, array $metadata = [], ?string $brandName = null): array
     {
@@ -129,7 +152,7 @@ class PayPal
         $body = [
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'custom_id'    => $localOrderId,         
+                'custom_id'    => $localOrderId,
                 'reference_id' => "order-{$localOrderId}",
                 'invoice_id'   => "INV-{$localOrderId}",
                 'amount' => [
@@ -152,7 +175,14 @@ class PayPal
     public function captureOrder(string $orderId): array
     {
         $token = $this->token();
-        return $this->request('POST', "/v2/checkout/orders/{$orderId}/capture", [], $token);
+
+        $idempotencyKey = bin2hex(random_bytes(16));
+        return $this->request(
+            'POST',
+            "/v2/checkout/orders/{$orderId}/capture",
+            ['headers' => ['PayPal-Request-Id: ' . $idempotencyKey]],
+            $token
+        );
     }
 
     public static function extractApproveLink(array $order): ?string

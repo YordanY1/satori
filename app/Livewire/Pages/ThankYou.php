@@ -25,8 +25,6 @@ class ThankYou extends Component
         if ($paypalOrderId && $this->order->payment_method === 'paypal' && $this->order->payment_status !== 'paid') {
             $this->confirmPayPalOrder($paypalOrderId);
         }
-
-        Cart::clear();
     }
 
     protected function confirmStripeSession(string $sessionId): void
@@ -60,6 +58,7 @@ class ThankYou extends Component
         ])->save();
 
         $this->maybeCreateEcontLabelFromStripeSession($session);
+        Cart::clear();
     }
 
     protected function maybeCreateEcontLabelFromStripeSession($session): void
@@ -112,7 +111,7 @@ class ThankYou extends Component
 
             $this->order->update([
                 'shipping_provider' => 'econt',
-                'shipping_payload'  => json_encode($label),
+                'shipping_payload'  => $label,
             ]);
         } catch (\Throwable $e) {
             report($e);
@@ -169,6 +168,8 @@ class ThankYou extends Component
             ])->save();
 
             $this->createEcontLabelFromLocalOrder();
+
+            Cart::clear();
         } catch (\Throwable $e) {
             report($e);
         }

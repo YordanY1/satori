@@ -484,7 +484,7 @@ class Checkout extends Component
 
                     $order->update([
                         'shipping_provider' => 'econt',
-                        'shipping_payload'  => json_encode($label),
+                        'shipping_payload'  => $label,
                     ]);
 
                     Cart::clear();

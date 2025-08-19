@@ -12,43 +12,47 @@ use App\Models\Book;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\Shipping\EcontDirectoryService;
+use App\Services\Shipping\ShippingCalculator;
 
 class Checkout extends Component
 {
-    // Default shipping method (can be "address" or "econt_office")
+    // Default shipping method: "address" or "econt_office"
     public string $shipping_method = 'address';
 
     // --- City selection (structured from Econt directory) ---
-    public string $citySearch = '';       // User input (search query)
-    public ?int $cityId = null;           // Internal Econt city ID
-    public string $cityLabel = '';        // Displayed label of the city
-    public ?string $cityPostCode = null;  // City postal code
-    public array $cityOptions = [];       // Autocomplete dropdown options
+    public string $citySearch = '';
+    public ?int $cityId = null;          // Econt city internal ID (our DB PK)
+    public string $cityLabel = '';
+    public ?string $cityPostCode = null;
+    public array $cityOptions = [];
 
-    // --- Customer basic info ---
+    // --- Customer info ---
     public string $name = '';
     public string $email = '';
     public string $phone = '';
-    public string $address = '';          // Address notes (floor, apt, etc.)
-    public string $payment_method = 'cod'; // "cod", "stripe", or "paypal"
+    public string $address = '';         // Notes (floor, apt, entrance)
+    public string $payment_method = 'cod'; // "cod", "stripe", "paypal"
 
     // --- Econt office selection ---
     public string $officeSearch = '';
-    public ?string $officeCode = null;    // Econt office code
+    public ?string $officeCode = null;   // Econt office code
     public string $officeLabel = '';
     public array $officeOptions = [];
     public bool $officeDropdownOpen = false;
 
-    // --- Street selection (only after city is selected) ---
+    // --- Street selection (requires city) ---
     public string $streetSearch = '';
-    public ?int $streetId = null;         // Internal PK from our DB
-    public ?int $streetCode = null;       // Econt street ID
+    public ?int $streetId = null;        // our streets table PK (if any)
+    public ?int $streetCode = null;      // Econt street ID (if any)
     public string $streetLabel = '';
     public array $streetOptions = [];
-    public string $streetNum = '';        // House/building number (can be "12A")
+    public string $streetNum = '';       // e.g. "12A"
+
+    // Shipping
+    public float $shippingCost = 0.00;
 
     /**
-     * Validation rules depending on the selected shipping method.
+     * Validation rules depending on selected shipping method.
      */
     protected function rules(): array
     {
@@ -61,13 +65,11 @@ class Checkout extends Component
         ];
 
         if ($this->shipping_method === 'address') {
-            // Address delivery requires a city and address details
             $base['cityId']     = 'required|integer|min:1';
-            $base['streetCode'] = 'nullable|integer|min:1'; // Some towns have no streets in Econt DB
+            $base['streetCode'] = 'nullable|integer|min:1';
             $base['streetNum']  = 'nullable|string|max:20';
-            $base['address']    = 'required|string|min:5';  // Additional notes or fallback
+            $base['address'] = 'nullable|string|max:255';
         } else {
-            // Office delivery requires office code
             $base['officeCode'] = 'required|string|min:1';
         }
 
@@ -75,20 +77,19 @@ class Checkout extends Component
     }
 
     /**
-     * Called when the user switches shipping method.
-     * Reset the irrelevant fields and open correct dropdown.
+     * Switch shipping method + reset unrelated fields + auto recalc.
      */
     public function updatedShippingMethod(string $value): void
     {
         if ($value === 'address') {
-            // Reset office-related fields
+            // Reset office fields
             $this->officeSearch = '';
             $this->officeCode   = null;
             $this->officeLabel  = '';
             $this->officeOptions = [];
             $this->officeDropdownOpen = false;
 
-            // Reset city-related fields
+            // Reset city fields
             $this->citySearch = '';
             $this->cityId = null;
             $this->cityLabel = '';
@@ -97,7 +98,7 @@ class Checkout extends Component
 
             $this->dispatch('focus-city-input');
         } else {
-            // Reset address-related fields
+            // Reset address fields
             $this->address = '';
             $this->citySearch = '';
             $this->cityId = null;
@@ -106,10 +107,12 @@ class Checkout extends Component
             $this->cityOptions = [];
             $this->officeDropdownOpen = true;
         }
+
+        $this->calculateShippingSafely();
     }
 
     /**
-     * Helper to resolve the Econt directory service (dependency injection).
+     * Resolve the Econt directory service (DI).
      */
     private function dir(): EcontDirectoryService
     {
@@ -117,7 +120,7 @@ class Checkout extends Component
     }
 
     /**
-     * Autocomplete search for Econt offices.
+     * Search Econt offices by query.
      */
     public function updatedOfficeSearch(): void
     {
@@ -132,21 +135,22 @@ class Checkout extends Component
     }
 
     /**
-     * Select office from dropdown.
+     * Select office from dropdown + auto recalc.
      */
     public function selectOffice($code, $label): void
     {
-        $this->officeCode        = (string) $code;
-        $this->officeLabel       = (string) $label;
-        $this->officeSearch      = (string) $label;
-        $this->officeOptions     = [];
+        $this->officeCode         = (string) $code;
+        $this->officeLabel        = (string) $label;
+        $this->officeSearch       = (string) $label;
+        $this->officeOptions      = [];
         $this->officeDropdownOpen = false;
 
         $this->resetValidation('officeCode');
+        $this->calculateShippingSafely();
     }
 
     /**
-     * Autocomplete search for cities.
+     * Search cities.
      */
     public function updatedCitySearch(): void
     {
@@ -169,7 +173,7 @@ class Checkout extends Component
     }
 
     /**
-     * Autocomplete search for streets (requires city).
+     * Search streets (requires city).
      */
     public function updatedStreetSearch(): void
     {
@@ -191,21 +195,22 @@ class Checkout extends Component
     }
 
     /**
-     * Select street from dropdown.
+     * Select street + auto recalc.
      */
     public function selectStreet($id, $code, $label): void
     {
-        $this->streetId    = (int) $id;
-        $this->streetCode  = (int) $code;
-        $this->streetLabel = (string) $label;
+        $this->streetId     = (int) $id;
+        $this->streetCode   = (int) $code;
+        $this->streetLabel  = (string) $label;
         $this->streetSearch = (string) $label;
         $this->streetOptions = [];
 
         $this->resetValidation(['streetCode']);
+        $this->calculateShippingSafely();
     }
 
     /**
-     * Select city from dropdown.
+     * Select city + auto recalc.
      */
     public function selectCity($id, $label, $postCode = null): void
     {
@@ -216,13 +221,129 @@ class Checkout extends Component
         $this->cityOptions  = [];
 
         $this->resetValidation(['cityId', 'address']);
+        $this->calculateShippingSafely();
+    }
+
+    /**
+     * Recalculate shipping when address details change (only for "address" method).
+     */
+    public function updatedStreetNum(): void
+    {
+        $this->calculateShippingSafely();
+    }
+
+    public function updatedAddress(): void
+    {
+        if ($this->shipping_method === 'address') {
+            $this->calculateShippingSafely();
+        }
+    }
+
+    public function updatedName(): void
+    {
+        $this->calculateShippingSafely();
+    }
+
+    public function updatedPhone(): void
+    {
+        $this->calculateShippingSafely();
+    }
+
+    /**
+     * Cheap guard to avoid hitting API without required data.
+     */
+    private function canCalculateShipping(): bool
+    {
+        if (trim($this->name) === '' || trim($this->phone) === '') {
+            return false;
+        }
+
+        if ($this->shipping_method === 'address') {
+            return (bool) $this->cityId;
+        }
+
+        if ($this->shipping_method === 'econt_office') {
+            return (bool) $this->officeCode;
+        }
+
+        return false;
+    }
+
+    /**
+     * Safe wrapper to recalc shipping (resets to 0 if insufficient data).
+     */
+    private function calculateShippingSafely(): void
+    {
+        if (!$this->canCalculateShipping()) {
+            $this->shippingCost = 0.00;
+            return;
+        }
+        $this->calculateShipping();
+    }
+
+    /**
+     * Compute total shipment weight from cart. Adjust to your domain (Book weight, default fallback, etc.)
+     */
+    private function computeCartWeight(): float
+    {
+        $items = Cart::all();
+        if (empty($items)) {
+            return 1.0; // fallback
+        }
+
+        $bookIds = array_keys($items);
+        $books   = Book::whereIn('id', $bookIds)->get(['id']);
+
+        $totalWeight = 0.0;
+        foreach ($books as $book) {
+            $qty = max(1, (int) ($items[$book->id]['quantity'] ?? 1));
+            $unitW = 0.5;
+            $totalWeight += $unitW * $qty;
+        }
+
+        return max(0.3, round($totalWeight, 2));
+    }
+
+    /**
+     * Call Econt CALCULATE via ShippingCalculator and set $shippingCost.
+     */
+    public function calculateShipping(): void
+    {
+        try {
+            $calculator = app(ShippingCalculator::class);
+
+            $labelInput = [
+                'sender' => [
+                    'name'      => config('shipping.econt.sender_name'),
+                    'phone'     => config('shipping.econt.sender_phone'),
+                    'city_name' => config('shipping.econt.sender_city'),
+                    'post_code' => config('shipping.econt.sender_post'),
+                    'street'    => config('shipping.econt.sender_street'),
+                    'num'       => config('shipping.econt.sender_num'),
+                ],
+                'receiver' => [
+                    'name'         => $this->name,
+                    'phone'        => preg_replace('/\s+/', '', $this->phone),
+                    'city_id'      => $this->shipping_method === 'address' ? $this->cityId : null,
+                    'office_code'  => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
+                    'street_label' => $this->streetLabel ?: null,
+                    'street_num'   => $this->streetNum ?: null,
+                ],
+                'pack_count'  => 1,
+                'weight'      => $this->computeCartWeight(),
+                'description' => 'Книги',
+            ];
+
+            $this->shippingCost = $calculator->calculate($labelInput);
+        } catch (\Throwable $e) {
+            report($e);
+            $this->shippingCost = 0.00;
+            $this->addError('shipping', 'Не успяхме да изчислим доставка: ' . $e->getMessage());
+        }
     }
 
     /**
      * Main order placement logic.
-     * - Validate form
-     * - Create order and order items in DB
-     * - Redirect to payment provider if needed
      */
     public function placeOrder()
     {
@@ -231,6 +352,11 @@ class Checkout extends Component
         if (Cart::count() === 0) {
             $this->addError('cart', 'The cart is empty.');
             return;
+        }
+
+        // Ensure we have a fresh shipping price
+        if ($this->shippingCost <= 0) {
+            $this->calculateShippingSafely();
         }
 
         return DB::transaction(function () {
@@ -259,11 +385,11 @@ class Checkout extends Component
             }
 
             $discount = 0.00;
-            $shipping = 0.00;
+            $shipping = $this->shippingCost;
             $tax      = 0.00;
             $total    = $subtotal - $discount + $shipping + $tax;
 
-            // Create the order record
+            // Create order
             $order = Order::create([
                 'public_id'        => (string) Str::uuid(),
                 'order_number'     => $this->generateOrderNumber(),
@@ -282,7 +408,7 @@ class Checkout extends Component
                 'payment_status'   => 'pending',
             ]);
 
-            // Create related order items
+            // Order items
             foreach ($normalized as $n) {
                 OrderItem::create([
                     'order_id'   => $order->id,
@@ -294,6 +420,7 @@ class Checkout extends Component
                 ]);
             }
 
+            // COD => create label (CREATE)
             if ($this->payment_method === 'cod') {
                 try {
                     $labelService = app(\App\Services\Shipping\EcontLabelService::class);
@@ -308,16 +435,15 @@ class Checkout extends Component
                             'num'       => config('shipping.econt.sender_num'),
                         ],
                         'receiver' => [
-                            'name'        => $this->name,
-                            'phone'       => preg_replace('/\s+/', '', $this->phone),
-                            'city_id'     => $this->shipping_method === 'address' ? $this->cityId : null,
-                            'office_code' => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
-                            'street_label' => $this->streetLabel,
-                            'street_num'  => $this->streetNum,
-                            'address_note' => $this->address,
+                            'name'         => $this->name,
+                            'phone'        => preg_replace('/\s+/', '', $this->phone),
+                            'city_id'      => $this->shipping_method === 'address' ? $this->cityId : null,
+                            'office_code'  => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
+                            'street_label' => $this->streetLabel ?: null,
+                            'street_num'   => $this->streetNum ?: null,
                         ],
                         'pack_count'   => 1,
-                        'weight'       => 1.0,
+                        'weight'       => $this->computeCartWeight(),
                         'description'  => 'Книги',
                         'cod' => [
                             'amount'   => $order->total,
@@ -326,8 +452,8 @@ class Checkout extends Component
                         ],
                     ];
 
+                    $label = $labelService->validateThenCreate($labelInput);
 
-                    $label = $labelService->submit($labelInput);
 
                     $order->update([
                         'shipping_provider' => 'econt',
@@ -344,6 +470,7 @@ class Checkout extends Component
                 }
             }
 
+            // Stripe
             if ($this->payment_method === 'stripe') {
                 try {
                     $stripe = new StripeClient(config('services.stripe.secret'));
@@ -381,11 +508,12 @@ class Checkout extends Component
                 }
             }
 
+            // PayPal
             if ($this->payment_method === 'paypal') {
                 try {
                     $pp = new PayPal();
 
-                    // Convert BGN to EUR
+                    // Convert BGN -> EUR
                     $eurTotal = round($order->total / 1.95583, 2);
 
                     $created = $pp->createOrder(
@@ -415,29 +543,29 @@ class Checkout extends Component
                 }
             }
 
-            // Fallback: mark as placed
+            // Fallback
             Cart::clear();
             $this->dispatch('notify', message: 'Thank you! Your order has been placed.');
             return $this->redirectRoute('thankyou', $order->id);
         });
     }
 
-    /**
-     * Render the checkout view.
-     */
     public function render()
     {
+        $subtotal = (float) Cart::total();
+        $total    = round($subtotal + $this->shippingCost, 2);
+
         return view('livewire.pages.checkout', [
-            'cart'  => Cart::all(),
-            'total' => Cart::total(),
+            'cart'         => Cart::all(),
+            'subtotal'     => $subtotal,
+            'shippingCost' => $this->shippingCost,
+            'total'        => $total,
         ])->layout('layouts.app', [
             'title' => 'Checkout — Satori Co',
         ]);
     }
 
-    /**
-     * Generate unique order number (sequential per year).
-     */
+
     private function generateOrderNumber(): string
     {
         $seq = (int) ((Order::max('id') ?? 0) + 1);

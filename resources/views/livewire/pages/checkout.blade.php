@@ -138,16 +138,6 @@
                                 class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
                                        focus:outline-none focus:ring-4 focus:ring-black/10">
                         </div>
-
-                        <div class="mt-3">
-                            <label class="block text-sm font-medium mb-1">Допълнение към адреса</label>
-                            <textarea wire:model.lazy="address" rows="3"
-                                class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
-                                       focus:outline-none focus:ring-4 focus:ring-black/10 @error('address') border-red-500 @enderror"></textarea>
-                            @error('address')
-                                <span class="text-red-600 text-xs">{{ $message }}</span>
-                            @enderror
-                        </div>
                     @endif
 
                     @if ($shipping_method === 'econt_office')
@@ -208,10 +198,34 @@
             </div>
 
             <div class="mt-2 rounded-2xl border border-black/5 bg-neutral-50 p-5">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-[15px] font-medium text-neutral-700">{{ __('checkout.total') }}</h2>
-                    <div class="text-xl font-bold tracking-tight">
-                        {{ number_format($total, 2) }} {{ __('checkout.currency') }}
+                <div class="mt-2 rounded-2xl border border-black/5 bg-neutral-50 p-5 space-y-2">
+                    {{-- Subtotal --}}
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-neutral-600">Стойност продукти</span>
+                        <span class="font-medium">{{ number_format($subtotal, 2) }}
+                            {{ __('checkout.currency') }}</span>
+                    </div>
+
+                    {{-- Shipping --}}
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-neutral-600">Доставка</span>
+                        <span class="font-medium">
+                            @if ($shippingCost > 0)
+                                {{ number_format($shippingCost, 2) }} {{ __('checkout.currency') }}
+                            @else
+                                —
+                            @endif
+                        </span>
+                    </div>
+
+                    <hr class="my-2">
+
+                    {{-- Total --}}
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-[15px] font-semibold text-neutral-700">{{ __('checkout.total') }}</h2>
+                        <div class="text-xl font-bold tracking-tight">
+                            {{ number_format($total, 2) }} {{ __('checkout.currency') }}
+                        </div>
                     </div>
                 </div>
 

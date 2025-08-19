@@ -10,6 +10,8 @@ use Gdinko\Econt\Hydrators\Label;
 use Gdinko\Econt\Enums\LabelMode;
 use Gdinko\Econt\Enums\ShipmentType;
 use Throwable;
+use Illuminate\Http\Client\RequestException;
+
 
 class EcontLabelService
 {
@@ -227,21 +229,34 @@ class EcontLabelService
 
             return is_array($result) ? $result : json_decode(json_encode($result), true);
         } catch (Throwable $e) {
-            // Try to extract raw response body (Guzzle)
-            $raw = method_exists($e, 'getResponse') && $e->getResponse()
-                ? (string) $e->getResponse()->getBody()
-                : null;
+            $raw = null;
+            $json = null;
 
-            // Try to parse JSON from exception message as fallback
+            // Laravel Http Client (пакетът gdinko/econt ползва него)
+            if ($e instanceof RequestException && $e->response) {
+                $raw = $e->response->body();
+                try {
+                    $json = $e->response->json();
+                } catch (\Throwable $t) {
+                    // ignore
+                }
+            }
+
+            // Fallback ако минем през Guzzle (рядко)
+            if (!$raw && method_exists($e, 'getResponse') && $e->getResponse()) {
+                $raw = (string) $e->getResponse()->getBody();
+            }
+
             $message = $e->getMessage();
-            $parsed  = $this->tryExtractJson($message) ?? $this->tryExtractJson((string) $e);
+            $parsedFromMessage = $this->tryExtractJson($message) ?? $this->tryExtractJson((string) $e);
 
             Log::error('ECONT_LABEL_SUBMIT:error', [
                 'trace_id' => $traceId,
                 'mode'     => $mode,
                 'message'  => $message,
-                'raw'      => $raw,
-                'parsed'   => $parsed,
+                'raw'      => $raw,   // <- тук ще видиш суровото тяло от Еконт
+                'json'     => $json,  // <- ако е JSON, още по-добре
+                'parsed'   => $parsedFromMessage,
                 'exception_class' => get_class($e),
                 'file'     => $e->getFile(),
                 'line'     => $e->getLine(),
@@ -250,6 +265,20 @@ class EcontLabelService
             throw $e;
         }
     }
+
+    public function validateThenCreate(array $input): array
+    {
+        // 1) VALIDATE
+        try {
+            $this->submit($input, LabelMode::VALIDATE);
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Econt validation failed. Please check account permissions / services and payload. ' . $e->getMessage(), previous: $e);
+        }
+
+        // 2) CREATE
+        return $this->submit($input, LabelMode::CREATE);
+    }
+
 
     /**
      * Tries to extract a JSON blob from a string (e.g., exception message)
@@ -267,5 +296,4 @@ class EcontLabelService
         $arr  = json_decode($json, true);
         return json_last_error() === JSON_ERROR_NONE ? $arr : null;
     }
-
 }

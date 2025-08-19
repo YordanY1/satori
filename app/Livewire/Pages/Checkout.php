@@ -16,6 +16,12 @@ use App\Services\Shipping\ShippingCalculator;
 
 class Checkout extends Component
 {
+
+    protected $listeners = ['cart-updated' => 'recalcShipping'];
+    public function recalcShipping()
+    {
+        $this->calculateShippingSafely();
+    }
     // Default shipping method: "address" or "econt_office"
     public string $shipping_method = 'address';
 
@@ -287,22 +293,25 @@ class Checkout extends Component
     private function computeCartWeight(): float
     {
         $items = Cart::all();
-        if (empty($items)) {
-            return 1.0; // fallback
-        }
-
-        $bookIds = array_keys($items);
-        $books   = Book::whereIn('id', $bookIds)->get(['id']);
+        if (empty($items)) return 0.5;
 
         $totalWeight = 0.0;
-        foreach ($books as $book) {
-            $qty = max(1, (int) ($items[$book->id]['quantity'] ?? 1));
-            $unitW = 0.5;
+        foreach ($items as $id => $item) {
+            $qty   = max(1, (int) ($item['quantity'] ?? 1));
+            $unitW = (float) ($item['weight'] ?? 0.5);
             $totalWeight += $unitW * $qty;
         }
+        $totalWeight += 0.10;
+        $totalWeight = max(0.3, round($totalWeight, 2));
 
-        return max(0.3, round($totalWeight, 2));
+        \Log::debug('CHECKOUT:computeCartWeight', [
+            'cart' => $items,
+            'computed_weight_kg' => $totalWeight,
+        ]);
+
+        return $totalWeight;
     }
+
 
     /**
      * Call Econt CALCULATE via ShippingCalculator and set $shippingCost.

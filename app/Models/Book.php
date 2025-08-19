@@ -11,6 +11,13 @@ class Book extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'price' => 'float',
+        'weight' => 'float',
+        'is_book_of_month' => 'bool',
+        'is_recommended' => 'bool',
+    ];
+
     protected $table = 'books';
 
 

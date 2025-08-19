@@ -9,6 +9,12 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'shipping_draft'  => 'array',
+        'shipping_payload' => 'array',
+        'paid_at'         => 'datetime',
+    ];
+
     protected $guarded = ['id'];
 
     public function items()

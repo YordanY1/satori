@@ -18,10 +18,12 @@ class Checkout extends Component
 {
 
     protected $listeners = ['cart-updated' => 'recalcShipping'];
+
     public function recalcShipping()
     {
         $this->calculateShippingSafely();
     }
+
     // Default shipping method: "address" or "econt_office"
     public string $shipping_method = 'address';
 
@@ -417,6 +419,22 @@ class Checkout extends Component
                 'payment_status'   => 'pending',
             ]);
 
+            $order->shipping_draft = [
+                'carrier' => 'econt',
+                'method'  => $this->shipping_method,
+                'receiver_office_code' => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
+                'receiver' => [
+                    'name'         => $this->name,
+                    'phone'        => preg_replace('/\s+/', '', $this->phone),
+                    'city_id'      => $this->shipping_method === 'address' ? $this->cityId : null,
+                    'street_label' => $this->streetLabel ?: null,
+                    'street_num'   => $this->streetNum ?: null,
+                ],
+                'weight'      => $this->computeCartWeight(),
+                'description' => 'Книги',
+            ];
+            $order->save();
+
             // Order items
             foreach ($normalized as $n) {
                 OrderItem::create([
@@ -484,6 +502,8 @@ class Checkout extends Component
                 try {
                     $stripe = new StripeClient(config('services.stripe.secret'));
 
+                    $computedWeight = $this->computeCartWeight();
+
                     $lineItems = array_map(function ($n) {
                         return [
                             'price_data' => [
@@ -502,12 +522,22 @@ class Checkout extends Component
                         'currency'             => 'bgn',
                         'customer_email'       => $this->email,
                         'metadata'             => [
-                            'order_number' => $order->order_number,
-                            'order_id'     => (string) $order->id,
+                            'order_number'   => $order->order_number,
+                            'order_id'       => (string) $order->id,
+
+                            'shipping_method' => $this->shipping_method,
+                            'city_id'        => $this->shipping_method === 'address' ? (string) ($this->cityId ?? '') : '',
+                            'office_code'    => $this->shipping_method === 'econt_office' ? (string) ($this->officeCode ?? '') : '',
+                            'street_label'   => (string) ($this->streetLabel ?? ''),
+                            'street_num'     => (string) ($this->streetNum ?? ''),
+                            'weight'         => (string) $computedWeight,
+                            'customer_name'  => $this->name,
+                            'customer_phone' => preg_replace('/\s+/', '', $this->phone),
                         ],
                         'success_url'          => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
                         'cancel_url'           => route('checkout'),
                     ]);
+
 
                     return $this->redirect($session->url);
                 } catch (\Throwable $e) {
@@ -530,11 +560,7 @@ class Checkout extends Component
                         amount: $eurTotal,
                         returnUrl: route('thankyou', $order->id),
                         cancelUrl: route('checkout'),
-                        metadata: [
-                            'order_number' => $order->order_number,
-                            'orig_currency' => 'BGN',
-                            'orig_total'    => number_format($order->total, 2, '.', ''),
-                        ],
+                        metadata: ['local_order_id' => $order->id],
                         brandName: config('app.name', 'Store')
                     );
 
@@ -551,6 +577,7 @@ class Checkout extends Component
                     return;
                 }
             }
+
 
             // Fallback
             Cart::clear();

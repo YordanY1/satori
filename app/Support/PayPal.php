@@ -120,14 +120,22 @@ class PayPal
     {
         $token = $this->token();
 
+        $localOrderId = (string)($metadata['local_order_id'] ?? '');
+        if ($localOrderId === '') {
+            throw new \RuntimeException('createOrder: missing local_order_id in $metadata');
+        }
+
+
         $body = [
             'intent' => 'CAPTURE',
             'purchase_units' => [[
+                'custom_id'    => $localOrderId,         
+                'reference_id' => "order-{$localOrderId}",
+                'invoice_id'   => "INV-{$localOrderId}",
                 'amount' => [
                     'currency_code' => strtoupper($currency),
                     'value' => number_format($amount, 2, '.', ''),
                 ],
-                'custom_id' => $metadata['order_number'] ?? null,
             ]],
             'application_context' => [
                 'return_url' => $returnUrl,

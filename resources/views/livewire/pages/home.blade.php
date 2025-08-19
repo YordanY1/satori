@@ -8,14 +8,15 @@
     <livewire:home.media />
 
     <livewire:home.blog-teasers />
+
     <div class="bg-neutral-100 rounded-2xl p-6 sm:p-10">
         <h2 class="text-xl sm:text-2xl font-semibold mb-3">
-            Абонамент за бюлетин <span class="text-primary">(с безплатен откъс от книга)</span>
+            {{ __('newsletter.section_title') }}
+            <span class="text-primary">{{ __('newsletter.section_subtitle') }}</span>
         </h2>
         <p class="text-neutral-600 mb-6">
-            Въведи своя имейл и ще получиш PDF откъс от подбрана книга директно в пощата си.
+            {{ __('newsletter.description') }}
         </p>
         <livewire:newsletter.signup />
     </div>
-
 </section>

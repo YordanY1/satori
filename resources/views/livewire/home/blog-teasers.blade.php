@@ -1,7 +1,11 @@
 <section aria-labelledby="blog-section" class="my-8">
     <div class="flex items-end justify-between mb-4">
-        <h2 id="blog-section" class="text-xl sm:text-2xl font-semibold text-primary">От блога</h2>
-        <a href="{{ route('blog') }}" class="text-sm text-accent hover:underline transition">Виж всички</a>
+        <h2 id="blog-section" class="text-xl sm:text-2xl font-semibold text-primary">
+            {{ __('blog.section_title') }}
+        </h2>
+        <a href="{{ route('blog') }}" class="text-sm text-accent hover:underline transition">
+            {{ __('blog.see_all') }}
+        </a>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -10,7 +14,7 @@
                 itemscope itemtype="https://schema.org/BlogPosting">
 
                 <a href="{{ $p['url'] }}" itemprop="url">
-                    <img src="{{ $p['cover'] }}" alt="Корица към статията: {{ $p['title'] }}"
+                    <img src="{{ $p['cover'] }}" alt="{{ __('blog.cover', ['title' => $p['title']]) }}"
                         class="w-full h-40 object-cover" itemprop="image">
                 </a>
 
@@ -33,8 +37,8 @@
                     <div class="mt-auto pt-3">
                         <a href="{{ $p['url'] }}"
                             class="inline-block w-full text-center px-4 py-2 text-sm font-medium text-text border border-accent rounded-lg hover:bg-accent/10 hover:text-text transition"
-                            aria-label="Прочети още за {{ $p['title'] }}">
-                            Прочети още →
+                            aria-label="{{ __('blog.read_more_aria', ['title' => $p['title']]) }}">
+                            {{ __('blog.read_more') }}
                         </a>
                     </div>
                 </div>

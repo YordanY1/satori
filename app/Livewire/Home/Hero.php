@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Book;
 use App\Models\Event;
 use App\Models\Post;
+use Illuminate\Support\Str;
 
 class Hero extends Component
 {
@@ -20,39 +21,53 @@ class Hero extends Component
         $event = Event::whereDate('date', '>=', now())->orderBy('date')->first();
         $post  = Post::latest()->first();
 
+        $normImg = function (?string $path, string $fallback) {
+            if (!$path) return asset($fallback);
+            return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+        };
+
         $this->slides = collect([
             $book ? [
-                'title'    => "Нова книга: {$book->title}",
-                'subtitle' => $book->excerpt ?: 'Виж детайлите за изданието!',
-                'cta'      => ['label' => 'Виж книгата', 'url' => route('book.show', $book->slug)],
-                'image'    => $book->cover ?: 'storage/images/hero-1.jpg',
-                'alt'      => "Корица: {$book->title}",
+                'title'    => __('hero.book.title', ['title' => $book->title]),
+                'subtitle' => $book->excerpt ?: __('hero.book.subtitle_fallback'),
+                'cta'      => [
+                    'label' => __('hero.book.cta'),
+                    'url'   => route('book.show', $book->slug),
+                ],
+                'image'    => $normImg($book->cover, 'storage/images/hero-1.jpg'),
+                'alt'      => __('hero.book.alt', ['title' => $book->title]),
             ] : null,
 
             $event ? [
-                'title'    => "Събитие: {$event->title}",
-                'subtitle' => $event->excerpt ?: 'Запази мястото си!',
-                'cta'      => ['label' => 'Регистрирай се', 'url' => route('event.show', $event->slug)],
-                'image'    => $event->cover ?: 'storage/images/hero-1.jpg',
-                'alt'      => "Събитие: {$event->title}",
+                'title'    => __('hero.event.title', ['title' => $event->title]),
+                'subtitle' => $event->excerpt ?: __('hero.event.subtitle_fallback'),
+                'cta'      => [
+                    'label' => __('hero.event.cta'),
+                    'url'   => route('event.show', $event->slug),
+                ],
+                'image'    => $normImg($event->cover, 'storage/images/hero-1.jpg'),
+                'alt'      => __('hero.event.alt', ['title' => $event->title]),
             ] : null,
 
             $post ? [
                 'title'    => $post->title,
-                'subtitle' => $post->excerpt ?: 'Прочети последната статия',
-                'cta'      => ['label' => 'Виж статията', 'url' => route('blog.show', $post->slug)],
-                'image'    => $post->cover ?: 'storage/images/hero-3.jpg',
-                'alt'      => "Статия: {$post->title}",
+                'subtitle' => $post->excerpt ?: __('hero.post.subtitle_fallback'),
+                'cta'      => [
+                    'label' => __('hero.post.cta'),
+                    'url'   => route('blog.show', $post->slug),
+                ],
+                'image'    => $normImg($post->cover, 'storage/images/hero-1.jpg'),
+                'alt'      => __('hero.post.alt', ['title' => $post->title]),
             ] : null,
         ])->filter()->values()->toArray();
 
         if (count($this->slides) === 0) {
             $this->slides = [[
-                'title'    => 'Очаквайте скоро',
-                'subtitle' => 'Нови книги, събития и статии.',
-                'cta'      => ['label' => 'Към началото', 'url' => url('/')],
-                'image'    => 'storage/images/hero-1.jpg',
-                'alt'      => 'Очаквайте скоро',
+                'title'    => __('hero.empty.title'),
+                'subtitle' => __('hero.empty.subtitle'),
+                'cta'      => ['label' => __('hero.empty.cta'), 'url' => url('/')],
+                'image'    => asset('storage/images/hero-1.jpg'),
+                'alt'      => __('hero.empty.alt'),
             ]];
         }
     }

@@ -11,6 +11,9 @@ class Book extends Model
 
     protected $guarded = ['id'];
 
+    protected $table = 'books';
+
+
     public function author()
     {
         return $this->belongsTo(Author::class);

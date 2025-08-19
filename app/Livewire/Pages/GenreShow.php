@@ -4,6 +4,7 @@ namespace App\Livewire\Pages;
 
 use Livewire\Component;
 use App\Livewire\Concerns\UsesCart;
+use App\Models\Genre;
 
 class GenreShow extends Component
 {
@@ -16,25 +17,39 @@ class GenreShow extends Component
     {
         $this->slug = $slug;
 
+        $genre = Genre::where('slug', $slug)->firstOrFail();
+
+        $books = $genre->books()
+            ->with('author:id,name')
+            ->select(
+                'books.id',
+                'books.author_id',
+                'books.title',
+                'books.slug',
+                'books.price',
+                'books.cover'
+            )
+            ->latest('books.id')
+            ->take(24)
+            ->get()
+            ->map(fn($b) => [
+                'id'    => $b->id,
+                'slug'  => $b->slug,
+                'title' => $b->title,
+                'price' => $b->price,
+                'cover' => $b->cover
+                    ? (str_starts_with($b->cover, 'storage/')
+                        ? asset($b->cover)
+                        : asset('storage/' . ltrim($b->cover, '/')))
+                    : asset('images/placeholders/book.jpg'),
+
+            ])
+            ->all();
+
         $this->genre = [
-            'name'  => ucfirst($slug),
-            'desc'  => "Описание на жанра — какво включва и защо е интересен.",
-            'books' => [
-                [
-                    'id'    => 1,
-                    'slug'  => 'prisustvie-specialno-izdanie',
-                    'title' => 'Присъствие – Специално издание',
-                    'price' => 26.90,
-                    'cover' => asset('storage/images/hero-1.jpg'),
-                ],
-                [
-                    'id'    => 2,
-                    'slug'  => 'sila-na-nastoqshtiq-moment',
-                    'title' => 'Силата на настоящия момент',
-                    'price' => 22.90,
-                    'cover' => asset('storage/images/hero-1.jpg'),
-                ],
-            ],
+            'name'  => $genre->name,
+            'desc'  => $genre->description ?? '',
+            'books' => $books,
         ];
     }
 

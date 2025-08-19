@@ -21,15 +21,14 @@ class Signup extends Component
             $this->ok = true;
             $this->reset('email');
 
-            $this->dispatch('notify', message: '✅ Абонаментът е приет! Провери имейла си.');
+            $this->dispatch('notify', message: __('newsletter.subscribed'));
         } catch (\Throwable $e) {
             report($e);
-            $this->errorMessage = 'Възникна грешка. Опитай пак малко по-късно.';
+            $this->errorMessage = __('newsletter.error');
 
-            $this->dispatch('notify', message: '❌ Възникна грешка. Опитай пак.');
+            $this->dispatch('notify', message: __('newsletter.error_notify'));
         }
     }
-
 
     public function render()
     {

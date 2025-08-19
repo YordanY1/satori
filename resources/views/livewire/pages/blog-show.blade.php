@@ -2,8 +2,8 @@
     <h1 class="text-3xl font-bold mb-4">{{ $post->title }}</h1>
 
     <p class="text-gray-500 text-sm mb-6">
-        ✍ {{ $post->author ?? 'Неизвестен автор' }}
-        — 📅 {{ $post->created_at?->format('d.m.Y') }}
+        {{ __('blog.by', ['author' => $post->author ?? __('blog.unknown_author')]) }}
+        — {{ __('blog.date', ['date' => $post->created_at?->format('d.m.Y')]) }}
     </p>
 
     @if ($post->cover)

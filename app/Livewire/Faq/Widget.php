@@ -4,6 +4,10 @@ namespace App\Livewire\Faq;
 
 use Livewire\Component;
 use App\Models\Faq;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
+use App\Rules\RecaptchaV2;
+use App\Mail\QuickQuestionMail;
 
 class Widget extends Component
 {
@@ -16,16 +20,25 @@ class Widget extends Component
     public string $contact_email = '';
     public string $contact_message = '';
 
-    protected $rules = [
-        'contact_name' => 'required|string|min:2',
-        'contact_email' => 'required|email',
-        'contact_message' => 'required|string|min:10'
-    ];
+    public string $recaptcha = '';
+    public string $website = '';
+
+    protected function rules()
+    {
+        return [
+            'contact_name'    => 'required|string|min:2',
+            'contact_email'   => 'required|email',
+            'contact_message' => 'required|string|min:10',
+            'recaptcha'       => ['required', new RecaptchaV2],
+            'website'         => 'prohibited|size:0',
+        ];
+    }
 
     public function mount(): void
     {
         $this->suggested = Faq::where('is_active', true)
             ->latest()->take(5)->get(['id', 'question', 'answer'])->toArray();
+
         $this->results = $this->suggested;
     }
 
@@ -41,15 +54,36 @@ class Widget extends Component
 
     public function quickAsk(): void
     {
-        $this->validate();
 
-        // Тук можеш да пуснеш notification/мейл към екипа или да съхраниш в БД.
-        // Примерно: \Mail::to(config('mail.from.address'))->send(new QuickQuestion(...));
-        // За сега – само тост:
+        $key = 'faqwidget:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            $this->addError('contact_name', __('Твърде много опити. Опитайте след :sec сек.', ['sec' => $seconds]));
+            return;
+        }
+        RateLimiter::hit($key, 60);
+
+        $data = $this->validate();
+
+        // изпрати имейл
+        try {
+            Mail::to('info@satori-ko.bg')->send(
+                new QuickQuestionMail(
+                    name: $this->contact_name,
+                    email: $this->contact_email,
+                    message: $this->contact_message
+                )
+            );
+        } catch (\Throwable $e) {
+            report($e);
+            $this->addError('contact_name', 'Възникна грешка при изпращане. Опитайте отново.');
+            return;
+        }
+
+
         $this->dispatch('notify', message: 'Получихме съобщението ти. Ще се свържем скоро.');
-
-        // Clear:
-        $this->contact_name = $this->contact_email = $this->contact_message = '';
+        $this->reset(['contact_name', 'contact_email', 'contact_message', 'recaptcha', 'website']);
+        $this->dispatch('recaptcha-reset');
         $this->open = false;
     }
 

@@ -51,7 +51,7 @@
             <hr>
 
             {{-- Quick contact --}}
-            <div class="space-y-2">
+            {{-- <div class="space-y-2">
                 <div class="text-sm font-medium">Не намери отговор?</div>
                 <input type="text" wire:model.lazy="contact_name" placeholder="Име"
                     class="w-full rounded-xl border px-3 py-2 text-sm focus:outline-none focus:ring-4 focus:ring-black/10">
@@ -76,7 +76,7 @@
                     class="w-full rounded-xl bg-black text-white py-2 text-sm font-semibold hover:bg-black/90 focus:ring-4 focus:ring-black/20">
                     Изпрати
                 </button>
-            </div>
+            </div> --}}
         </div>
     </div>
 </div>

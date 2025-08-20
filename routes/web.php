@@ -33,13 +33,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Livewire\Profile\Settings;
 use App\Livewire\Profile\Orders;
 use App\Livewire\Profile\Favorites;
-
-
+use App\Livewire\Auth\ForgotPasswordForm;
+use App\Livewire\Auth\ResetPasswordForm;
 use App\Livewire\Pages\PrivacyPolicy;
 use App\Livewire\Pages\CookiePolicy;
 use App\Livewire\Pages\Terms;
-
-
 
 
 Route::get('/', Home::class)->name('home');
@@ -94,3 +92,6 @@ Route::middleware('auth')->group(function () {
 Route::get('/privacy-policy', PrivacyPolicy::class)->name('privacy');
 Route::get('/cookie-policy', CookiePolicy::class)->name('cookies');
 Route::get('/terms', Terms::class)->name('terms');
+
+Route::get('/forgot-password', ForgotPasswordForm::class)->name('password.request');
+Route::get('/reset-password/{token}/{email}', ResetPasswordForm::class)->name('password.reset');

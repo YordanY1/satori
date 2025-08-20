@@ -38,10 +38,9 @@ class Contact extends Component
         RateLimiter::attempt($key, $perMinute = 3, function () {}, $decaySeconds = 60);
         if (RateLimiter::tooManyAttempts($key, $perMinute)) {
             $seconds = RateLimiter::availableIn($key);
-            $this->addError('name', __('Твърде много опити. Опитайте след :sec сек.', ['sec' => $seconds]));
+            $this->addError('name', __('contact.rate_limit', ['sec' => $seconds]));
             return;
         }
-
         $validated = $this->validate();
 
         $contact = ContactModel::create([
@@ -53,7 +52,7 @@ class Contact extends Component
 
         Mail::to('info@satori-ko.bg')->send(new ContactMessage($contact));
 
-        session()->flash('success', 'Благодарим! Ще се свържем с вас скоро.');
+        session()->flash('success', __('contact.success'));
         $this->reset(['name', 'email', 'message', 'recaptcha', 'website']);
         $this->dispatch('recaptcha-reset');
     }
@@ -63,7 +62,7 @@ class Contact extends Component
         return view('livewire.pages.contact', [
             'recaptchaSiteKey' => config('services.recaptcha.site_key'),
         ])->layout('layouts.app', [
-            'title' => 'Контакт — Сатори Ко',
+            'title' => __('contact.title'),
         ]);
     }
 }

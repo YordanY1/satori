@@ -61,18 +61,28 @@
         <!-- Desktop auth links (hidden on mobile) -->
         <div class="hidden md:flex items-center gap-2">
             @guest
-                <a wire:navigate href="{{ route('login') }}" class="px-3 py-2">Вход</a>
-                <a wire:navigate href="{{ route('register') }}" class="px-3 py-2">Регистрация</a>
+                <a wire:navigate href="{{ route('login') }}" class="px-3 py-2">
+                    {{ __('auth.login') }}
+                </a>
+                <a wire:navigate href="{{ route('register') }}" class="px-3 py-2">
+                    {{ __('auth.register') }}
+                </a>
             @endguest
 
             @auth
-                <a wire:navigate href="{{ route('profile.overview') }}" class="px-3 py-2">Профил</a>
-                <form method="POST" action="{{ route('logout') }}" class="inline">
+                <a wire:navigate href="{{ route('profile.overview') }}" class="px-3 py-2">
+                    {{ __('auth.profile') }}
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="inline"
+                    aria-label="{{ __('auth.logout_aria') }}">
                     @csrf
-                    <button type="submit" class="px-3 py-2 hover:text-accent transition cursor-pointer">Изход</button>
+                    <button type="submit" class="px-3 py-2 hover:text-accent transition cursor-pointer">
+                        {{ __('auth.logout') }}
+                    </button>
                 </form>
             @endauth
         </div>
+
     </div>
 
     <!-- Mobile menu -->
@@ -85,23 +95,23 @@
                     {{ $item['icon'] }} {{ $item['label'] }}
                 </a>
             @endforeach
-
             @guest
                 <a wire:navigate href="{{ route('login') }}" @click="open = false"
-                    class="px-6 py-4 border-b hover:bg-background">Вход</a>
+                    class="px-6 py-4 border-b hover:bg-background">{{ __('auth.login') }}</a>
                 <a wire:navigate href="{{ route('register') }}" @click="open = false"
-                    class="px-6 py-4 border-b hover:bg-background">Регистрация</a>
+                    class="px-6 py-4 border-b hover:bg-background">{{ __('auth.register') }}</a>
             @endguest
 
             @auth
                 <a wire:navigate href="{{ route('profile.overview') }}" @click="open = false"
-                    class="px-6 py-4 border-b hover:bg-background">Профил</a>
+                    class="px-6 py-4 border-b hover:bg-background">{{ __('auth.profile') }}</a>
                 <form method="POST" action="{{ route('logout') }}" class="px-6 py-4 border-b hover:bg-background"
-                    @submit="open=false">
+                    @submit="open=false" aria-label="{{ __('auth.logout_aria') }}">
                     @csrf
-                    <button type="submit" class="w-full text-left">Изход</button>
+                    <button type="submit" class="w-full text-left">{{ __('auth.logout') }}</button>
                 </form>
             @endauth
+
         </nav>
     </div>
 </header>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="UTF-8">
-    <title>Ново съобщение</title>
+    <title>{{ __('contact_mail.new_message_title') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,14 +73,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📩 Ново съобщение от контактната форма</h1>
+            <h1>📩 {{ __('contact_mail.new_message_title') }}</h1>
         </div>
         <div class="content">
-            <p><span class="label">Име:</span> {{ $contact->name }}</p>
-            <p><span class="label">Имейл:</span> {{ $contact->email }}</p>
+            <p><span class="label">{{ __('contact_mail.name') }}:</span> {{ $contact->name }}</p>
+            <p><span class="label">{{ __('contact_mail.email') }}:</span> {{ $contact->email }}</p>
 
             @if (!empty($contact->phone))
-                <p><span class="label">Телефон:</span> {{ $contact->phone }}</p>
+                <p><span class="label">{{ __('contact_mail.phone') }}:</span> {{ $contact->phone }}</p>
             @endif
 
             <div class="message-box">
@@ -88,8 +88,7 @@
             </div>
         </div>
         <div class="footer">
-            Това е автоматично съобщение от сайта <strong>satori-ko.bg</strong>.
-            Отговорете директно на този имейл, за да се свържете с подателя.
+            {!! __('contact_mail.footer', ['site' => config('app.url')]) !!}
         </div>
     </div>
 </body>

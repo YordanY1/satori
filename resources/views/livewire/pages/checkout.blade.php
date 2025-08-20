@@ -7,6 +7,7 @@
 
         <form wire:submit.prevent="placeOrder" class="grid grid-cols-1 gap-6 p-6 sm:p-8" x-data>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {{-- Name --}}
                 <div>
                     <label class="block text-sm font-medium mb-1">{{ __('checkout.name') }}</label>
                     <input type="text" wire:model.lazy="name" autocomplete="name"
@@ -18,6 +19,7 @@
                     @enderror
                 </div>
 
+                {{-- Email --}}
                 <div>
                     <label class="block text-sm font-medium mb-1">{{ __('checkout.email') }}</label>
                     <input type="email" wire:model.lazy="email" autocomplete="email"
@@ -29,6 +31,7 @@
                     @enderror
                 </div>
 
+                {{-- Phone --}}
                 <div>
                     <label class="block text-sm font-medium mb-1">{{ __('checkout.phone') }}</label>
                     <input type="tel" wire:model.lazy="phone" autocomplete="tel" inputmode="tel"
@@ -41,28 +44,30 @@
                     @enderror
                 </div>
 
+                {{-- Shipping --}}
                 <div class="sm:col-span-2 rounded-2xl border border-black/5 bg-neutral-50 p-5">
-                    <h2 class="text-[15px] font-semibold mb-3">Адрес за доставка</h2>
+                    <h2 class="text-[15px] font-semibold mb-3">{{ __('checkout.shipping_address.title') }}</h2>
 
                     <div class="flex flex-col sm:flex-row gap-3 mb-4">
                         <label class="inline-flex items-center gap-2">
                             <input type="radio" class="accent-black" wire:model.live="shipping_method"
                                 value="econt_office">
-                            <span>До офис на Еконт</span>
+                            <span>{{ __('checkout.shipping_address.office') }}</span>
                         </label>
                         <label class="inline-flex items-center gap-2">
                             <input type="radio" class="accent-black" wire:model.live="shipping_method"
                                 value="address">
-                            <span>До адрес</span>
+                            <span>{{ __('checkout.shipping_address.address') }}</span>
                         </label>
                     </div>
 
+                    {{-- Address --}}
                     @if ($shipping_method === 'address')
                         <div wire:key="shipping-address-block" x-data
                             x-on:focus-city-input.window="$nextTick(() => $refs.cityInput?.focus())">
-                            <label class="block text-sm font-medium mb-1">Град</label>
+                            <label class="block text-sm font-medium mb-1">{{ __('checkout.fields.city') }}</label>
                             <input x-ref="cityInput" type="text" wire:model.live.debounce.250ms="citySearch"
-                                placeholder="Започни да пишеш: София, Пловдив..."
+                                placeholder="{{ __('checkout.placeholders.city') }}"
                                 class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
                                        focus:outline-none focus:ring-4 focus:ring-black/10 @error('cityId') border-red-500 @enderror"
                                 autocomplete="off">
@@ -85,22 +90,24 @@
 
                             @if ($cityId)
                                 <p class="mt-2 text-sm text-neutral-700">
-                                    Избран град: <span class="font-medium">{{ $cityLabel }}</span>
+                                    {{ __('checkout.selected.city') }}: <span
+                                        class="font-medium">{{ $cityLabel }}</span>
                                     @if ($cityPostCode)
-                                        <span class="text-neutral-500"> (П.к. {{ $cityPostCode }})</span>
+                                        <span class="text-neutral-500"> ({{ __('checkout.selected.post_code') }}
+                                            {{ $cityPostCode }})</span>
                                     @endif
                                     <button type="button" class="underline ml-2"
                                         wire:click="$set('cityId', null); $set('cityLabel',''); $set('citySearch',''); $set('cityPostCode', null);">
-                                        Смени
+                                        {{ __('checkout.change') }}
                                     </button>
                                 </p>
                             @endif
                         </div>
 
                         <div class="mt-3" x-data>
-                            <label class="block text-sm font-medium mb-1">Улица</label>
+                            <label class="block text-sm font-medium mb-1">{{ __('checkout.fields.street') }}</label>
                             <input type="text" wire:model.live.debounce.250ms="streetSearch"
-                                placeholder="Започни да пишеш: бул. Цар Борис..."
+                                placeholder="{{ __('checkout.placeholders.street') }}"
                                 class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
                                        focus:outline-none focus:ring-4 focus:ring-black/10 @error('streetCode') border-red-500 @enderror"
                                 autocomplete="off">
@@ -123,30 +130,35 @@
 
                             @if ($streetCode)
                                 <p class="mt-2 text-sm text-neutral-700">
-                                    Избрана улица: <span class="font-medium">{{ $streetLabel }}</span>
+                                    {{ __('checkout.selected.street') }}: <span
+                                        class="font-medium">{{ $streetLabel }}</span>
                                     <button type="button" class="underline ml-2"
                                         wire:click="$set('streetId', null); $set('streetCode', null); $set('streetLabel',''); $set('streetSearch','');">
-                                        Смени
+                                        {{ __('checkout.change') }}
                                     </button>
                                 </p>
                             @endif
                         </div>
 
                         <div class="mt-3">
-                            <label class="block text-sm font-medium mb-1">Номер</label>
-                            <input type="text" wire:model.lazy="streetNum" placeholder="№ (пример: 12, 12А, 12/1)"
+                            <label
+                                class="block text-sm font-medium mb-1">{{ __('checkout.fields.street_num') }}</label>
+                            <input type="text" wire:model.lazy="streetNum"
+                                placeholder="{{ __('checkout.placeholders.street_num') }}"
                                 class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
                                        focus:outline-none focus:ring-4 focus:ring-black/10">
                         </div>
                     @endif
 
+                    {{-- Econt office --}}
                     @if ($shipping_method === 'econt_office')
                         <div class="relative" wire:key="shipping-econt-office-only" x-data
                             x-on:focus-office-input.window="$nextTick(() => $refs.officeInput?.focus())">
-                            <label class="block text-sm font-medium mb-1">Офис на Еконт</label>
+                            <label
+                                class="block text-sm font-medium mb-1">{{ __('checkout.shipping_address.office_input') }}</label>
                             <input x-ref="officeInput" type="text" wire:model.live.debounce.300ms="officeSearch"
                                 wire:keydown.escape="$set('officeOptions', [])"
-                                placeholder="Започни да пишеш: София, Пловдив, бул. България..."
+                                placeholder="{{ __('checkout.placeholders.office') }}"
                                 class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm
                                        focus:outline-none focus:ring-4 focus:ring-black/10 @error('officeCode') border-red-500 @enderror">
                             @error('officeCode')
@@ -163,17 +175,19 @@
                                             {{ $opt['label'] }}
                                         </li>
                                     @empty
-                                        <li class="px-3 py-2 text-sm text-neutral-500">Няма резултати</li>
+                                        <li class="px-3 py-2 text-sm text-neutral-500">{{ __('checkout.no_results') }}
+                                        </li>
                                     @endforelse
                                 </ul>
                             @endif
 
                             @if ($officeCode)
                                 <p class="mt-2 text-sm text-neutral-700">
-                                    Избран офис: <span class="font-medium">{{ $officeLabel }}</span>
+                                    {{ __('checkout.selected.office') }}: <span
+                                        class="font-medium">{{ $officeLabel }}</span>
                                     <button type="button" class="underline ml-2"
                                         wire:click="$set('officeCode', null); $set('officeLabel',''); $set('officeSearch','');">
-                                        Смени
+                                        {{ __('checkout.change') }}
                                     </button>
                                 </p>
                             @endif
@@ -181,6 +195,7 @@
                     @endif
                 </div>
 
+                {{-- Payment --}}
                 <div class="sm:col-span-2">
                     <label class="block text-sm font-medium mb-1">{{ __('checkout.payment_method') }}</label>
                     <select wire:model="payment_method"
@@ -197,18 +212,17 @@
                 </div>
             </div>
 
+            {{-- Summary --}}
             <div class="mt-2 rounded-2xl border border-black/5 bg-neutral-50 p-5">
                 <div class="mt-2 rounded-2xl border border-black/5 bg-neutral-50 p-5 space-y-2">
-                    {{-- Subtotal --}}
                     <div class="flex items-center justify-between text-sm">
-                        <span class="text-neutral-600">Стойност продукти</span>
+                        <span class="text-neutral-600">{{ __('checkout.subtotal') }}</span>
                         <span class="font-medium">{{ number_format($subtotal, 2) }}
                             {{ __('checkout.currency') }}</span>
                     </div>
 
                     <hr class="my-2">
 
-                    {{-- Total --}}
                     <div class="flex items-center justify-between">
                         <h2 class="text-[15px] font-semibold text-neutral-700">{{ __('checkout.total') }}</h2>
                         <div class="text-xl font-bold tracking-tight">
@@ -221,16 +235,18 @@
                     <p class="mt-2 text-red-600 text-sm">{{ $message }}</p>
                 @enderror
 
+                {{-- Terms --}}
                 <div class="mt-4 flex items-start gap-3">
                     <label class="inline-flex items-start gap-2 text-sm">
                         <input type="checkbox" class="mt-1 rounded accent-black" wire:model.live="accept_terms">
                         <span class="text-neutral-700">
-                            Съгласен/на съм с
-                            <a wire:navigate href="{{ route('terms') }}" class="underline">Общи условия</a>,
-                            <a wire:navigate href="{{ route('privacy') }}" class="underline">Политика за
-                                поверителност</a>
-                            и <a wire:navigate href="{{ route('cookies') }}" class="underline">Политика за
-                                бисквитки</a>.
+                            {!! __('checkout.terms', [
+                                'terms' => '<a wire:navigate href="' . route('terms') . '" class="underline">' . __('checkout.terms_link') . '</a>',
+                                'privacy' =>
+                                    '<a wire:navigate href="' . route('privacy') . '" class="underline">' . __('checkout.privacy_link') . '</a>',
+                                'cookies' =>
+                                    '<a wire:navigate href="' . route('cookies') . '" class="underline">' . __('checkout.cookies_link') . '</a>',
+                            ]) !!}
                         </span>
                     </label>
                 </div>
@@ -239,12 +255,12 @@
                     <p class="mt-2 text-red-600 text-sm">{{ $message }}</p>
                 @enderror
 
-
+                {{-- Actions --}}
                 <div class="mt-4 flex flex-col sm:flex-row gap-3">
                     <button type="submit"
                         class="inline-flex items-center justify-center rounded-xl bg-black px-5 py-3 text-white font-semibold shadow-lg shadow-black/5
-           hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60 disabled:cursor-not-allowed
-           focus:outline-none focus:ring-4 focus:ring-black/20"
+                               hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60 disabled:cursor-not-allowed
+                               focus:outline-none focus:ring-4 focus:ring-black/20"
                         wire:loading.attr="disabled" wire:target="placeOrder"
                         x-bind:disabled="!$wire.get('accept_terms') || $wire.get('total') <= 0">
                         <span wire:loading.remove wire:target="placeOrder">{{ __('checkout.confirm') }}</span>

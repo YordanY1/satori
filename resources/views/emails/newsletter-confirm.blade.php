@@ -6,14 +6,13 @@
     $unsubscribeUrl = $unsubscribeUrl ?? '#';
 @endphp
 <!doctype html>
-<html lang="bg">
+<html lang="{{ app()->getLocale() }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Потвърди абонамента</title>
-   
+    <title>{{ __('newsletter.subject') }}</title>
     <style>
         .preheader {
             display: none !important;
@@ -55,7 +54,6 @@
             }
         }
 
-        /* iOS link colors */
         a[x-apple-data-detectors] {
             color: inherit !important;
             text-decoration: none !important;
@@ -64,7 +62,7 @@
 </head>
 
 <body style="margin:0; padding:0; background:#f6f7fb;">
-    <div class="preheader">Потвърди абонамента си и вземи безплатния PDF откъс.</div>
+    <div class="preheader">{{ __('newsletter.preheader') }}</div>
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f6f7fb;">
         <tr>
             <td align="center" style="padding:24px 12px;">
@@ -76,7 +74,7 @@
                         <td style="padding:0 24px 8px 24px;">
                             <h1 class="text"
                                 style="margin:0 0 8px 0; font-family:Arial,Helvetica,sans-serif; font-size:22px; line-height:1.3; color:#0f172a;">
-                                Потвърди абонамента си
+                                {{ __('newsletter.title') }}
                             </h1>
                         </td>
                     </tr>
@@ -85,8 +83,7 @@
                         <td style="padding:0 24px;">
                             <p class="text"
                                 style="margin:0 0 14px 0; font-family:Arial,Helvetica,sans-serif; font-size:16px; line-height:1.6; color:#334155;">
-                                Благодарим ти за интереса към нашия бюлетин! 🎉 С едно потвърждение ще получиш
-                                <strong>безплатен PDF откъс от подбрана книга</strong> — директно в пощата си.
+                                {!! __('newsletter.thanks') !!}
                             </p>
                         </td>
                     </tr>
@@ -98,13 +95,13 @@
                                 style="background:#f1f5f9; border:1px solid #e5e7eb; border-radius:10px; padding:14px 16px;">
                                 <p class="text"
                                     style="margin:0 0 6px 0; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#0f172a;">
-                                    <strong>Какво получаваш след потвърждение:</strong>
+                                    <strong>{{ __('newsletter.panel_title') }}</strong>
                                 </p>
                                 <ul
                                     style="margin:0; padding-left:18px; font-family:Arial,Helvetica,sans-serif; font-size:14px; color:#334155; line-height:1.6;">
-                                    <li>📘 Безплатен откъс (PDF) от нашата селекция за месеца</li>
-                                    <li>📨 Бюлетин с практически идеи и кратки резюмета</li>
-                                    <li>🎯 Рядко и само полезно съдържание — без спам</li>
+                                    <li>{{ __('newsletter.panel_items.pdf') }}</li>
+                                    <li>{{ __('newsletter.panel_items.newsletter') }}</li>
+                                    <li>{{ __('newsletter.panel_items.no_spam') }}</li>
                                 </ul>
                             </div>
                         </td>
@@ -118,7 +115,7 @@
                                     <td class="btn" bgcolor="#0ea5e9" style="border-radius:10px;">
                                         <a href="{{ $confirmUrl }}" target="_blank"
                                             style="display:inline-block; padding:12px 20px; font-family:Arial,Helvetica,sans-serif; font-size:15px; font-weight:700; color:#ffffff; text-decoration:none; border:1px solid #0ea5e9; border-radius:10px;">
-                                            Потвърди абонамента
+                                            {{ __('newsletter.button') }}
                                         </a>
                                     </td>
                                 </tr>
@@ -131,7 +128,7 @@
                         <td style="padding:0 24px;">
                             <p class="muted"
                                 style="margin:0 0 16px 0; font-family:Arial,Helvetica,sans-serif; font-size:13px; line-height:1.6; color:#64748b;">
-                                Ако бутонът не работи, копирай и отвори този линк:<br>
+                                {{ __('newsletter.fallback') }}<br>
                                 <a href="{{ $confirmUrl }}" target="_blank"
                                     style="color:#0ea5e9; word-break:break-all;">{{ $confirmUrl }}</a>
                             </p>
@@ -150,8 +147,7 @@
                         <td style="padding:0 24px 10px 24px;">
                             <p class="text"
                                 style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:14px; line-height:1.6; color:#334155;">
-                                <strong>Нямаш време сега?</strong> Запази линка и се върни когато ти е удобно.
-                                Ако това писмо не е било за теб — спокойно, можеш да се отпишеш по всяко време.
+                                {{ __('newsletter.extra') }}
                             </p>
                         </td>
                     </tr>
@@ -161,12 +157,13 @@
                         <td align="center" style="padding:16px 24px 22px 24px;">
                             <p class="muted"
                                 style="margin:0 0 6px 0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#6b7280;">
-                                Не желаеш повече имейли? <a href="{{ $unsubscribeUrl }}" target="_blank"
-                                    style="color:#0ea5e9;">Отпиши се</a>.
+                                {{ __('newsletter.unsubscribe') }}
+                                <a href="{{ $unsubscribeUrl }}" target="_blank"
+                                    style="color:#0ea5e9;">{{ __('newsletter.unsubscribe_link') }}</a>.
                             </p>
                             <p class="muted"
                                 style="margin:0; font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#9ca3af;">
-                                © {{ date('Y') }} {{ $brandName }}. Всички права запазени.
+                                © {{ date('Y') }} {{ $brandName }}. {{ __('newsletter.rights') }}
                             </p>
                         </td>
                     </tr>

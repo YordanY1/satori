@@ -1,8 +1,8 @@
 <section class="max-w-5xl mx-auto">
-    <h1 class="text-3xl font-extrabold tracking-tight mb-6">Любими продукти</h1>
+    <h1 class="text-3xl font-extrabold tracking-tight mb-6">{{ __('favorites.title') }}</h1>
 
     @if ($books->isEmpty())
-        <p class="text-neutral-600">Още нямаш любими. Разгледай каталога и добавяй с ❤️</p>
+        <p class="text-neutral-600">{{ __('favorites.empty') }}</p>
     @else
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
             @foreach ($books as $book)
@@ -15,8 +15,13 @@
                                 <p class="text-sm text-neutral-600 mt-0.5">{{ $book->author->name }}</p>
                             @endisset
                             <div class="mt-2 flex items-center justify-between">
-                                <span class="font-bold">{{ number_format($book->price, 2) }} лв.</span>
-                                <span class="text-xs text-neutral-600">❤️ {{ $book->favorited_by_count }}</span>
+                                <span class="font-bold">
+                                    {{ number_format($book->price, 2) }} {{ __('favorites.currency') }}
+                                </span>
+                                <span class="text-xs text-neutral-600">
+                                    ❤️
+                                    {{ trans_choice('favorites.favorited_by', $book->favorited_by_count, ['count' => $book->favorited_by_count]) }}
+                                </span>
                             </div>
                         </div>
                     </a>

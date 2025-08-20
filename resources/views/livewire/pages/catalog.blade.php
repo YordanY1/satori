@@ -47,11 +47,17 @@
             <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope
                 itemtype="https://schema.org/Book">
 
-                <a href="{{ route('book.show', $book['slug'] ?? '') }}"
-                    aria-label="{{ __('shop.aria.view_details', ['title' => $book['title']]) }}">
-                    <img src="{{ $book['cover'] }}" alt="{{ __('shop.alt.cover', ['title' => $book['title']]) }}"
-                        class="w-full h-40 sm:h-48 object-cover rounded-t-xl" loading="lazy" itemprop="image">
-                </a>
+                <div class="relative">
+                    <a href="{{ route('book.show', $book['slug'] ?? '') }}"
+                        aria-label="{{ __('shop.aria.view_details', ['title' => $book['title']]) }}">
+                        <img src="{{ $book['cover'] }}" alt="{{ __('shop.alt.cover', ['title' => $book['title']]) }}"
+                            class="w-full h-40 sm:h-48 object-cover rounded-t-xl" loading="lazy" itemprop="image">
+                    </a>
+
+                    <div class="absolute top-2 right-2">
+                        <livewire:favorite-button :book-id="$book['id']" wire:key="fav-catalog-{{ $book['id'] }}" />
+                    </div>
+                </div>
 
                 <div class="p-3 flex flex-col gap-2 flex-1">
                     <h2 class="font-medium text-sm sm:text-base line-clamp-2" itemprop="name">

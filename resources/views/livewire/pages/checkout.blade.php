@@ -207,7 +207,7 @@
                     </div>
 
                     {{-- Shipping --}}
-                    <div class="flex items-center justify-between text-sm">
+                    {{-- <div class="flex items-center justify-between text-sm">
                         <span class="text-neutral-600">Доставка</span>
                         <span class="font-medium">
                             @if ($shippingCost > 0)
@@ -216,7 +216,7 @@
                                 —
                             @endif
                         </span>
-                    </div>
+                    </div> --}}
 
                     <hr class="my-2">
 

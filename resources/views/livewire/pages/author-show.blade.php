@@ -142,10 +142,18 @@
                         <a href="{{ route('book.show', $b['slug']) }}"
                             aria-label="{{ __('author.aria.view_book', ['title' => $b['title']]) }}" itemprop="url">
                             @if (!empty($b['cover']))
-                                <img src="{{ $b['cover'] }}"
-                                    alt="{{ __('author.alt.cover', ['title' => $b['title']]) }}"
-                                    class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy"
-                                    itemprop="image">
+                                <div class="relative">
+                                    <img src="{{ $b['cover'] }}"
+                                        alt="{{ __('author.alt.cover', ['title' => $b['title']]) }}"
+                                        class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy"
+                                        itemprop="image">
+
+            
+                                    <div class="absolute top-2 right-2">
+                                        <livewire:favorite-button :book-id="$b['id']"
+                                            wire:key="fav-author-{{ $b['id'] }}" />
+                                    </div>
+                                </div>
                             @else
                                 <div
                                     class="w-full h-40 sm:h-48 bg-neutral-100 rounded-xl mb-3

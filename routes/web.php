@@ -26,6 +26,17 @@ use App\Http\Controllers\Http\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Http\Newsletter\ExcerptController;
 
 
+use App\Livewire\Auth\LoginPage;
+use App\Livewire\Auth\RegisterPage;
+use App\Livewire\Profile\Overview;
+use Illuminate\Support\Facades\Auth;
+use App\Livewire\Profile\Settings;
+use App\Livewire\Profile\Orders;
+use App\Livewire\Profile\Favorites;
+
+
+
+
 Route::get('/', Home::class)->name('home');
 
 Route::get('/catalog', Catalog::class)->name('catalog');
@@ -52,3 +63,24 @@ Route::get('/thank-you/{order}', ThankYou::class)->name('thankyou');
 Route::get('/newsletter/confirm/{token}', ConfirmController::class)->name('newsletter.confirm');
 Route::get('/newsletter/unsubscribe/{token}', UnsubscribeController::class)->name('newsletter.unsubscribe');
 Route::get('/newsletter/excerpt/{token}', ExcerptController::class)->name('newsletter.excerpt');
+
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', LoginPage::class)->name('login');
+    Route::get('/register', RegisterPage::class)->name('register');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', Overview::class)->name('profile.overview');
+    Route::get('/profile', Overview::class)->name('profile.overview');
+    Route::get('/profile/orders', Orders::class)->name('profile.orders');
+    Route::get('/profile/favorites', Favorites::class)->name('profile.favorites');
+    Route::get('/profile/settings', Settings::class)->name('profile.settings');
+
+    Route::post('/logout', function () {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('home');
+    })->name('logout');
+});

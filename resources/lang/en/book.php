@@ -18,6 +18,6 @@ return [
     'description' => 'Description',
     'reviews' => 'Reviews & Ratings',
     'no_reviews' => 'There are no reviews for this book yet.',
-    'excerpt' => 'Excerpt: :title',
+    'excerpt_aria' => 'Excerpt: :title',
     'close' => 'Close',
 ];

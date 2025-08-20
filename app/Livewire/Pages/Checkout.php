@@ -13,6 +13,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\Shipping\EcontDirectoryService;
 use App\Services\Shipping\ShippingCalculator;
+use Illuminate\Support\Facades\Auth;
+
 
 class Checkout extends Component
 {
@@ -58,6 +60,16 @@ class Checkout extends Component
 
     // Shipping
     public float $shippingCost = 0.00;
+
+    public function mount(): void
+    {
+        if (Auth::check()) {
+            $u = Auth::user();
+            $this->name  = (string) ($u->name ?? '');
+            $this->email = (string) ($u->email ?? '');
+            $this->phone = (string) (data_get($u, 'phone', '') ?? '');
+        }
+    }
 
     /**
      * Validation rules depending on selected shipping method.
@@ -402,6 +414,7 @@ class Checkout extends Component
 
             // Create order
             $order = Order::create([
+                'user_id'         => Auth::id(),
                 'public_id'        => (string) Str::uuid(),
                 'order_number'     => $this->generateOrderNumber(),
                 'customer_name'    => $this->name,

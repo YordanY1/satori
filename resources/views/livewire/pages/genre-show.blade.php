@@ -7,11 +7,17 @@
             <article class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition flex flex-col" itemscope
                 itemtype="https://schema.org/Book">
 
-                <a href="{{ route('book.show', $b['slug']) }}"
-                    aria-label="{{ __('shop.aria.view_details', ['title' => $b['title']]) }}">
-                    <img src="{{ $b['cover'] }}" alt="{{ __('book.cover', ['title' => $b['title']]) }}"
-                        class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy" itemprop="image">
-                </a>
+                <div class="relative">
+                    <a href="{{ route('book.show', $b['slug']) }}"
+                        aria-label="{{ __('shop.aria.view_details', ['title' => $b['title']]) }}">
+                        <img src="{{ $b['cover'] }}" alt="{{ __('book.cover', ['title' => $b['title']]) }}"
+                            class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy" itemprop="image">
+                    </a>
+
+                    <div class="absolute top-2 right-2">
+                        <livewire:favorite-button :book-id="$b['id']" wire:key="fav-card-{{ $b['id'] }}" />
+                    </div>
+                </div>
 
                 <h2 class="font-medium text-sm sm:text-base line-clamp-2 mb-1" itemprop="name">
                     {{ $b['title'] }}
@@ -24,7 +30,7 @@
 
                 <button wire:click="addToCart({{ (int) $b['id'] }})"
                     class="mt-auto w-full rounded-xl bg-white text-black py-2 text-sm font-bold shadow-sm border border-black
-                               focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer"
+                   focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer"
                     aria-label="{{ __('shop.aria.add_to_cart', ['title' => $b['title']]) }}">
                     {{ __('shop.add_to_cart') }}
                 </button>

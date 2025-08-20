@@ -4,9 +4,11 @@ namespace App\Livewire\Home;
 
 use Livewire\Component;
 use App\Models\Book;
+use App\Livewire\Concerns\UsesCart;
 
 class BookOfMonth extends Component
 {
+    use UsesCart;
     public array $book = [];
 
     public function mount(): void

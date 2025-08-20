@@ -6,12 +6,15 @@
     </h1>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
+        <div class="relative">
             <img src="{{ $book['cover'] }}"
                 alt="{{ __('book.cover_alt', ['title' => $book['title']]) ?? 'Корицата на книгата ' . $book['title'] }}"
                 class="w-full h-auto rounded-xl shadow-md" itemprop="image">
-        </div>
 
+            <div class="absolute top-3 right-3">
+                <livewire:favorite-button :book-id="$book['id']" wire:key="fav-detail-{{ $book['id'] }}" />
+            </div>
+        </div>
         <div class="flex flex-col gap-5">
             <p class="text-lg text-text">
                 {{ __('book.author') }}

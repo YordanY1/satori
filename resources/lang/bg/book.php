@@ -18,6 +18,6 @@ return [
     'description' => 'Описание',
     'reviews' => 'Ревюта и оценки',
     'no_reviews' => 'Все още няма ревюта за тази книга.',
-    'excerpt' => 'Откъс: :title',
+    'excerpt_aria' => 'Откъс от ":title"',
     'close' => 'Затвори',
 ];

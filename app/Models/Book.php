@@ -35,4 +35,20 @@ class Book extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(\App\Models\Favorite::class);
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'favorites')->withTimestamps();
+    }
+
+    public function isFavoritedBy(?\App\Models\User $user): bool
+    {
+        if (! $user) return false;
+        return $this->favoritedBy()->where('users.id', $user->id)->exists();
+    }
 }

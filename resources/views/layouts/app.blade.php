@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Сатори Ко')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -13,9 +15,11 @@
 <div x-data="{
     show: false,
     text: '',
-    open(msg) { this.text = msg;
+    open(msg) {
+        this.text = msg;
         this.show = true;
-        setTimeout(() => this.show = false, 2000); }
+        setTimeout(() => this.show = false, 2000);
+    }
 }" @notify.window="open($event.detail.message)" class="fixed bottom-6 right-6 z-[9999]"
     aria-live="polite" aria-atomic="true">
     <div x-show="show" x-transition.duration.200ms

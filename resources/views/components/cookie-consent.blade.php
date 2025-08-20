@@ -4,15 +4,19 @@
         <div class="mx-auto max-w-5xl m-4 rounded-2xl border bg-white shadow-lg p-4">
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div class="text-sm leading-6 flex-1">
-                    Използваме бисквитки, за да подобрим изживяването ти.
-                    <a href="{{ route('cookies') }}" class="underline">Научи повече</a>.
+                    {{ __('cookies.banner_text') }}
+                    <a href="{{ route('cookies') }}" class="underline">{{ __('cookies.learn_more') }}</a>.
                 </div>
 
                 <div class="flex gap-2">
                     <button @click="declineAll()"
-                        class="rounded-xl border px-4 py-2 text-sm hover:bg-neutral-50 cursor-pointer">Отказ</button>
+                        class="rounded-xl border px-4 py-2 text-sm hover:bg-neutral-50 cursor-pointer">
+                        {{ __('cookies.decline') }}
+                    </button>
                     <button @click="acceptAll()"
-                        class="rounded-xl bg-black text-white px-4 py-2 text-sm hover:bg-black/90 cursor-pointer">Приемам</button>
+                        class="rounded-xl bg-black text-white px-4 py-2 text-sm hover:bg-black/90 cursor-pointer">
+                        {{ __('cookies.accept') }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -43,9 +47,7 @@
 
                 try {
                     const data = JSON.parse(raw);
-                    // считаме за „consented“, ако вече има запис (независимо дали е true/false)
                     this.consented = typeof data === 'object';
-                    // (по избор) ако искаш client-side да пуска GA/Pixel само при accept:
                     this.apply(data);
                 } catch (_) {}
             },
@@ -75,8 +77,6 @@
             },
 
             apply(prefs) {
-                // Ако искаш да НЕ инжектираш нищо client-side, махни всичко отдолу.
-                // Пример: GA4 само при analytics=true
                 if (prefs?.analytics && !window.__gaLoaded) {
                     window.__gaLoaded = true;
                     // ЗАМЕНИ G-XXXXXXX ако ще ползваш GA4
@@ -94,7 +94,6 @@
                     // document.head.appendChild(s2);
                 }
 
-                // Пример: Meta Pixel само при marketing=true
                 if (prefs?.marketing && !window.__fbqLoaded) {
                     window.__fbqLoaded = true;
                     // ЗАМЕНИ 1234567890 ако ще ползваш Pixel

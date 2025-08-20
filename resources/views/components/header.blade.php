@@ -58,20 +58,21 @@
             </button>
         </div>
 
-        <!-- Auth links -->
-        @guest
-            <a wire:navigate href="{{ route('login') }}" class="px-3 py-2">Вход</a>
-            <a wire:navigate href="{{ route('register') }}" class="px-3 py-2">Регистрация</a>
-        @endguest
+        <!-- Desktop auth links (hidden on mobile) -->
+        <div class="hidden md:flex items-center gap-2">
+            @guest
+                <a wire:navigate href="{{ route('login') }}" class="px-3 py-2">Вход</a>
+                <a wire:navigate href="{{ route('register') }}" class="px-3 py-2">Регистрация</a>
+            @endguest
 
-        @auth
-            <a wire:navigate href="{{ route('profile.overview') }}" class="px-3 py-2">Профил</a>
-
-            <form method="POST" action="{{ route('logout') }}" class="inline" x-data @submit.prevent="$el.submit();">
-                @csrf
-                <button type="submit" class="px-3 py-2 hover:text-accent transition cursor-pointer">Изход</button>
-            </form>
-        @endauth
+            @auth
+                <a wire:navigate href="{{ route('profile.overview') }}" class="px-3 py-2">Профил</a>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="px-3 py-2 hover:text-accent transition cursor-pointer">Изход</button>
+                </form>
+            @endauth
+        </div>
     </div>
 
     <!-- Mobile menu -->

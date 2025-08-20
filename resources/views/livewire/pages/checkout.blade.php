@@ -206,18 +206,6 @@
                             {{ __('checkout.currency') }}</span>
                     </div>
 
-                    {{-- Shipping --}}
-                    {{-- <div class="flex items-center justify-between text-sm">
-                        <span class="text-neutral-600">Доставка</span>
-                        <span class="font-medium">
-                            @if ($shippingCost > 0)
-                                {{ number_format($shippingCost, 2) }} {{ __('checkout.currency') }}
-                            @else
-                                —
-                            @endif
-                        </span>
-                    </div> --}}
-
                     <hr class="my-2">
 
                     {{-- Total --}}
@@ -233,16 +221,36 @@
                     <p class="mt-2 text-red-600 text-sm">{{ $message }}</p>
                 @enderror
 
+                <div class="mt-4 flex items-start gap-3">
+                    <label class="inline-flex items-start gap-2 text-sm">
+                        <input type="checkbox" class="mt-1 rounded accent-black" wire:model.live="accept_terms">
+                        <span class="text-neutral-700">
+                            Съгласен/на съм с
+                            <a wire:navigate href="{{ route('terms') }}" class="underline">Общи условия</a>,
+                            <a wire:navigate href="{{ route('privacy') }}" class="underline">Политика за
+                                поверителност</a>
+                            и <a wire:navigate href="{{ route('cookies') }}" class="underline">Политика за
+                                бисквитки</a>.
+                        </span>
+                    </label>
+                </div>
+
+                @error('accept_terms')
+                    <p class="mt-2 text-red-600 text-sm">{{ $message }}</p>
+                @enderror
+
+
                 <div class="mt-4 flex flex-col sm:flex-row gap-3">
                     <button type="submit"
                         class="inline-flex items-center justify-center rounded-xl bg-black px-5 py-3 text-white font-semibold shadow-lg shadow-black/5
-                               hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60 disabled:cursor-not-allowed
-                               focus:outline-none focus:ring-4 focus:ring-black/20"
+           hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-4 focus:ring-black/20"
                         wire:loading.attr="disabled" wire:target="placeOrder"
-                        x-bind:disabled="$wire.get('total') <= 0">
+                        x-bind:disabled="!$wire.get('accept_terms') || $wire.get('total') <= 0">
                         <span wire:loading.remove wire:target="placeOrder">{{ __('checkout.confirm') }}</span>
                         <span wire:loading wire:target="placeOrder">{{ __('checkout.processing') }}</span>
                     </button>
+
                     <a href="{{ route('cart') }}"
                         class="inline-flex items-center justify-center rounded-xl border border-neutral-300 bg-white px-5 py-3 font-medium text-neutral-800
                                hover:bg-neutral-100 focus:outline-none focus:ring-4 focus:ring-black/10">

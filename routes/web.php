@@ -37,6 +37,8 @@ use App\Livewire\Profile\Favorites;
 
 use App\Livewire\Pages\PrivacyPolicy;
 use App\Livewire\Pages\CookiePolicy;
+use App\Livewire\Pages\Terms;
+
 
 
 
@@ -91,3 +93,4 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/privacy-policy', PrivacyPolicy::class)->name('privacy');
 Route::get('/cookie-policy', CookiePolicy::class)->name('cookies');
+Route::get('/terms', Terms::class)->name('terms');

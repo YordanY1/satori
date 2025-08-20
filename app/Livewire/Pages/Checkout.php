@@ -61,6 +61,8 @@ class Checkout extends Component
     // Shipping
     public float $shippingCost = 0.00;
 
+    public bool $accept_terms = false;
+
     public function mount(): void
     {
         if (Auth::check()) {
@@ -82,6 +84,7 @@ class Checkout extends Component
             'phone'           => 'required|string|min:8',
             'payment_method'  => 'required|in:cod,stripe,paypal',
             'shipping_method' => 'required|in:econt_office,address',
+            'accept_terms'    => 'accepted',
         ];
 
         if ($this->shipping_method === 'address') {
@@ -430,6 +433,7 @@ class Checkout extends Component
                 'status'           => 'pending',
                 'payment_method'   => $this->payment_method,
                 'payment_status'   => 'pending',
+                'terms_accepted_at' => now(),
             ]);
 
             $order->shipping_draft = [

@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(\App\Models\Book::class, 'favorites')->withTimestamps();
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\Review::class);
+    }
 }

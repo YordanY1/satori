@@ -92,18 +92,23 @@
     <section class="mt-10" aria-labelledby="reviews-title">
         <h2 id="reviews-title" class="text-2xl font-semibold mb-4">{{ __('book.reviews') }}</h2>
 
-        @forelse($book['reviews'] as $review)
-            <article class="border-b border-neutral-200 py-4">
-                <h3 class="font-semibold text-text">{{ $review['user'] }}</h3>
-                <p class="text-yellow-600" aria-label="Оценка: {{ $review['rating'] }} от 5">
-                    {{ str_repeat('★', $review['rating']) }}{{ str_repeat('☆', 5 - $review['rating']) }}
-                </p>
-                <p class="text-neutral-800">{{ $review['content'] }}</p>
-            </article>
-        @empty
-            <p class="text-neutral-600">{{ __('book.no_reviews') }}</p>
-        @endforelse
+        <livewire:reviews.form :book-id="$book['id']" />
+
+        <div class="mt-6">
+            @forelse($book['reviews'] as $review)
+                <article class="border-b border-neutral-200 py-4">
+                    <h3 class="font-semibold text-text">{{ $review['user'] }}</h3>
+                    <p class="text-yellow-600" aria-label="Оценка: {{ $review['rating'] }} от 5">
+                        {{ str_repeat('★', $review['rating']) }}{{ str_repeat('☆', 5 - $review['rating']) }}
+                    </p>
+                    <p class="text-neutral-800">{{ $review['content'] }}</p>
+                </article>
+            @empty
+                <p class="text-neutral-600">{{ __('book.no_reviews') }}</p>
+            @endforelse
+        </div>
     </section>
+
 
     @if (!empty($book['excerpt_url']))
         <div x-data="{ open: false }" x-on:open-excerpt.window="open = true" x-show="open" x-cloak

@@ -14,6 +14,8 @@ class BookShow extends Component
     public string $slug;
     public array $book = [];
 
+    protected $listeners = ['review:created' => 'reloadReviews'];
+
     public function mount(string $slug): void
     {
         $this->slug = $slug;
@@ -22,26 +24,30 @@ class BookShow extends Component
             ->where('slug', $slug)
             ->with([
                 'author:id,name,slug',
-                'reviews.user:id,name',
+                'reviews' => fn($q) => $q->latest(),
             ])
             ->firstOrFail();
 
-        // cover
+
         $cover = $b->cover
             ? (Str::startsWith($b->cover, ['http://', 'https://']) ? $b->cover : asset($b->cover))
             : asset('storage/images/default-book.jpg');
 
-        // excerpt
+
         $excerptUrl = $b->excerpt
             ? (Str::startsWith($b->excerpt, ['http://', 'https://']) ? $b->excerpt : asset($b->excerpt))
             : null;
 
-        // reviews
+
         $reviews = $b->reviews->map(fn($r) => [
-            'user'    => $r->user?->name ?? 'Анонимен',
-            'rating'  => $r->rating,
-            'content' => $r->content,
+            'user'    => $r->user_name ?: 'Анонимен',
+            'rating'  => (int) $r->rating,
+            'content' => (string) ($r->content ?? ''),
         ])->toArray();
+
+
+        $ratingAvg = (float) number_format($b->reviews()->avg('rating') ?? 0, 1);
+        $ratingCnt = (int) $b->reviews()->count();
 
         $this->book = [
             'id'           => $b->id,
@@ -52,14 +58,33 @@ class BookShow extends Component
                 'slug' => $b->author->slug,
             ],
             'price'        => (float) $b->price,
-            'format'       => $b->format,
+            'format'       => (string) $b->format,
             'cover'        => $cover,
-            'description'  => $b->description ?? '',
+            'description'  => (string) ($b->description ?? ''),
             'excerpt_url'  => $excerptUrl,
-            'rating_avg'   => round($b->reviews_avg_rating ?? 0, 1),
-            'rating_count' => $b->reviews_count ?? 0,
+            'rating_avg'   => $ratingAvg,
+            'rating_count' => $ratingCnt,
             'reviews'      => $reviews,
         ];
+    }
+
+    public function reloadReviews(): void
+    {
+        $b = Book::with(['reviews' => fn($q) => $q->latest()])
+            ->findOrFail($this->book['id']);
+
+        $reviews = $b->reviews->map(fn($r) => [
+            'user'    => $r->user_name ?: 'Анонимен',
+            'rating'  => (int) $r->rating,
+            'content' => (string) ($r->content ?? ''),
+        ])->toArray();
+
+        $avg = (float) number_format($b->reviews()->avg('rating') ?? 0, 1);
+        $cnt = (int) $b->reviews()->count();
+
+        $this->book['reviews'] = $reviews;
+        $this->book['rating_avg'] = $avg;
+        $this->book['rating_count'] = $cnt;
     }
 
     public function render()

@@ -54,5 +54,11 @@
             <span>{{ __('footer.copyright', ['year' => date('Y')]) }}</span>
             <span>{{ __('footer.made_with') }}</span>
         </div>
+
+        <div class="flex justify-center gap-6">
+            <a wire:navigate href="{{ route('privacy') }}">Политика за поверителност</a>
+            <a wire:navigate href="{{ route('cookies') }}">Политика за бисквитки</a>
+            {{-- <button @click="$dispatch('cookie:open')" class="underline">Cookie настройки</button> --}}
+        </div>
     </div>
 </footer>

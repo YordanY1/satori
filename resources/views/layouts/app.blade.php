@@ -28,6 +28,11 @@
     </div>
 </div>
 
+<x-cookie-consent />
+
+
+
+
 <body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
     <x-header />
 

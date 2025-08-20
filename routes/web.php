@@ -35,6 +35,9 @@ use App\Livewire\Profile\Orders;
 use App\Livewire\Profile\Favorites;
 
 
+use App\Livewire\Pages\PrivacyPolicy;
+use App\Livewire\Pages\CookiePolicy;
+
 
 
 Route::get('/', Home::class)->name('home');
@@ -84,3 +87,7 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('home');
     })->name('logout');
 });
+
+
+Route::get('/privacy-policy', PrivacyPolicy::class)->name('privacy');
+Route::get('/cookie-policy', CookiePolicy::class)->name('cookies');

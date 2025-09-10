@@ -12,7 +12,6 @@ class Hero extends Component
 {
     public array $slides = [];
     public int $active = 0;
-
     public int $rotateEveryMs = 6000;
 
     public function mount(): void
@@ -22,10 +21,13 @@ class Hero extends Component
         $post  = Post::latest()->first();
 
         $normUrl = function (?string $path, string $fallback) {
-            if (!$path) return asset($fallback);
+            if (!$path) {
+                return asset($fallback);
+            }
+
             return Str::startsWith($path, ['http://', 'https://'])
                 ? $path
-                : asset($path);
+                : asset('storage/' . ltrim($path, '/'));
         };
 
         $this->slides = collect([
@@ -33,7 +35,7 @@ class Hero extends Component
                 'title'        => __('hero.book.title', ['title' => $book->title]),
                 'subtitle'     => $book->excerpt ?: __('hero.book.subtitle_fallback'),
                 'subtitle_url' => !empty($book->excerpt_url)
-                    ? $normUrl($book->excerpt_url, '')
+                    ? $normUrl($book->excerpt_url, 'storage/images/hero-1.jpg')
                     : null,
                 'cta'          => [
                     'label' => __('hero.book.cta'),
@@ -67,7 +69,6 @@ class Hero extends Component
                 'alt'          => __('hero.post.alt', ['title' => $post->title]),
             ] : null,
         ])->filter()->values()->toArray();
-
 
         if (count($this->slides) === 0) {
             $this->slides = [[

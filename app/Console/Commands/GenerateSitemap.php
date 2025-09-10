@@ -17,68 +17,87 @@ class GenerateSitemap extends Command
 
     public function handle(): void
     {
-        $urls = [];
+        $sitemaps = [];
 
+        $static = [
+            ['loc' => url('/')],
+            ['loc' => url('/catalog')],
+            ['loc' => url('/authors')],
+            ['loc' => url('/genres')],
+            ['loc' => url('/events')],
+            ['loc' => url('/blog')],
+            ['loc' => url('/about')],
+            ['loc' => url('/contact')],
+            ['loc' => url('/privacy-policy')],
+            ['loc' => url('/cookie-policy')],
+            ['loc' => url('/terms')],
+        ];
+        $this->writeSitemap('sitemap-static.xml', $static);
+        $sitemaps[] = url('storage/sitemap-static.xml');
 
-        $urls[] = ['loc' => url('/')];
-
-
-        foreach (
-            [
-                '/catalog',
-                '/authors',
-                '/genres',
-                '/events',
-                '/blog',
-                '/about',
-                '/contact',
-                '/privacy-policy',
-                '/cookie-policy',
-                '/terms',
-            ] as $path
-        ) {
-            $urls[] = ['loc' => url($path)];
-        }
-
-
+        $books = [];
         foreach (Book::select('slug', 'updated_at')->get() as $b) {
-            $urls[] = [
+            $books[] = [
                 'loc' => route('book.show', $b->slug),
                 'lastmod' => optional($b->updated_at)->toAtomString(),
             ];
         }
+        $this->writeSitemap('sitemap-books.xml', $books);
+        $sitemaps[] = url('storage/sitemap-books.xml');
 
+        $authors = [];
         foreach (Author::select('slug', 'updated_at')->get() as $a) {
-            $urls[] = [
+            $authors[] = [
                 'loc' => route('author.show', $a->slug),
                 'lastmod' => optional($a->updated_at)->toAtomString(),
             ];
         }
+        $this->writeSitemap('sitemap-authors.xml', $authors);
+        $sitemaps[] = url('storage/sitemap-authors.xml');
 
+        $genres = [];
         foreach (Genre::select('slug', 'updated_at')->get() as $g) {
-            $urls[] = [
+            $genres[] = [
                 'loc' => route('genre.show', $g->slug),
                 'lastmod' => optional($g->updated_at)->toAtomString(),
             ];
         }
+        $this->writeSitemap('sitemap-genres.xml', $genres);
+        $sitemaps[] = url('storage/sitemap-genres.xml');
 
+        $posts = [];
         foreach (Post::select('slug', 'updated_at')->get() as $p) {
-            $urls[] = [
+            $posts[] = [
                 'loc' => route('blog.show', $p->slug),
                 'lastmod' => optional($p->updated_at)->toAtomString(),
             ];
         }
+        $this->writeSitemap('sitemap-posts.xml', $posts);
+        $sitemaps[] = url('storage/sitemap-posts.xml');
 
+        $events = [];
         foreach (Event::select('slug', 'updated_at')->get() as $e) {
-            $urls[] = [
+            $events[] = [
                 'loc' => route('event.show', $e->slug),
                 'lastmod' => optional($e->updated_at)->toAtomString(),
             ];
         }
+        $this->writeSitemap('sitemap-events.xml', $events);
+        $sitemaps[] = url('storage/sitemap-events.xml');
 
+        $index = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+        $index .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+        foreach ($sitemaps as $s) {
+            $index .= "  <sitemap><loc>{$s}</loc></sitemap>" . PHP_EOL;
+        }
+        $index .= '</sitemapindex>';
+        Storage::disk('public')->put('sitemap.xml', $index);
+    }
+
+    private function writeSitemap(string $filename, array $urls): void
+    {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
-
         foreach ($urls as $url) {
             $xml .= "  <url>" . PHP_EOL;
             $xml .= "    <loc>" . e($url['loc']) . "</loc>" . PHP_EOL;
@@ -87,11 +106,7 @@ class GenerateSitemap extends Command
             }
             $xml .= "  </url>" . PHP_EOL;
         }
-
         $xml .= '</urlset>';
-
-        Storage::disk('public')->put('sitemap.xml', $xml);
-
-        $this->info('✅ Sitemap generated successfully!');
+        Storage::disk('public')->put($filename, $xml);
     }
 }

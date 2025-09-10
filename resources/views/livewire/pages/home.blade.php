@@ -3,7 +3,7 @@
 
     {{-- <livewire:home.recommended-books /> --}}
 
-    <livewire:home.book-of-month />
+    {{-- <livewire:home.book-of-month /> --}}
 
     <livewire:home.media />
 

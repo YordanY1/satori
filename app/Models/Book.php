@@ -51,4 +51,13 @@ class Book extends Model
         if (! $user) return false;
         return $this->favoritedBy()->where('users.id', $user->id)->exists();
     }
+
+    public function getCoverUrlAttribute(): string
+    {
+        if (Str::startsWith($this->cover, ['http://', 'https://'])) {
+            return $this->cover;
+        }
+
+        return asset('storage/' . ($this->cover ?? 'images/default-book.jpg'));
+    }
 }

@@ -10,13 +10,8 @@
 
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         @foreach ($books as $b)
-            @php
-                $img = Str::startsWith($b->cover, ['http://', 'https://'])
-                    ? $b->cover
-                    : asset($b->cover ?? 'storage/images/default-book.jpg');
-                $url = route('book.show', $b->slug);
-            @endphp
-
+            <img src="{{ $b->cover_url }}" alt="{{ __('catalog.book_cover', ['title' => $b->title]) }}" loading="lazy"
+                class="w-full h-40 object-cover rounded-xl mb-3" itemprop="image">
             <article class="bg-background rounded-2xl p-3 shadow-sm hover:shadow-lg transition flex flex-col h-full"
                 itemscope itemtype="https://schema.org/Book">
 

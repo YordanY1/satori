@@ -35,6 +35,7 @@ class BookOfMonth extends Component
             'title'       => $bom->title,
             'description' => $bom->description ?? '',
             'price'       => (float) $bom->price,
+            'price_eur'   => (float) $bom->price_eur,
             'cover'       => str($bom->cover)->startsWith(['http://', 'https://']) ? $bom->cover : asset($bom->cover),
             'excerpt_url' => $bom->excerpt ? (str($bom->excerpt)->startsWith(['http://', 'https://']) ? $bom->excerpt : asset($bom->excerpt)) : null,
             'slug'        => $bom->slug,

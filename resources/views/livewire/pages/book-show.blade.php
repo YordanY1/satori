@@ -26,9 +26,22 @@
 
             <div class="flex items-center gap-6">
                 <p class="text-2xl font-bold text-accent" itemprop="offers" itemscope
-                    itemtype="https://schema.org/Offer">
-                    <meta itemprop="priceCurrency" content="BGN">
-                    <span itemprop="price">{{ number_format($book['price'], 2) }}</span> {{ __('book.price_currency') }}
+                    itemtype="https://schema.org/AggregateOffer">
+            
+                    <span itemscope itemtype="https://schema.org/Offer">
+                        <meta itemprop="priceCurrency" content="BGN">
+                        <span itemprop="price">{{ number_format($book['price'], 2) }}</span>
+                        {{ __('book.price_currency') }}
+                    </span>
+
+
+                    @if (!empty($book['price_eur']))
+                        <br>
+                        <span class="text-lg text-gray-500" itemscope itemtype="https://schema.org/Offer">
+                            <meta itemprop="priceCurrency" content="EUR">
+                            <span itemprop="price">{{ number_format($book['price_eur'], 2) }}</span> €
+                        </span>
+                    @endif
                 </p>
 
                 <p class="text-text">

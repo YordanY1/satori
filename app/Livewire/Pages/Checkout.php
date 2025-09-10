@@ -606,17 +606,22 @@ class Checkout extends Component
     public function render()
     {
         $subtotal = (float) Cart::total();
-        $total    = round($subtotal + $this->shippingCost, 2);
+        $subtotalEur = (float) Cart::totalEur();
+        $total = round($subtotal + $this->shippingCost, 2);
+        $totalEur = round($subtotalEur + 0, 2); 
 
         return view('livewire.pages.checkout', [
-            'cart'         => Cart::all(),
-            'subtotal'     => $subtotal,
-            'shippingCost' => $this->shippingCost,
-            'total'        => $total,
+            'cart'          => Cart::all(),
+            'subtotal'      => $subtotal,
+            'subtotal_eur'  => $subtotalEur,
+            'shippingCost'  => $this->shippingCost,
+            'total'         => $total,
+            'total_eur'     => $totalEur,
         ])->layout('layouts.app', [
             'title' => 'Checkout — Satori Co',
         ]);
     }
+
 
 
     private function generateOrderNumber(): string

@@ -58,6 +58,7 @@ class BookShow extends Component
                 'slug' => $b->author->slug,
             ],
             'price'        => (float) $b->price,
+            'price_eur'    => (float) $b->price_eur,
             'format'       => (string) $b->format,
             'cover'        => $cover,
             'description'  => (string) ($b->description ?? ''),

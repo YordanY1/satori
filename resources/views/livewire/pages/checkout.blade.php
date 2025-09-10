@@ -217,8 +217,15 @@
                 <div class="mt-2 rounded-2xl border border-black/5 bg-neutral-50 p-5 space-y-2">
                     <div class="flex items-center justify-between text-sm">
                         <span class="text-neutral-600">{{ __('checkout.subtotal') }}</span>
-                        <span class="font-medium">{{ number_format($subtotal, 2) }}
-                            {{ __('checkout.currency') }}</span>
+                        <span class="font-medium">
+                            {{ number_format($subtotal, 2) }} {{ __('checkout.currency') }}
+                            @if (!empty($subtotal_eur))
+                                <br>
+                                <span class="text-xs text-gray-500">
+                                    {{ number_format($subtotal_eur, 2) }} €
+                                </span>
+                            @endif
+                        </span>
                     </div>
 
                     <hr class="my-2">
@@ -227,8 +234,15 @@
                         <h2 class="text-[15px] font-semibold text-neutral-700">{{ __('checkout.total') }}</h2>
                         <div class="text-xl font-bold tracking-tight">
                             {{ number_format($total, 2) }} {{ __('checkout.currency') }}
+                            @if (!empty($total_eur))
+                                <br>
+                                <span class="text-sm text-gray-500 font-medium">
+                                    {{ number_format($total_eur, 2) }} €
+                                </span>
+                            @endif
                         </div>
                     </div>
+
                 </div>
 
                 @error('cart')

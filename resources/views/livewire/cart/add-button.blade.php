@@ -4,5 +4,11 @@
            active:scale-95 transition cursor-pointer">
 
     {{ __('cart.buy') }}
-    <span>({{ __('cart.price', ['amount' => number_format($price, 2), 'currency' => __('cart.currency')]) }})</span>
+    <span>
+        ({{ number_format($price, 2) }} {{ __('cart.currency') }}
+        @if (!empty($price_eur))
+             {{ number_format($price_eur, 2) }} €
+        @endif
+        )
+    </span>
 </button>

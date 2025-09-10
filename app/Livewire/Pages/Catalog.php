@@ -53,7 +53,7 @@ class Catalog extends Component
     {
         $q = Book::query()
             ->with(['author:id,name,slug', 'genres:id,name,slug'])
-            ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id']);
+            ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id', 'price_eur']);
 
         if (!empty($this->filters['author'])) {
             $q->where('author_id', (int)$this->filters['author']);
@@ -96,6 +96,7 @@ class Catalog extends Component
                 'id'    => $b->id,
                 'title' => $b->title,
                 'price' => (float)$b->price,
+                'price_eur' => (float)$b->price_eur,
                 'slug'  => $b->slug,
                 'cover' => $cover,
             ];

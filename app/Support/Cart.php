@@ -19,14 +19,25 @@ class Cart
         return round(collect(self::all())->sum(fn($i) => $i['price'] * $i['quantity']), 2);
     }
 
+    public static function totalEur(): float
+    {
+        return round(collect(self::all())->sum(fn($i) => ($i['price_eur'] ?? 0) * $i['quantity']), 2);
+    }
+
     public static function put(int $bookId, array $payload): void
     {
         $cart = self::all();
+
         if (isset($cart[$bookId])) {
             $cart[$bookId]['quantity'] += $payload['quantity'] ?? 1;
         } else {
-            $cart[$bookId] = $payload + ['quantity' => 1];
+            $cart[$bookId] = $payload + [
+                'quantity'   => 1,
+                'price'      => $payload['price'] ?? 0,
+                'price_eur'  => $payload['price_eur'] ?? null,
+            ];
         }
+
         session()->put('cart', $cart);
     }
 
@@ -44,7 +55,9 @@ class Cart
         $cart = self::all();
         if (isset($cart[$bookId])) {
             $cart[$bookId]['quantity']--;
-            if ($cart[$bookId]['quantity'] <= 0) unset($cart[$bookId]);
+            if ($cart[$bookId]['quantity'] <= 0) {
+                unset($cart[$bookId]);
+            }
             session()->put('cart', $cart);
         }
     }

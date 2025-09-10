@@ -31,6 +31,12 @@
                                 <span class="font-medium text-text">
                                     {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
                                 </span>
+                                @if (!empty($item['price_eur']))
+                                    <br>
+                                    <span class="text-xs text-gray-500">
+                                         {{ number_format($item['price_eur'], 2) }} €
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="mt-3 flex items-center justify-between">
@@ -42,9 +48,15 @@
                                         class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px]">+</button>
                                 </div>
 
-                                <div class="font-semibold">
+                                <div class="font-semibold text-right">
                                     {{ number_format($item['price'] * $item['quantity'], 2) }}
                                     {{ __('cart.currency') }}
+                                    @if (!empty($item['price_eur']))
+                                        <br>
+                                        <span class="text-xs text-gray-500">
+                                             {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -92,6 +104,12 @@
                             </td>
                             <td class="p-4 font-medium whitespace-nowrap">
                                 {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
+                                @if (!empty($item['price_eur']))
+                                    <br>
+                                    <span class="text-xs text-gray-500">
+                                         {{ number_format($item['price_eur'], 2) }} €
+                                    </span>
+                                @endif
                             </td>
                             <td class="p-4">
                                 <div class="inline-flex items-center gap-2 border rounded-lg px-2 py-1">
@@ -104,6 +122,12 @@
                             </td>
                             <td class="p-4 font-semibold text-accent whitespace-nowrap">
                                 {{ number_format($item['price'] * $item['quantity'], 2) }} {{ __('cart.currency') }}
+                                @if (!empty($item['price_eur']))
+                                    <br>
+                                    <span class="text-xs text-gray-500">
+                                         {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
+                                    </span>
+                                @endif
                             </td>
                             <td class="p-4 text-right">
                                 <button wire:click="remove({{ $id }})"
@@ -124,10 +148,16 @@
                 {{ __('cart.clear') }}
             </button>
 
-            <div class="flex items-center gap-6">
+            <div class="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-right">
                 <div class="text-lg sm:text-xl">
                     <span class="text-neutral-600">{{ __('cart.subtotal') }}</span>
                     <span class="font-extrabold">{{ number_format($total, 2) }} {{ __('cart.currency') }}</span>
+                    @if (!empty(\App\Support\Cart::totalEur()))
+                        <br>
+                        <span class="text-sm text-gray-500 font-medium">
+                             {{ number_format(\App\Support\Cart::totalEur(), 2) }} €
+                        </span>
+                    @endif
                 </div>
                 <a wire:navigate href="{{ route('checkout') }}"
                     class="px-6 py-3 rounded-xl border border-accent text-text font-semibold shadow active:translate-y-[1px]">

@@ -18,7 +18,7 @@ class RecommendedBooks extends Component
             ->where('is_recommended', true)
             ->latest()
             ->take(4)
-            ->get(['id', 'title', 'slug', 'price', 'cover']);
+            ->get(['id', 'title', 'slug', 'price', 'cover', 'price_eur']);
     }
 
     public function render()

@@ -64,9 +64,21 @@
                         {{ $book['title'] }}
                     </h2>
 
-                    <span class="text-accent font-bold" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                        <meta itemprop="priceCurrency" content="BGN">
-                        <span itemprop="price">{{ number_format($book['price'], 2) }}</span> {{ __('shop.currency') }}
+                    <span class="text-accent font-bold" itemprop="offers" itemscope
+                        itemtype="https://schema.org/AggregateOffer">
+                        <span itemscope itemtype="https://schema.org/Offer">
+                            <meta itemprop="priceCurrency" content="BGN">
+                            <span itemprop="price">{{ number_format($book['price'], 2) }}</span>
+                            {{ __('shop.currency') }}
+                        </span>
+
+                        @if (!empty($book['price_eur']))
+                            <br>
+                            <span class="text-sm text-gray-500" itemscope itemtype="https://schema.org/Offer">
+                                <meta itemprop="priceCurrency" content="EUR">
+                                <span itemprop="price">{{ number_format($book['price_eur'], 2) }}</span> €
+                            </span>
+                        @endif
                     </span>
 
                     <button wire:click="addToCart({{ (int) $book['id'] }})"

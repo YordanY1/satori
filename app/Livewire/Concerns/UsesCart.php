@@ -14,6 +14,7 @@ trait UsesCart
         Cart::put($book->id, [
             'title'       => $book->title,
             'price'       => (float) $book->price,
+            'price_eur'   => (float) $book->price_eur,
             'cover'       => $book->cover,
             'slug'        => $book->slug,
             'quantity'    => max(1, $qty),

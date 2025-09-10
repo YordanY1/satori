@@ -13,9 +13,12 @@ class ExcerptController extends Controller
         $sub = $repo->findByToken($token);
         abort_unless($sub && $sub->confirmed_at && !$sub->unsubscribed_at, 403, 'Нямаш достъп.');
 
-        $path = storage_path('app/public/excerpts/presence.pdf');
-        abort_unless(is_file($path), 404, 'Откъсът липсва.');
+        $latestExcerpt = \App\Models\NewsletterExcerpt::latest()->first();
+        abort_unless($latestExcerpt && $latestExcerpt->file_path, 404, 'Няма качен файл.');
 
-        return Response::download($path, 'presence.pdf');
+        $path = storage_path('app/public/' . $latestExcerpt->file_path);
+        abort_unless(is_file($path), 404, 'Файлът липсва.');
+
+        return response()->download($path, $latestExcerpt->title . '.pdf');
     }
 }

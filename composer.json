@@ -7,11 +7,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "filament/filament": "4.0",
+        "filament/spatie-laravel-settings-plugin": "4.0",
         "gdinko/econt": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6",
+        "spatie/laravel-permission": "^6.21",
+        "spatie/laravel-settings": "^3.4",
         "stripe/stripe-php": "^17.5"
     },
     "require-dev": {
@@ -39,7 +43,8 @@
         "post-autoload-dump": [
             "@php artisan config:clear",
             "@php artisan clear-compiled",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

@@ -14,7 +14,9 @@ use App\Models\OrderItem;
 use App\Services\Shipping\EcontDirectoryService;
 use App\Services\Shipping\ShippingCalculator;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderPlacedAdminMail;
+use App\Mail\OrderPlacedCustomerMail;
 
 class Checkout extends Component
 {
@@ -464,6 +466,10 @@ class Checkout extends Component
                 ]);
             }
 
+            Mail::to($order->customer_email)->queue(new OrderPlacedCustomerMail($order));
+            Mail::to(config('mail.admin_address', 'admin@example.com'))->queue(new OrderPlacedAdminMail($order));
+
+
             // COD => create label (CREATE)
             if ($this->payment_method === 'cod') {
                 try {
@@ -608,7 +614,7 @@ class Checkout extends Component
         $subtotal = (float) Cart::total();
         $subtotalEur = (float) Cart::totalEur();
         $total = round($subtotal + $this->shippingCost, 2);
-        $totalEur = round($subtotalEur + 0, 2); 
+        $totalEur = round($subtotalEur + 0, 2);
 
         return view('livewire.pages.checkout', [
             'cart'          => Cart::all(),

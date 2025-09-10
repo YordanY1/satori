@@ -10,7 +10,7 @@ class BookOfMonth extends Component
 {
     use UsesCart;
 
-    public array $book = [];
+    public object $book;
 
     public function mount(): void
     {
@@ -19,7 +19,7 @@ class BookOfMonth extends Component
             ->first();
 
         if (!$bom) {
-            $this->book = [
+            $this->book = (object) [
                 'id'          => 0,
                 'title'       => 'Скоро очаквайте!',
                 'description' => 'Новата „Книга на месеца“ е на път.',
@@ -32,7 +32,7 @@ class BookOfMonth extends Component
             return;
         }
 
-        $this->book = [
+        $this->book = (object) [
             'id'          => $bom->id,
             'title'       => $bom->title,
             'description' => $bom->description ?? '',

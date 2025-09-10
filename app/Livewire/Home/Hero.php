@@ -21,21 +21,16 @@ class Hero extends Component
         $event = Event::whereDate('date', '>=', now())->orderBy('date')->first();
         $post  = Post::latest()->first();
 
-        // нормализира URL за изображения и PDF-и
-        $normUrl = function (?string $path, string $fallback = null): string {
-            if (!$path) {
-                return $fallback ? asset($fallback) : '';
-            }
-            return Str::startsWith($path, ['http://', 'https://'])
-                ? $path
-                : asset('storage/' . ltrim($path, '/'));
+        $normUrl = function (?string $path, string $fallback) {
+            if (!$path) return asset($fallback);
+            return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
         };
 
         $this->slides = collect([
             $book ? [
                 'title'        => __('hero.book.title', ['title' => $book->title]),
                 'subtitle'     => $book->excerpt ?: __('hero.book.subtitle_fallback'),
-                'subtitle_url' => $book->excerpt ? $normUrl($book->excerpt) : null,
+                'subtitle_url' => !empty($book->excerpt_url) ? $normUrl($book->excerpt_url, '') : null,
                 'cta'          => [
                     'label' => __('hero.book.cta'),
                     'url'   => route('book.show', $book->slug),
@@ -47,7 +42,7 @@ class Hero extends Component
             $event ? [
                 'title'        => __('hero.event.title', ['title' => $event->title]),
                 'subtitle'     => $event->excerpt ?: __('hero.event.subtitle_fallback'),
-                'subtitle_url' => $event->excerpt ? $normUrl($event->excerpt) : null,
+                'subtitle_url' => null,
                 'cta'          => [
                     'label' => __('hero.event.cta'),
                     'url'   => route('event.show', $event->slug),
@@ -59,7 +54,7 @@ class Hero extends Component
             $post ? [
                 'title'        => $post->title,
                 'subtitle'     => $post->excerpt ?: __('hero.post.subtitle_fallback'),
-                'subtitle_url' => $post->excerpt ? $normUrl($post->excerpt) : null,
+                'subtitle_url' => null,
                 'cta'          => [
                     'label' => __('hero.post.cta'),
                     'url'   => route('blog.show', $post->slug),
@@ -74,10 +69,7 @@ class Hero extends Component
                 'title'        => __('hero.empty.title'),
                 'subtitle'     => __('hero.empty.subtitle'),
                 'subtitle_url' => null,
-                'cta'          => [
-                    'label' => __('hero.empty.cta'),
-                    'url'   => url('/'),
-                ],
+                'cta'          => ['label' => __('hero.empty.cta'), 'url' => url('/')],
                 'image_url'    => asset('storage/images/hero-1.jpg'),
                 'alt'          => __('hero.empty.alt'),
             ]];

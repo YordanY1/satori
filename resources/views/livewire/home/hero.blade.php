@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Str; @endphp
+
 <section x-data="{
     rotating: @js($rotateEveryMs > 0),
     interval: null,
@@ -23,8 +25,14 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
 
         <div wire:key="slide-{{ $active }}" class="contents">
             <figure class="absolute inset-0 w-full h-full">
-                <img src="{{ $slide['image_url'] }}" alt="{{ $slide['alt'] ?? __('slider.slide_fallback') }}"
-                    loading="lazy" class="w-full h-full object-cover">
+                @php
+                    $img = Str::startsWith($slide['image'] ?? '', ['http://', 'https://'])
+                        ? $slide['image']
+                        : asset($slide['image'] ?? 'storage/images/hero-1.jpg');
+                    $alt = $slide['alt'] ?? ($slide['title'] ?? __('slider.slide_fallback'));
+                @endphp
+                <img src="{{ $img }}" alt="{{ $alt }}" loading="lazy"
+                    class="w-full h-full object-cover">
             </figure>
 
             <div
@@ -37,14 +45,15 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
                         {{ $slide['title'] ?? '' }}
                     </h2>
 
-                    @if (!empty($slide['subtitle_url']) && str_ends_with(strtolower($slide['subtitle_url']), '.pdf'))
-                        <a href="{{ $slide['subtitle_url'] }}"
+                    @php $subtitle = $slide['subtitle'] ?? ''; @endphp
+                    @if (is_string($subtitle) && Str::endsWith(Str::lower($subtitle), '.pdf'))
+                        <a href="{{ Str::startsWith($subtitle, ['http://', 'https://']) ? $subtitle : asset($subtitle) }}"
                             class="mt-2 inline-block underline underline-offset-4 text-background/90 text-xs sm:text-base"
                             target="_blank" rel="noopener">
                             {{ __('slider.download_pdf') }}
                         </a>
-                    @elseif (!empty($slide['subtitle']))
-                        <p class="mt-2 text-background/90 text-xs sm:text-base">{{ $slide['subtitle'] }}</p>
+                    @else
+                        <p class="mt-2 text-background/90 text-xs sm:text-base">{{ $subtitle }}</p>
                     @endif
 
                     @if (!empty($slide['cta']['url'] ?? null) && !empty($slide['cta']['label'] ?? null))
@@ -67,7 +76,6 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
             </div>
         </div>
     @endif
-
 
     <button wire:click="prev"
         class="grid absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full

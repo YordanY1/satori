@@ -19,14 +19,15 @@
                     : asset('storage/authors/default.jpg');
             @endphp
 
-            <article class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition text-center" itemscope
-                itemtype="https://schema.org/Person">
+            <article
+                class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition text-center flex flex-col min-h-[280px]"
+                itemscope itemtype="https://schema.org/Person">
                 <a href="{{ route('author.show', $a->slug) }}"
                     aria-label="{{ __('authors.aria.view', ['name' => $a->name]) }}">
                     <img src="{{ $photo }}" alt="{{ __('authors.alt.photo', ['name' => $a->name]) }}"
-                        class="w-full h-40 object-cover rounded-xl mb-3" loading="lazy" itemprop="image">
+                        class="w-full h-90 object-cover rounded-xl mb-3" loading="lazy" itemprop="image">
                 </a>
-                <h2 class="font-semibold text-sm sm:text-base" itemprop="name">
+                <h2 class="font-semibold text-sm sm:text-base mt-auto" itemprop="name">
                     <a href="{{ route('author.show', $a->slug) }}" class="hover:text-accent transition">
                         {{ $a->name }}
                     </a>

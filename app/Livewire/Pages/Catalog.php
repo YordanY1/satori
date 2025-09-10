@@ -26,6 +26,7 @@ class Catalog extends Component
 
     public $authorOptions = [];
     public $genreOptions  = [];
+    public array $seo = [];
 
     protected $queryString = [
         'filters',
@@ -37,6 +38,20 @@ class Catalog extends Component
     {
         $this->authorOptions = Author::orderBy('name')->get(['id', 'name']);
         $this->genreOptions  = Genre::orderBy('name')->get(['id', 'name', 'slug']);
+
+        $this->seo = [
+            'title' => 'Каталог — Сатори Ко',
+            'description' => 'Разгледай пълния каталог на Сатори Ко. Книги по жанрове, автори и формати. Литература, духовност, философия и още.',
+            'keywords' => 'сатори, каталог, книги, автори, жанрове, литература',
+            'og:image' => asset('images/og/catalog.jpg'),
+            'schema' => [
+                "@context" => "https://schema.org",
+                "@type" => "CollectionPage",
+                "name" => "Каталог — Сатори Ко",
+                "description" => "Всички книги от издателство Сатори Ко, подредени по жанрове, автори и формати.",
+                "url" => url()->current(),
+            ],
+        ];
     }
 
     public function updatedFilters(): void
@@ -56,12 +71,12 @@ class Catalog extends Component
             ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id', 'price_eur']);
 
         if (!empty($this->filters['author'])) {
-            $q->where('author_id', (int)$this->filters['author']);
+            $q->where('author_id', (int) $this->filters['author']);
         }
 
         if (!empty($this->filters['genre'])) {
             $q->whereHas('genres', function ($g) {
-                $g->where('genres.id', (int)$this->filters['genre']);
+                $g->where('genres.id', (int) $this->filters['genre']);
             });
         }
 
@@ -97,8 +112,8 @@ class Catalog extends Component
             return [
                 'id'        => $b->id,
                 'title'     => $b->title,
-                'price'     => (float)$b->price,
-                'price_eur' => (float)$b->price_eur,
+                'price'     => (float) $b->price,
+                'price_eur' => (float) $b->price_eur,
                 'slug'      => $b->slug,
                 'cover'     => $cover,
             ];
@@ -110,7 +125,7 @@ class Catalog extends Component
             'authorOptions'  => $this->authorOptions,
             'genreOptions'   => $this->genreOptions,
         ])->layout('layouts.app', [
-            'title' => 'Каталог — Сатори Ко',
+            'seo' => $this->seo,
         ]);
     }
 }

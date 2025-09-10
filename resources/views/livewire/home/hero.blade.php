@@ -24,8 +24,7 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
         <div wire:key="slide-{{ $active }}" class="contents">
             <figure class="absolute inset-0 w-full h-full">
                 <img src="{{ $slide['image_url'] ?? asset('storage/images/hero-1.jpg') }}"
-                    alt="{{ $slide['alt'] ?? __('slider.slide_fallback') }}" loading="lazy"
-                    class="w-full h-full object-cover">
+                    alt="Книга {{ $slide['title'] }} - Сатори" loading="lazy" class="w-full h-full object-cover">
 
             </figure>
 

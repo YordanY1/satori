@@ -13,6 +13,7 @@ class Blog extends Component
 
     public string $q = '';
     public string $sort = 'new';
+    public array $seo = [];
 
     protected $queryString = [
         'q'    => ['except' => ''],
@@ -20,10 +21,33 @@ class Blog extends Component
         'page' => ['except' => 1],
     ];
 
+    public function mount(): void
+    {
+        $this->seo = [
+            'title' => 'Блог — Сатори Ко',
+            'description' => 'Чети последните статии, новини и вдъхновения от екипа на Сатори Ко. Литература, култура и духовност.',
+            'keywords' => 'сатори, блог, статии, книги, литература, култура',
+            'og:image' => asset('images/og/blog.jpg'),
+            'schema' => [
+                "@context" => "https://schema.org",
+                "@type" => "Blog",
+                "name" => "Блог — Сатори Ко",
+                "description" => "Статии и новини от Сатори Ко.",
+                "url" => url()->current(),
+                "publisher" => [
+                    "@type" => "Organization",
+                    "name" => "Сатори Ко",
+                    "logo" => asset('images/logo.png'),
+                ]
+            ],
+        ];
+    }
+
     public function updatedQ(): void
     {
         $this->resetPage();
     }
+
     public function updatedSort(): void
     {
         $this->resetPage();
@@ -57,7 +81,6 @@ class Blog extends Component
 
         $paginator = $q->paginate(12)->withQueryString();
 
-
         $posts = $paginator->through(function (Post $p) {
             $cover = $p->cover
                 ? (Str::startsWith($p->cover, ['http://', 'https://']) ? $p->cover : asset($p->cover))
@@ -74,10 +97,10 @@ class Blog extends Component
         });
 
         return view('livewire.pages.blog', [
-            'posts'      => $posts,
-            'paginator'  => $paginator,
+            'posts'     => $posts,
+            'paginator' => $paginator,
         ])->layout('layouts.app', [
-            'title' => 'Блог — Сатори Ко',
+            'seo' => $this->seo,
         ]);
     }
 }

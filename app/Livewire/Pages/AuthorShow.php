@@ -13,6 +13,7 @@ class AuthorShow extends Component
 
     public string $slug;
     public array $author = [];
+    public array $seo = [];
 
     public function mount(string $slug): void
     {
@@ -68,6 +69,25 @@ class AuthorShow extends Component
             'interviews' => $interviews,
             'books'      => $books,
         ];
+
+        $this->seo = [
+            'title' => $a->name . ' — Автор — Сатори Ко',
+            'description' => Str::limit(strip_tags($a->bio ?? 'Открий книги и интервюта от автора ' . $a->name), 160),
+            'keywords' => $a->name . ', книги, автор, писател, Сатори',
+            'og:image' => $photo,
+            'schema' => [
+                "@context" => "https://schema.org",
+                "@type" => "Person",
+                "name" => $a->name,
+                "image" => $photo,
+                "description" => Str::limit(strip_tags($a->bio ?? ''), 200),
+                "url" => url()->current(),
+                "worksFor" => [
+                    "@type" => "Organization",
+                    "name" => "Сатори Ко"
+                ],
+            ],
+        ];
     }
 
     public function render()
@@ -75,7 +95,7 @@ class AuthorShow extends Component
         return view('livewire.pages.author-show', [
             'author' => $this->author,
         ])->layout('layouts.app', [
-            'title' => $this->author['name'] . ' — Автор — Сатори Ко',
+            'seo' => $this->seo,
         ]);
     }
 }

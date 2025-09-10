@@ -13,6 +13,7 @@ class BookShow extends Component
 
     public string $slug;
     public array $book = [];
+    public array $seo = [];
 
     protected $listeners = ['review:created' => 'reloadReviews'];
 
@@ -67,8 +68,40 @@ class BookShow extends Component
             'rating_count' => $ratingCnt,
             'reviews'      => $reviews,
         ];
-    }
 
+        $desc = Str::limit(strip_tags($this->book['description']), 160) ?: 'Книга от ' . $this->book['author']['name'];
+
+        $this->seo = [
+            'title' => $this->book['title'] . ' — Сатори Ко',
+            'description' => $desc,
+            'keywords' => $this->book['title'] . ', ' . $this->book['author']['name'] . ', книга, Сатори',
+            'og:image' => $cover,
+            'schema' => [
+                "@context" => "https://schema.org",
+                "@type" => "Book",
+                "name" => $this->book['title'],
+                "author" => [
+                    "@type" => "Person",
+                    "name" => $this->book['author']['name'],
+                    "url" => route('author.show', $this->book['author']['slug']),
+                ],
+                "image" => $cover,
+                "description" => $desc,
+                "offers" => [
+                    "@type" => "Offer",
+                    "price" => $this->book['price'],
+                    "priceCurrency" => "BGN",
+                    "availability" => "http://schema.org/InStock",
+                    "url" => url()->current(),
+                ],
+                "aggregateRating" => [
+                    "@type" => "AggregateRating",
+                    "ratingValue" => $ratingAvg,
+                    "reviewCount" => $ratingCnt,
+                ],
+            ],
+        ];
+    }
 
     public function reloadReviews(): void
     {
@@ -94,7 +127,7 @@ class BookShow extends Component
         return view('livewire.pages.book-show', [
             'book' => $this->book,
         ])->layout('layouts.app', [
-            'title' => $this->book['title'] . ' — Сатори Ко',
+            'seo' => $this->seo,
         ]);
     }
 }

@@ -9,7 +9,6 @@ use App\Rules\RecaptchaV2;
 use App\Models\Contact as ContactModel;
 use App\Mail\ContactMessage;
 
-
 class Contact extends Component
 {
     public $name;
@@ -19,6 +18,8 @@ class Contact extends Component
     // reCAPTCHA & honeypot
     public $recaptcha = '';
     public $website = '';
+
+    public array $seo = [];
 
     protected function rules()
     {
@@ -31,16 +32,50 @@ class Contact extends Component
         ];
     }
 
+    public function mount(): void
+    {
+        $this->seo = [
+            'title' => 'Контакти — Сатори Ко',
+            'description' => 'Свържи се със Сатори Ко. Намери нашите контакти: имейл, телефон, адрес и форма за запитвания.',
+            'keywords' => 'сатори, контакти, имейл, телефон, адрес, връзка',
+            'og:image' => asset('images/og/contact.jpg'),
+            'schema' => [
+                "@context" => "https://schema.org",
+                "@type" => "ContactPage",
+                "name" => "Контакти — Сатори Ко",
+                "description" => "Официална страница за връзка със Сатори Ко.",
+                "url" => url()->current(),
+                "publisher" => [
+                    "@type" => "Organization",
+                    "name" => "Сатори Ко",
+                    "logo" => [
+                        "@type" => "ImageObject",
+                        "url" => asset('images/logo.png'),
+                    ],
+                    "contactPoint" => [
+                        "@type" => "ContactPoint",
+                        "contactType" => "Customer Support",
+                        "telephone" => "+359 888 123 456",
+                        "email" => "info@satori-ko.bg",
+                        "areaServed" => "BG",
+                        "availableLanguage" => ["Bulgarian", "English"]
+                    ]
+                ],
+            ],
+        ];
+    }
+
     public function submit()
     {
-
         $key = 'contact:' . request()->ip();
         RateLimiter::attempt($key, $perMinute = 3, function () {}, $decaySeconds = 60);
+
         if (RateLimiter::tooManyAttempts($key, $perMinute)) {
             $seconds = RateLimiter::availableIn($key);
             $this->addError('name', __('contact.rate_limit', ['sec' => $seconds]));
             return;
         }
+
         $validated = $this->validate();
 
         $contact = ContactModel::create([
@@ -48,7 +83,6 @@ class Contact extends Component
             'email'   => $this->email,
             'message' => $this->message,
         ]);
-
 
         Mail::to('info@satori-ko.bg')->send(new ContactMessage($contact));
 
@@ -62,7 +96,7 @@ class Contact extends Component
         return view('livewire.pages.contact', [
             'recaptchaSiteKey' => config('services.recaptcha.site_key'),
         ])->layout('layouts.app', [
-            'title' => __('contact.title'),
+            'seo' => $this->seo,
         ]);
     }
 }

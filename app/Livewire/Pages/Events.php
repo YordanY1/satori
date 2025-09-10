@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 class Events extends Component
 {
     public array $events = [];
+    public array $seo = [];
 
     public function mount(): void
     {
@@ -47,6 +48,20 @@ class Events extends Component
                 ];
             })
             ->toArray();
+
+        $this->seo = [
+            'title' => 'Събития — Сатори Ко',
+            'description' => 'Разгледай всички събития, организирани от Сатори Ко. Лекции, уъркшопи, курсове и онлайн срещи.',
+            'keywords' => 'сатори, събития, лекции, курсове, уъркшопи',
+            'og:image' => asset('images/og/events.jpg'),
+            'schema' => [
+                "@context" => "https://schema.org",
+                "@type" => "CollectionPage",
+                "name" => "Събития — Сатори Ко",
+                "description" => "Предстоящи и минали събития, организирани от Сатори Ко.",
+                "url" => url()->current(),
+            ],
+        ];
     }
 
     public function render()
@@ -54,7 +69,7 @@ class Events extends Component
         return view('livewire.pages.events', [
             'events' => $this->events,
         ])->layout('layouts.app', [
-            'title' => 'Събития — Сатори Ко',
+            'seo' => $this->seo,
         ]);
     }
 }

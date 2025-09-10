@@ -29,12 +29,23 @@
 
     {{-- Structured Data (Schema.org JSON-LD) --}}
     @if (!empty($seo['schema']))
-        <script type="application/ld+json">{!! json_encode($seo['schema'], JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) !!}</script>
+        <script type="application/ld+json">
+            {!! json_encode($seo['schema'], JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT) !!}
+        </script>
     @endif
+
+    {{-- Favicons --}}
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
+
 
 <body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
 

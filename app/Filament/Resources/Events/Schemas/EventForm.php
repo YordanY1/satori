@@ -6,7 +6,9 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class EventForm
 {
@@ -15,26 +17,60 @@ class EventForm
         return $schema
             ->components([
                 TextInput::make('title')
-                    ->required(),
+                    ->label('Заглавие')
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('slug', Str::slug($state));
+                    }),
+
                 TextInput::make('slug')
-                    ->required(),
+                    ->label('Slug')
+                    ->disabled()
+                    ->dehydrated(true)
+                    ->required()
+                    ->unique(ignoreRecord: true),
+
                 DateTimePicker::make('date')
-                    ->required(),
+                    ->label('Дата и час')
+                    ->required()
+                    ->seconds(false)
+                    ->native(false),
+
                 TextInput::make('location')
-                    ->default(null),
+                    ->label('Място')
+                    ->nullable(),
+
                 Textarea::make('program')
-                    ->default(null)
-                    ->columnSpanFull(),
+                    ->label('Програма')
+                    ->columnSpanFull()
+                    ->nullable(),
+
                 Toggle::make('is_paid')
-                    ->required(),
+                    ->label('Платено събитие')
+                    ->default(false),
+
                 TextInput::make('payment_link')
-                    ->default(null),
+                    ->label('Линк за плащане')
+                    ->nullable(),
+
                 TextInput::make('registration_link')
-                    ->default(null),
+                    ->label('Линк за регистрация')
+                    ->nullable(),
+
                 TextInput::make('video_url')
-                    ->default(null),
-                TextInput::make('cover')
-                    ->default(null),
+                    ->label('Видео линк')
+                    ->nullable(),
+
+                FileUpload::make('cover')
+                    ->label('Корица')
+                    ->image()
+                    ->directory('events')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->imagePreviewHeight('200')
+                    ->downloadable()
+                    ->nullable(),
             ]);
     }
 }

@@ -4,7 +4,10 @@ namespace App\Filament\Resources\Posts\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class PostForm
 {
@@ -13,19 +16,61 @@ class PostForm
         return $schema
             ->components([
                 TextInput::make('title')
-                    ->required(),
+                    ->label('Заглавие')
+                    ->required()
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('slug', Str::slug($state));
+                    }),
+
                 TextInput::make('slug')
-                    ->required(),
+                    ->label('Slug')
+                    ->disabled()
+                    ->dehydrated(true)
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(255),
+
                 Textarea::make('excerpt')
-                    ->default(null)
+                    ->label('Кратко описание')
+                    ->rows(3)
+                    ->nullable()
                     ->columnSpanFull(),
-                Textarea::make('content')
+
+                RichEditor::make('content')
+                    ->label('Съдържание')
+                    ->toolbarButtons([
+                        'bold',
+                        'italic',
+                        'strike',
+                        'link',
+                        'bulletList',
+                        'orderedList',
+                        'blockquote',
+                        'codeBlock',
+                        'h2',
+                        'h3',
+                        'redo',
+                        'undo',
+                    ])
                     ->required()
                     ->columnSpanFull(),
-                TextInput::make('cover')
-                    ->default(null),
+
+                FileUpload::make('cover')
+                    ->label('Корица')
+                    ->image()
+                    ->directory('posts')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->imagePreviewHeight('200')
+                    ->downloadable()
+                    ->nullable(),
+
                 TextInput::make('author')
-                    ->required(),
+                    ->label('Автор')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 }

@@ -68,7 +68,7 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
         </div>
     @endif
 
-
+    {{-- Навигация --}}
     <button wire:click="prev"
         class="grid absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full
                bg-accent text-white border border-accent/20 shadow-lg hover:bg-accent/90 hover:border-accent

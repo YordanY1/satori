@@ -89,16 +89,18 @@ class Catalog extends Component
 
         $books = $booksPaginator->through(function (Book $b) {
             $cover = $b->cover
-                ? (Str::startsWith($b->cover, ['http://', 'https://']) ? $b->cover : asset($b->cover))
+                ? (Str::startsWith($b->cover, ['http://', 'https://'])
+                    ? $b->cover
+                    : asset('storage/' . ltrim($b->cover, '/')))
                 : asset('storage/images/default-book.jpg');
 
             return [
-                'id'    => $b->id,
-                'title' => $b->title,
-                'price' => (float)$b->price,
+                'id'        => $b->id,
+                'title'     => $b->title,
+                'price'     => (float)$b->price,
                 'price_eur' => (float)$b->price_eur,
-                'slug'  => $b->slug,
-                'cover' => $cover,
+                'slug'      => $b->slug,
+                'cover'     => $cover,
             ];
         });
 

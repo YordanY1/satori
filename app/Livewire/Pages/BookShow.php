@@ -28,23 +28,23 @@ class BookShow extends Component
             ])
             ->firstOrFail();
 
-
         $cover = $b->cover
-            ? (Str::startsWith($b->cover, ['http://', 'https://']) ? $b->cover : asset($b->cover))
+            ? (Str::startsWith($b->cover, ['http://', 'https://'])
+                ? $b->cover
+                : asset('storage/' . ltrim($b->cover, '/')))
             : asset('storage/images/default-book.jpg');
 
-
         $excerptUrl = $b->excerpt
-            ? (Str::startsWith($b->excerpt, ['http://', 'https://']) ? $b->excerpt : asset($b->excerpt))
+            ? (Str::startsWith($b->excerpt, ['http://', 'https://'])
+                ? $b->excerpt
+                : asset('storage/' . ltrim($b->excerpt, '/')))
             : null;
-
 
         $reviews = $b->reviews->map(fn($r) => [
             'user'    => $r->user_name ?: 'Анонимен',
             'rating'  => (int) $r->rating,
             'content' => (string) ($r->content ?? ''),
         ])->toArray();
-
 
         $ratingAvg = (float) number_format($b->reviews()->avg('rating') ?? 0, 1);
         $ratingCnt = (int) $b->reviews()->count();
@@ -68,6 +68,7 @@ class BookShow extends Component
             'reviews'      => $reviews,
         ];
     }
+
 
     public function reloadReviews(): void
     {

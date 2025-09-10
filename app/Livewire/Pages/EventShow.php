@@ -15,8 +15,10 @@ class EventShow extends Component
         $e = Event::where('slug', $slug)->firstOrFail();
 
         $cover = $e->cover
-            ? (Str::startsWith($e->cover, ['http://', 'https://']) ? $e->cover : asset($e->cover))
-            : null;
+            ? (Str::startsWith($e->cover, ['http://', 'https://'])
+                ? $e->cover
+                : asset('storage/' . ltrim($e->cover, '/')))
+            : asset('storage/images/default-event.jpg');
 
         $this->event = [
             'title'             => $e->title,

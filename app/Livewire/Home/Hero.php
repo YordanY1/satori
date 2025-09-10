@@ -23,14 +23,18 @@ class Hero extends Component
 
         $normUrl = function (?string $path, string $fallback) {
             if (!$path) return asset($fallback);
-            return Str::startsWith($path, ['http://', 'https://']) ? $path : asset($path);
+            return Str::startsWith($path, ['http://', 'https://'])
+                ? $path
+                : asset($path);
         };
 
         $this->slides = collect([
             $book ? [
                 'title'        => __('hero.book.title', ['title' => $book->title]),
                 'subtitle'     => $book->excerpt ?: __('hero.book.subtitle_fallback'),
-                'subtitle_url' => !empty($book->excerpt_url) ? $normUrl($book->excerpt_url, '') : null,
+                'subtitle_url' => !empty($book->excerpt_url)
+                    ? $normUrl($book->excerpt_url, '')
+                    : null,
                 'cta'          => [
                     'label' => __('hero.book.cta'),
                     'url'   => route('book.show', $book->slug),
@@ -63,6 +67,7 @@ class Hero extends Component
                 'alt'          => __('hero.post.alt', ['title' => $post->title]),
             ] : null,
         ])->filter()->values()->toArray();
+
 
         if (count($this->slides) === 0) {
             $this->slides = [[

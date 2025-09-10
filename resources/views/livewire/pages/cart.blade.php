@@ -34,7 +34,7 @@
                                 @if (!empty($item['price_eur']))
                                     <br>
                                     <span class="text-xs text-gray-500">
-                                         {{ number_format($item['price_eur'], 2) }} €
+                                        {{ number_format($item['price_eur'], 2) }} €
                                     </span>
                                 @endif
                             </div>
@@ -54,7 +54,7 @@
                                     @if (!empty($item['price_eur']))
                                         <br>
                                         <span class="text-xs text-gray-500">
-                                             {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
+                                            {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
                                         </span>
                                     @endif
                                 </div>
@@ -89,7 +89,7 @@
                         @php
                             $img = \Illuminate\Support\Str::startsWith($item['cover'], ['http://', 'https://'])
                                 ? $item['cover']
-                                : asset($item['cover']);
+                                : asset('storage/' . ltrim($item['cover'], '/'));
                         @endphp
                         <tr class="border-t hover:bg-gray-50 transition">
                             <td class="p-4">
@@ -107,7 +107,7 @@
                                 @if (!empty($item['price_eur']))
                                     <br>
                                     <span class="text-xs text-gray-500">
-                                         {{ number_format($item['price_eur'], 2) }} €
+                                        {{ number_format($item['price_eur'], 2) }} €
                                     </span>
                                 @endif
                             </td>
@@ -125,7 +125,7 @@
                                 @if (!empty($item['price_eur']))
                                     <br>
                                     <span class="text-xs text-gray-500">
-                                         {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
+                                        {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
                                     </span>
                                 @endif
                             </td>
@@ -141,6 +141,7 @@
             </table>
         </div>
 
+
         {{-- Totals / actions --}}
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <button wire:click="clear"
@@ -155,7 +156,7 @@
                     @if (!empty(\App\Support\Cart::totalEur()))
                         <br>
                         <span class="text-sm text-gray-500 font-medium">
-                             {{ number_format(\App\Support\Cart::totalEur(), 2) }} €
+                            {{ number_format(\App\Support\Cart::totalEur(), 2) }} €
                         </span>
                     @endif
                 </div>

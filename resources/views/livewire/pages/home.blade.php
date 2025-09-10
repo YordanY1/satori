@@ -1,5 +1,5 @@
 <section class="space-y-12">
-    {{-- <livewire:home.hero /> --}}
+    <livewire:home.hero />
 
     {{-- <livewire:home.recommended-books /> --}}
 

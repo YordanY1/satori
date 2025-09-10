@@ -9,6 +9,7 @@ use App\Livewire\Concerns\UsesCart;
 class BookOfMonth extends Component
 {
     use UsesCart;
+
     public array $book = [];
 
     public function mount(): void
@@ -19,13 +20,14 @@ class BookOfMonth extends Component
 
         if (!$bom) {
             $this->book = [
-                'id' => 0,
-                'title' => 'Скоро очаквайте!',
+                'id'          => 0,
+                'title'       => 'Скоро очаквайте!',
                 'description' => 'Новата „Книга на месеца“ е на път.',
-                'price' => 0.00,
-                'cover' => asset('storage/images/hero-1.jpg'),
+                'price'       => 0.00,
+                'price_eur'   => null,
+                'cover_url'   => asset('storage/images/hero-1.jpg'),
                 'excerpt_url' => null,
-                'slug' => null,
+                'slug'        => null,
             ];
             return;
         }
@@ -36,8 +38,14 @@ class BookOfMonth extends Component
             'description' => $bom->description ?? '',
             'price'       => (float) $bom->price,
             'price_eur'   => (float) $bom->price_eur,
-            'cover'       => str($bom->cover)->startsWith(['http://', 'https://']) ? $bom->cover : asset($bom->cover),
-            'excerpt_url' => $bom->excerpt ? (str($bom->excerpt)->startsWith(['http://', 'https://']) ? $bom->excerpt : asset($bom->excerpt)) : null,
+            'cover_url'   => str($bom->cover)->startsWith(['http://', 'https://'])
+                ? $bom->cover
+                : asset('storage/' . ltrim($bom->cover, '/')),
+            'excerpt_url' => $bom->excerpt
+                ? (str($bom->excerpt)->startsWith(['http://', 'https://'])
+                    ? $bom->excerpt
+                    : asset('storage/' . ltrim($bom->excerpt, '/')))
+                : null,
             'slug'        => $bom->slug,
         ];
     }

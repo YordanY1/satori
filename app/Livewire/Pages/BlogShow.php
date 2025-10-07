@@ -25,10 +25,19 @@ class BlogShow extends Component
             ?: Str::limit(strip_tags($this->post->content ?? ''), 160);
 
         $this->seo = [
-            'title' => $this->post->title . ' — Блог — Сатори Ко',
+            'title' => "{$this->post->title} — Блог — Сатори Ко",
             'description' => $excerpt,
-            'keywords' => $this->post->title . ', блог, статия, книги, Сатори',
+            'keywords' => "{$this->post->title}, блог, статия, книги, Сатори",
+            'canonical' => url()->current(),
+            'og:title' => "{$this->post->title} — Сатори Ко",
+            'og:description' => $excerpt,
+            'og:url' => url()->current(),
+            'og:type' => 'article',
             'og:image' => $cover,
+            'twitter:card' => 'summary_large_image',
+            'twitter:title' => $this->post->title,
+            'twitter:description' => $excerpt,
+            'twitter:image' => $cover,
             'schema' => [
                 "@context" => "https://schema.org",
                 "@type" => "BlogPosting",
@@ -37,13 +46,13 @@ class BlogShow extends Component
                 "image" => $cover,
                 "author" => [
                     "@type" => "Person",
-                    "name" => $this->post->author ?? "Сатори Ко",
+                    "name" => $this->post->author ?: "Екипът на Сатори Ко",
                 ],
                 "datePublished" => optional($this->post->created_at)->toIso8601String(),
                 "dateModified" => optional($this->post->updated_at)->toIso8601String(),
                 "mainEntityOfPage" => [
                     "@type" => "WebPage",
-                    "@id" => url()->current()
+                    "@id" => url()->current(),
                 ],
                 "publisher" => [
                     "@type" => "Organization",

@@ -99,6 +99,19 @@ class BookShow extends Component
                     "ratingValue" => $ratingAvg,
                     "reviewCount" => $ratingCnt,
                 ],
+                'canonical' => url()->current(),
+                'og:title' => $this->book['title'] . ' — Сатори Ко',
+                'og:description' => $desc,
+                'og:url' => url()->current(),
+                'og:type' => 'book',
+                'twitter:card' => 'summary_large_image',
+                'twitter:title' => $this->book['title'],
+                'twitter:description' => $desc,
+                'twitter:image' => $cover,
+                "availability" => $b->stock > 0
+                    ? "http://schema.org/InStock"
+                    : "http://schema.org/OutOfStock",
+                "isbn" => $b->isbn ?? null,
             ],
         ];
     }

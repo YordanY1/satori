@@ -1,34 +1,34 @@
 <?php
 
 return [
-    'title' => 'Book Catalog – Satori Co Online Bookstore',
+    'title' => 'Book Catalog | Satori Co Online Bookstore',
 
     'filters' => [
-        'author_label' => 'Filter by author',
-        'author_all'   => 'All authors',
-        'genre_label'  => 'Filter by genre',
-        'genre_all'    => 'All genres',
-        'format_label' => 'Filter by format',
-        'format_all'   => 'All formats',
-        'format_paper' => 'Paperback',
+        'author_label' => 'Filter by Author',
+        'author_all'   => 'All Authors',
+        'genre_label'  => 'Filter by Genre',
+        'genre_all'    => 'All Genres',
+        'format_label' => 'Filter by Format',
+        'format_all'   => 'All Formats',
+        'format_paper' => 'Paperback Edition',
         'format_ebook' => 'E-book',
     ],
 
     'sort' => [
-        'label'      => 'Sort',
-        'popular'    => 'By popularity',
-        'new'        => 'New',
+        'label'      => 'Sort by',
+        'popular'    => 'Popularity',
+        'new'        => 'New Arrivals',
         'price_asc'  => 'Price: Low to High',
         'price_desc' => 'Price: High to Low',
     ],
 
     'aria' => [
-        'view_details' => 'View details for :title',
-        'add_to_cart'  => 'Add :title to cart',
+        'view_details' => 'View more about “:title”',
+        'add_to_cart'  => 'Add “:title” to your cart',
     ],
     'alt' => [
-        'cover' => 'Book cover of :title',
+        'cover' => 'Book cover of “:title” from Satori Co',
     ],
-    'add_to_cart' => 'Add to cart',
+    'add_to_cart' => 'Add to Cart',
     'currency'    => 'BGN',
 ];

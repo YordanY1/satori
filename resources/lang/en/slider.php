@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'section_aria'   => 'Promotions slider',
-    'download_pdf'   => 'Download excerpt (PDF)',
-    'prev'           => 'Previous slide',
-    'next'           => 'Next slide',
-    'goto'           => 'Go to slide :n',
-    'slide_fallback' => 'Slide',
+    'section_aria'   => 'Featured books and promotions slider by Satori',
+    'download_pdf'   => 'Download free book excerpt (PDF)',
+    'prev'           => 'Previous featured slide',
+    'next'           => 'Next featured slide',
+    'goto'           => 'Go to slide :n in the Satori highlights',
+    'slide_fallback' => 'Featured slide',
 ];

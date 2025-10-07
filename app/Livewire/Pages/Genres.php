@@ -22,7 +22,16 @@ class Genres extends Component
                 "name" => "Жанрове и Теми — Сатори Ко",
                 "description" => "Категории и жанрове книги в платформата Сатори Ко.",
                 "url" => url()->current(),
-            ]
+            ],
+            'canonical' => url()->current(),
+            'og:title' => 'Жанрове и Теми — Сатори Ко',
+            'og:description' => 'Разгледай жанровете и темите в платформата Сатори Ко — литература, философия, духовност и още.',
+            'og:type' => 'website',
+            'twitter:card' => 'summary_large_image',
+            'twitter:title' => 'Жанрове и Теми — Сатори Ко',
+            'twitter:description' => 'Разгледай жанровете и темите в платформата Сатори Ко — литература, философия, духовност и още.',
+            'twitter:image' => asset('images/default-og.jpg'),
+
         ];
     }
 

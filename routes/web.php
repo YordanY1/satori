@@ -42,7 +42,14 @@ use App\Livewire\Pages\Terms;
 
 Route::get('/', Home::class)->name('home');
 
-Route::get('/catalog', Catalog::class)->name('catalog');
+Route::get('/catalog/{author?}/{genre?}/{format?}', Catalog::class)
+    ->name('catalog')
+    ->where([
+        'author' => '[A-Za-z0-9\-]+',
+        'genre' => '[A-Za-z0-9\-]+',
+        'format' => '(paper|ebook)?'
+    ]);
+
 Route::get('/authors', Authors::class)->name('authors');
 Route::get('/events', Events::class)->name('events');
 Route::get('/blog', Blog::class)->name('blog');

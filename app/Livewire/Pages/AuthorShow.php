@@ -87,6 +87,26 @@ class AuthorShow extends Component
                     "name" => "Сатори Ко"
                 ],
             ],
+            'canonical' => url()->current(),
+            'og:title' => $a->name . ' — Автор — Сатори Ко',
+            'og:description' => Str::limit(strip_tags($a->bio ?? 'Открий книги и интервюта от ' . $a->name), 160),
+            'og:url' => url()->current(),
+            'og:type' => 'profile',
+            'twitter:card' => 'summary_large_image',
+            'twitter:title' => $a->name . ' — Автор — Сатори Ко',
+            'twitter:description' => Str::limit(strip_tags($a->bio ?? ''), 160),
+            'twitter:image' => $photo,
+            "hasWritten" => collect($books)->map(fn($b) => [
+                "@type" => "Book",
+                "name" => $b['title'],
+                "url" => route('book.show', $b['slug']),
+            ])->toArray(),
+            "sameAs" => array_filter([
+                $a->website ?? null,
+                $a->facebook ?? null,
+                $a->instagram ?? null,
+                $a->youtube ?? null,
+            ]),
         ];
     }
 

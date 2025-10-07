@@ -26,7 +26,20 @@ class Authors extends Component
                 "name" => "Автори — Сатори Ко",
                 "description" => "Страница с всички автори в платформата Сатори Ко.",
                 "url" => url()->current(),
-            ]
+            ],
+            'canonical' => url()->current(),
+            'og:title' => 'Автори — Сатори Ко',
+            'og:description' => 'Разгледай всички автори и писатели в платформата Сатори Ко – книги, биографии и снимки.',
+            'og:url' => url()->current(),
+            'og:type' => 'website',
+            'twitter:card' => 'summary_large_image',
+            'twitter:title' => 'Автори — Сатори Ко',
+            'twitter:description' => 'Биографии, книги и профили на всички автори в Сатори Ко.',
+            'twitter:image' => asset('images/default-og.jpg'),
+            "about" => [
+                "@type" => "Thing",
+                "name" => "Автори и писатели от Сатори Ко"
+            ],
         ];
     }
 

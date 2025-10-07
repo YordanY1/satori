@@ -34,16 +34,41 @@ class Catalog extends Component
         'page' => ['except' => 1],
     ];
 
-    public function mount(): void
+    public function mount(?string $author = null, ?string $genre = null, ?string $format = null): void
+
     {
-        $this->authorOptions = Author::orderBy('name')->get(['id', 'name']);
+        $this->authorOptions = Author::orderBy('name')->get(['id', 'name', 'slug']);
         $this->genreOptions  = Genre::orderBy('name')->get(['id', 'name', 'slug']);
+
+        if ($author) {
+            $authorModel = Author::where('slug', $author)->first();
+
+            if ($authorModel) {
+                $this->seo['title'] = "Книги от {$authorModel->name} — Сатори Ко";
+                $this->seo['description'] = "Открий книги от {$authorModel->name} в каталога на Сатори Ко. Издания по духовност, философия и осъзнатост.";
+            }
+        }
+
+        if ($genre) {
+            $genreModel = Genre::where('slug', $genre)->first();
+            if ($genreModel) {
+                $this->seo['title'] = "Книги в жанр {$genreModel->name} — Сатори Ко";
+                $this->seo['description'] = "Разгледай книги в категория {$genreModel->name} от издателство Сатори Ко.";
+            }
+        }
+
+        if ($format) {
+            $this->filters['format'] = $format;
+        }
 
         $this->seo = [
             'title' => 'Каталог — Сатори Ко',
-            'description' => 'Разгледай пълния каталог на Сатори Ко. Книги по жанрове, автори и формати. Литература, духовност, философия и още.',
-            'keywords' => 'сатори, каталог, книги, автори, жанрове, литература',
-            'og:image' => asset('images/og/catalog.jpg'),
+            'description' => 'Разгледай пълния каталог на Сатори Ко. Книги по жанрове, автори и формати — литература, духовност, философия и вдъхновение.',
+            'keywords' => 'сатори, книги, каталог, автори, жанрове, литература, духовност',
+            'canonical' => url()->current(),
+            'og:title' => 'Каталог — Сатори Ко',
+            'og:description' => 'Пълен каталог на книги по жанрове и автори от издателство Сатори Ко.',
+            'og:type' => 'website',
             'schema' => [
                 "@context" => "https://schema.org",
                 "@type" => "CollectionPage",
@@ -54,10 +79,21 @@ class Catalog extends Component
         ];
     }
 
-    public function updatedFilters(): void
+    public function updatedFilters($value, $key): void
     {
         $this->resetPage();
+
+        $authorSlug = optional(Author::find($this->filters['author']))->slug;
+        $genreSlug  = optional(Genre::find($this->filters['genre']))->slug;
+        $format     = $this->filters['format'];
+
+        $this->redirectRoute('catalog', [
+            'author' => $authorSlug,
+            'genre'  => $genreSlug,
+            'format' => $format,
+        ]);
     }
+
 
     public function updatedSort(): void
     {

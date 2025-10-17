@@ -7,7 +7,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 
-
 class NewsletterExcerptForm
 {
     public static function configure(Schema $schema): Schema
@@ -15,7 +14,9 @@ class NewsletterExcerptForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Заглавие')
                     ->required(),
+
                 FileUpload::make('file_path')
                     ->label('PDF файл')
                     ->directory('newsletter/excerpts')
@@ -25,7 +26,9 @@ class NewsletterExcerptForm
                     ->required()
                     ->downloadable()
                     ->previewable(false),
+
                 Toggle::make('is_sent')
+                    ->label('Изпратен')
                     ->required(),
             ]);
     }

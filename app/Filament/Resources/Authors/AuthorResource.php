@@ -18,9 +18,13 @@ class AuthorResource extends Resource
 {
     protected static ?string $model = Author::class;
 
+    protected static ?string $modelLabel = 'автор';
+    protected static ?string $pluralModelLabel = 'автори';
+    protected static ?string $navigationLabel = 'Автори';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Author';
+    protected static ?string $recordTitleAttribute = 'Автори';
 
     public static function form(Schema $schema): Schema
     {

@@ -12,13 +12,22 @@ class NewsletterExcerptInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('title'),
-                TextEntry::make('file_path'),
+                TextEntry::make('title')
+                    ->label('Заглавие'),
+
+                TextEntry::make('file_path')
+                    ->label('Файл'),
+
                 IconEntry::make('is_sent')
+                    ->label('Изпратен')
                     ->boolean(),
+
                 TextEntry::make('created_at')
+                    ->label('Създаден на')
                     ->dateTime(),
+
                 TextEntry::make('updated_at')
+                    ->label('Обновен на')
                     ->dateTime(),
             ]);
     }

@@ -20,6 +20,11 @@ class MediaResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $recordTitleAttribute = 'title';
+    protected static ?string $modelLabel = 'Медия';
+    protected static ?string $pluralModelLabel = 'Медии';
+    protected static ?string $navigationLabel = 'Медии';
+
     public static function form(Schema $schema): Schema
     {
         return MediaForm::configure($schema);
@@ -32,9 +37,7 @@ class MediaResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

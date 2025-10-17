@@ -17,10 +17,11 @@ class GenreResource extends Resource
 {
     protected static ?string $model = Genre::class;
 
-    public static function getNavigationLabel(): string
-    {
-        return 'Жанрове';
-    }
+    protected static ?string $modelLabel = 'Жанр';
+    protected static ?string $pluralModelLabel = 'Жанрове';
+    protected static ?string $navigationLabel = 'Жанрове';
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationIcon(): \BackedEnum|string|null
     {
         return 'heroicon-o-rectangle-stack';
@@ -35,17 +36,27 @@ class GenreResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Име')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('slug')->label('Slug')->searchable(),
-                Tables\Columns\IconColumn::make('is_active')->boolean()->label('Активен'),
-                Tables\Columns\TextColumn::make('created_at')->dateTime('d.m.Y H:i')->label('Създаден')->sortable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Име')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('slug')
+                    ->label('Слаг (URL име)')
+                    ->searchable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('Активен')
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Създаден на')
+                    ->dateTime('d.m.Y H:i')
+                    ->sortable(),
             ])
             ->actions([
-                EditAction::make()->label('Редакция'),
-                DeleteAction::make()->label('Изтриване'),
+                EditAction::make()->label('Редактирай'),
+                DeleteAction::make()->label('Изтрий'),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->label('Изтриване избраните'),
+                DeleteBulkAction::make()->label('Изтрий избраните'),
             ]);
     }
 

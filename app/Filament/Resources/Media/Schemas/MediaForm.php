@@ -36,7 +36,8 @@ class MediaForm
                     'image'   => 'Изображение',
                     'link'    => 'Външен линк',
                 ])
-                ->required(),
+                ->required()
+                ->live(),
 
             TextInput::make('youtube_id')
                 ->label('YouTube ID')

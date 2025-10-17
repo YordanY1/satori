@@ -18,7 +18,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->email === 'satori@gmail.com';
+        return $this->email === 'yordan@abv.bg';
     }
 
     /** @use HasFactory<\Database\Factories\UserFactory> */

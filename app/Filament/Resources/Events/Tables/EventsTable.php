@@ -16,42 +16,51 @@ class EventsTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Заглавие')
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label('Слаг (URL име)')
                     ->searchable(),
                 TextColumn::make('date')
+                    ->label('Дата')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('location')
+                    ->label('Локация')
                     ->searchable(),
                 IconColumn::make('is_paid')
+                    ->label('Платено събитие')
                     ->boolean(),
                 TextColumn::make('payment_link')
+                    ->label('Линк за плащане')
                     ->searchable(),
                 TextColumn::make('registration_link')
+                    ->label('Линк за регистрация')
                     ->searchable(),
                 TextColumn::make('video_url')
+                    ->label('Видео линк')
                     ->searchable(),
                 TextColumn::make('cover')
+                    ->label('Корица')
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Създадено на')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Обновено на')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Редактирай'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('Изтрий избраните'),
                 ]),
             ]);
     }

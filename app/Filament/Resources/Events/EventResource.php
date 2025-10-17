@@ -20,7 +20,11 @@ class EventResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Event';
+    protected static ?string $recordTitleAttribute = 'title';
+
+    protected static ?string $modelLabel = 'Събитие';
+    protected static ?string $pluralModelLabel = 'Събития';
+    protected static ?string $navigationLabel = 'Събития';
 
     public static function form(Schema $schema): Schema
     {
@@ -34,9 +38,7 @@ class EventResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

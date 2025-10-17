@@ -15,8 +15,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Artisan;
-
 
 class NewsletterExcerptResource extends Resource
 {
@@ -24,7 +22,10 @@ class NewsletterExcerptResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Newsletter';
+    protected static ?string $recordTitleAttribute = 'title';
+    protected static ?string $modelLabel = 'Новинарски откъс';
+    protected static ?string $pluralModelLabel = 'Новинарски откъси';
+    protected static ?string $navigationLabel = 'Новинарски откъси';
 
     public static function form(Schema $schema): Schema
     {
@@ -43,18 +44,16 @@ class NewsletterExcerptResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListNewsletterExcerpts::route('/'),
+            'index'  => ListNewsletterExcerpts::route('/'),
             'create' => CreateNewsletterExcerpt::route('/create'),
-            'view' => ViewNewsletterExcerpt::route('/{record}'),
-            'edit' => EditNewsletterExcerpt::route('/{record}/edit'),
+            'view'   => ViewNewsletterExcerpt::route('/{record}'),
+            'edit'   => EditNewsletterExcerpt::route('/{record}/edit'),
         ];
     }
 }

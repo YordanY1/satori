@@ -15,31 +15,40 @@ class PostsTable
         return $table
             ->columns([
                 TextColumn::make('title')
+                    ->label('Заглавие')
                     ->searchable(),
+
                 TextColumn::make('slug')
+                    ->label('Слаг (URL име)')
                     ->searchable(),
+
                 TextColumn::make('cover')
+                    ->label('Корица')
                     ->searchable(),
+
                 TextColumn::make('author')
+                    ->label('Автор')
                     ->searchable(),
+
                 TextColumn::make('created_at')
+                    ->label('Създадена на')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Обновена на')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Редактирай'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('Изтрий избраните'),
                 ]),
             ]);
     }

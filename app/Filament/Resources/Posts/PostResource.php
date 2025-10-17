@@ -20,7 +20,10 @@ class PostResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Post';
+    protected static ?string $recordTitleAttribute = 'title';
+    protected static ?string $modelLabel = 'Публикация';
+    protected static ?string $pluralModelLabel = 'Публикации';
+    protected static ?string $navigationLabel = 'Публикации';
 
     public static function form(Schema $schema): Schema
     {
@@ -34,17 +37,15 @@ class PostResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => ListPosts::route('/'),
+            'index'  => ListPosts::route('/'),
             'create' => CreatePost::route('/create'),
-            'edit' => EditPost::route('/{record}/edit'),
+            'edit'   => EditPost::route('/{record}/edit'),
         ];
     }
 }

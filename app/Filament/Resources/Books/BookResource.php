@@ -20,7 +20,11 @@ class BookResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Book';
+    protected static ?string $recordTitleAttribute = 'title';
+
+    protected static ?string $modelLabel = 'Книга';
+    protected static ?string $pluralModelLabel = 'Книги';
+    protected static ?string $navigationLabel = 'Книги';
 
     public static function form(Schema $schema): Schema
     {

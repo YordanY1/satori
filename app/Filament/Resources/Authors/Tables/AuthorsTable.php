@@ -15,16 +15,25 @@ class AuthorsTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Име')
                     ->searchable(),
+
                 TextColumn::make('slug')
+                    ->label('Слаг')
                     ->searchable(),
+
                 TextColumn::make('photo')
+                    ->label('Снимка')
                     ->searchable(),
+
                 TextColumn::make('created_at')
+                    ->label('Създаден на')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Обновен на')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -33,11 +42,11 @@ class AuthorsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->label('Редактирай'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->label('Изтрий избраните'),
                 ]),
             ]);
     }

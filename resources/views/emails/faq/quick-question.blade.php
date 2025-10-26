@@ -71,7 +71,7 @@
             <p><span class="label">Имейл:</span> {{ $email }}</p>
             <div class="box">{{ $message }}</div>
         </div>
-        <div class="footer">Автоматично съобщение от satori-ko.bg</div>
+        <div class="footer">Автоматично съобщение от izdatelstvo-satori.com</div>
     </div>
 </body>
 

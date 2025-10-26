@@ -2,13 +2,12 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class ResetPasswordMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
     public string $url;
 
@@ -20,7 +19,11 @@ class ResetPasswordMail extends Mailable
     public function build()
     {
         return $this->subject(__('auth.reset_password'))
+            ->from('support@izdatelstvo-satori.com', 'Издателство Сатори')
+            ->to(request('email'))
             ->view('emails.auth.reset-password')
-            ->with(['url' => $this->url]);
+            ->with([
+                'url' => $this->url,
+            ]);
     }
 }

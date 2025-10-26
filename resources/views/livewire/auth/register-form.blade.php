@@ -38,7 +38,9 @@
                 class="w-full mt-1 rounded-xl border px-3 py-2" />
         </div>
 
-        <button type="submit" class="w-full rounded-xl bg-black text-white py-2 font-semibold hover:bg-neutral-800">
+        <button type="submit" class="w-full rounded-xl bg-black text-white py-2 font-semibold hover:bg-neutral-800 cursor-pointer
+                               focus:outline-none focus:ring-2 focus:ring-accent/60
+                               disabled:opacity-60 disabled:cursor-not-allowed transition">
             {{ __('auth.register_button') }}
         </button>
     </form>

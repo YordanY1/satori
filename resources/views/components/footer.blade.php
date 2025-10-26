@@ -2,6 +2,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 text-sm">
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-8">
 
+            {{-- BRAND / ABOUT --}}
             <div>
                 <a href="{{ url('/') }}" class="flex items-center gap-3 mb-3 group"
                     aria-label="{{ __('footer.brand_aria') }}">
@@ -13,8 +14,20 @@
                 <p class="leading-relaxed text-neutral-700">
                     {{ __('footer.description') }}
                 </p>
+
+                {{-- SOCIALS --}}
+                <div class="flex gap-3 mt-4 text-2xl">
+                    <a href="https://www.facebook.com/VBelenski" target="_blank" rel="noopener" aria-label="Facebook"
+                        class="hover:text-accent transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                            <path
+                                d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12z" />
+                        </svg>
+                    </a>
+                </div>
             </div>
 
+            {{-- NAVIGATION --}}
             <div>
                 <p class="font-semibold mb-3 text-accent">{{ __('footer.navigation') }}</p>
                 <ul class="space-y-1">
@@ -42,6 +55,7 @@
                 </ul>
             </div>
 
+            {{-- NEWSLETTER --}}
             <div>
                 <p class="font-semibold mb-3 text-accent">{{ __('footer.newsletter') }}</p>
                 <p class="mb-3 text-neutral-700">{{ __('footer.newsletter_sub') }}</p>
@@ -49,17 +63,18 @@
             </div>
         </div>
 
+        {{-- BOTTOM LINE --}}
         <div
-            class="mt-8 pt-6 border-t border-neutral-200 text-xs text-neutral-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            class="mt-10 border-t border-neutral-200 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-neutral-500">
             <span>{{ __('footer.copyright', ['year' => date('Y')]) }}</span>
             <span>{{ __('footer.made_with') }}</span>
         </div>
 
-        <div class="flex justify-center gap-6">
-            <a wire:navigate href="{{ route('privacy') }}">Политика за поверителност</a>
-            <a wire:navigate href="{{ route('cookies') }}">Политика за бисквитки</a>
-            <a wire:navigate href="{{ route('terms') }}">Общи условия</a>
-            {{-- <button @click="$dispatch('cookie:open')" class="underline">Cookie настройки</button> --}}
+        {{-- LEGAL LINKS --}}
+        <div class="flex justify-center gap-6 mt-4 text-xs text-neutral-600">
+            <a wire:navigate href="{{ route('privacy') }}" class="hover:text-accent">{{ __('footer.privacy') }}</a>
+            <a wire:navigate href="{{ route('cookies') }}" class="hover:text-accent">{{ __('footer.cookies') }}</a>
+            <a wire:navigate href="{{ route('terms') }}" class="hover:text-accent">{{ __('footer.terms') }}</a>
         </div>
     </div>
 </footer>

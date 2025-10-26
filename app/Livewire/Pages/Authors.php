@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Pages;
 
-use Livewire\Component;
 use App\Models\Author;
+use Livewire\Component;
 
 class Authors extends Component
 {
     public $authors;
+
     public array $seo = [];
 
     public function mount(): void
@@ -16,29 +17,58 @@ class Authors extends Component
             ->get(['id', 'name', 'slug', 'photo']);
 
         $this->seo = [
-            'title' => 'Автори — Сатори Ко',
-            'description' => 'Разгледай всички автори в платформата Сатори Ко. Биографии, книги и снимки на любими писатели.',
-            'keywords' => 'сатори, автори, писатели, книги, български автори, международни автори',
-            'og:image' => asset('images/default-og.jpg'),
-            'schema' => [
-                "@context" => "https://schema.org",
-                "@type" => "CollectionPage",
-                "name" => "Автори — Сатори Ко",
-                "description" => "Страница с всички автори в платформата Сатори Ко.",
-                "url" => url()->current(),
-            ],
+            'title' => 'Автори — Издателство Сатори',
+            'description' => 'Разгледай всички автори от Издателство Сатори – техните биографии, книги и вдъхновяващи истории.',
+            'keywords' => 'издателство сатори, автори, писатели, книги, литература, български автори, международни автори',
             'canonical' => url()->current(),
-            'og:title' => 'Автори — Сатори Ко',
-            'og:description' => 'Разгледай всички автори и писатели в платформата Сатори Ко – книги, биографии и снимки.',
+            'og:title' => 'Автори — Издателство Сатори',
+            'og:description' => 'Всички автори и писатели, публикувани от Издателство Сатори. Биографии, книги и снимки.',
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',
-            'twitter:title' => 'Автори — Сатори Ко',
-            'twitter:description' => 'Биографии, книги и профили на всички автори в Сатори Ко.',
-            'twitter:image' => asset('images/default-og.jpg'),
-            "about" => [
-                "@type" => "Thing",
-                "name" => "Автори и писатели от Сатори Ко"
+            'twitter:title' => 'Автори — Издателство Сатори',
+            'twitter:description' => 'Открий биографии и произведения на авторите от Издателство Сатори.',
+            'twitter:image' => asset('images/logo.png'),
+
+            'schema' => [
+                '@context' => 'https://schema.org',
+                '@type' => 'CollectionPage',
+                'name' => 'Автори — Издателство Сатори',
+                'description' => 'Страница с всички автори, публикувани от Издателство Сатори.',
+                'url' => url()->current(),
+                'publisher' => [
+                    '@type' => 'Organization',
+                    '@id' => url('#organization'),
+                    'name' => 'Издателство Сатори',
+                    'alternateName' => 'Сатори Ко',
+                    'url' => url('/'),
+                    'logo' => asset('images/logo.png'),
+                    'sameAs' => [
+                        'https://www.facebook.com/VBelenski',
+                    ],
+                    'contactPoint' => [
+                        [
+                            '@type' => 'ContactPoint',
+                            'contactType' => 'Customer Support',
+                            'telephone' => '+359 87 849 0782',
+                            'email' => 'satorico@abv.bg',
+                            'areaServed' => 'BG',
+                            'availableLanguage' => ['Bulgarian', 'English'],
+                        ],
+                    ],
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => 'ж.к. Овча Купел 1, бл. 411, магазин 2',
+                        'addressLocality' => 'София',
+                        'postalCode' => '1632',
+                        'addressCountry' => 'BG',
+                    ],
+                ],
+                'about' => [
+                    '@type' => 'Thing',
+                    'name' => 'Автори и писатели от Издателство Сатори',
+                ],
             ],
         ];
     }

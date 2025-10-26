@@ -14,10 +14,10 @@
 
             <form x-data
                 @submit.prevent="
-        const token = grecaptcha.getResponse();
-        $wire.set('recaptcha', token);
-        $wire.call('submit');
-      "
+                    const token = grecaptcha.getResponse();
+                    $wire.set('recaptcha', token);
+                    $wire.call('submit');
+                "
                 class="space-y-5" novalidate>
 
                 {{-- Name --}}
@@ -83,10 +83,10 @@
                 {{-- Submit --}}
                 <button type="submit" wire:loading.attr="disabled"
                     class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl
-               bg-accent text-black font-semibold shadow-sm
-               hover:bg-accent/90 active:scale-[0.99]
-               focus:outline-none focus:ring-2 focus:ring-accent/60
-               disabled:opacity-60 disabled:cursor-not-allowed transition">
+                           bg-accent text-black font-semibold shadow-sm
+                           hover:bg-accent/90 active:scale-[0.99]
+                           focus:outline-none focus:ring-2 focus:ring-accent/60
+                           disabled:opacity-60 disabled:cursor-not-allowed transition cursor-pointer">
                     <span wire:loading.remove>{{ __('contact.send') }}</span>
                     <span wire:loading>{{ __('contact.sending') }}</span>
                     <span aria-hidden="true">📨</span>
@@ -100,56 +100,38 @@
 
             <p class="flex items-center gap-3">
                 <span aria-hidden="true">📧</span>
-                <a href="mailto:info@satori-ko.bg" class="text-accent hover:underline">
+                <a href="mailto:satorico@abv.bg" class="text-accent hover:underline">
                     {{ __('contact.email_link') }}
                 </a>
             </p>
 
             <p class="flex items-center gap-3">
                 <span aria-hidden="true">📞</span>
-                <a href="tel:+359888123456" class="text-accent hover:underline">
+                <a href="tel:+359878490782" class="text-accent hover:underline">
                     {{ __('contact.phone_link') }}
                 </a>
             </p>
 
             <p class="flex items-center gap-3">
                 <span aria-hidden="true">📍</span>
-                <span>{{ __('contact.address') }}</span>
+                <span>ж.к. Овча Купел 1, бл. 411, магазин 2, София, България</span>
             </p>
+
             <div class="pt-2">
                 <h3 class="text-sm font-medium text-neutral-600 mb-2">{{ __('contact.socials') }}</h3>
                 <div class="flex gap-3 text-2xl">
 
                     <!-- Facebook -->
-                    <a href="https://facebook.com" target="_blank" rel="noopener" class="hover:text-accent"
-                        aria-label="Facebook">
+                    <a href="https://www.facebook.com/VBelenski" target="_blank" rel="noopener"
+                        class="hover:text-accent" aria-label="Facebook">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                             <path
                                 d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0 0 22 12z" />
                         </svg>
                     </a>
 
-                    <!-- Instagram -->
-                    <a href="https://instagram.com" target="_blank" rel="noopener" class="hover:text-accent"
-                        aria-label="Instagram">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-                            <path
-                                d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm4.8-2.7a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z" />
-                        </svg>
-                    </a>
-
-                    <!-- YouTube -->
-                    <a href="https://youtube.com" target="_blank" rel="noopener" class="hover:text-accent"
-                        aria-label="YouTube">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-                            <path
-                                d="M21.8 8s-.2-1.5-.8-2.2c-.7-.8-1.5-.8-1.9-.9C16.4 4.7 12 4.7 12 4.7h0s-4.4 0-7.1.2c-.4 0-1.2.1-1.9.9C2.4 6.5 2.2 8 2.2 8S2 9.6 2 11.1v1.8c0 1.5.2 3.1.2 3.1s.2 1.5.8 2.2c.7.8 1.7.8 2.2.9 1.6.2 6.8.2 6.8.2s4.4 0 7.1-.2c.4 0 1.2-.1 1.9-.9.6-.7.8-2.2.8-2.2s.2-1.6.2-3.1v-1.8c0-1.5-.2-3.1-.2-3.1zM10 14.6V9.4l5.2 2.6L10 14.6z" />
-                        </svg>
-                    </a>
-
                 </div>
             </div>
-
         </div>
     </div>
 </section>

@@ -5,7 +5,7 @@
 
     <div class="mt-4 text-sm text-neutral-600 flex justify-between items-center">
         <a href="{{ route('password.request') }}" class="text-sky-600 hover:underline">
-            {{ __('auth.forgot_password_link') }}
+            {{ __('auth.forgot_password') }}
         </a>
     </div>
 </section>

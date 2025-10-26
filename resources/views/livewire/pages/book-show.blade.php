@@ -27,7 +27,7 @@
             <div class="flex items-center gap-6">
                 <p class="text-2xl font-bold text-accent" itemprop="offers" itemscope
                     itemtype="https://schema.org/AggregateOffer">
-            
+
                     <span itemscope itemtype="https://schema.org/Offer">
                         <meta itemprop="priceCurrency" content="BGN">
                         <span itemprop="price">{{ number_format($book['price'], 2) }}</span>
@@ -62,7 +62,7 @@
                 @if (!empty($book['excerpt_url']))
                     <button x-data @click="$dispatch('open-excerpt')"
                         class="rounded-xl bg-white text-black border border-black font-medium px-5 py-3
-                                   hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition">
+                                   hover:bg-neutral-100 focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer">
                         {{ __('book.read_excerpt') }}
                     </button>
                 @endif

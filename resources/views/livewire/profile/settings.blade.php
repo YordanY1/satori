@@ -36,7 +36,7 @@
                 <div class="pt-2">
                     <button type="submit"
                         class="inline-flex items-center justify-center rounded-xl bg-black px-5 py-2.5 text-white font-semibold shadow
-                               hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60"
+                               hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60 cursor-pointer"
                         wire:loading.attr="disabled" wire:target="updateProfile">
                         <span wire:loading.remove wire:target="updateProfile">{{ __('settings.profile.save') }}</span>
                         <span wire:loading wire:target="updateProfile">{{ __('settings.profile.saving') }}</span>
@@ -81,7 +81,7 @@
                 <div class="pt-2">
                     <button type="submit"
                         class="inline-flex items-center justify-center rounded-xl bg-black px-5 py-2.5 text-white font-semibold shadow
-                               hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60"
+                               hover:bg-black/90 active:translate-y-[1px] disabled:opacity-60 cursor-pointer"
                         wire:loading.attr="disabled" wire:target="updatePassword">
                         <span wire:loading.remove
                             wire:target="updatePassword">{{ __('settings.password.change') }}</span>

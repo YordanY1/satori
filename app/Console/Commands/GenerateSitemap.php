@@ -2,111 +2,114 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Book;
 use App\Models\Author;
+use App\Models\Book;
+use App\Models\Event;
 use App\Models\Genre;
 use App\Models\Post;
-use App\Models\Event;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class GenerateSitemap extends Command
 {
     protected $signature = 'sitemap:generate';
-    protected $description = 'Генерира sitemap.xml за сайта';
+
+    protected $description = 'Генерира sitemap.xml и известява търсачките';
 
     public function handle(): void
     {
+        $this->info('🔄 Генериране на sitemap файловете...');
+
         $sitemaps = [];
 
-        $static = [
-            ['loc' => url('/')],
-            ['loc' => url('/catalog')],
-            ['loc' => url('/authors')],
-            ['loc' => url('/genres')],
-            ['loc' => url('/events')],
-            ['loc' => url('/blog')],
-            ['loc' => url('/about')],
-            ['loc' => url('/contact')],
-            ['loc' => url('/privacy-policy')],
-            ['loc' => url('/cookie-policy')],
-            ['loc' => url('/terms')],
-        ];
+        $static = collect([
+            '/',
+            '/catalog',
+            '/authors',
+            '/genres',
+            '/events',
+            '/blog',
+            '/about',
+            '/contact',
+            '/privacy-policy',
+            '/cookie-policy',
+            '/terms',
+        ])->map(fn ($path) => ['loc' => url($path)]);
+
         $this->writeSitemap('sitemap-static.xml', $static);
         $sitemaps[] = url('storage/sitemap-static.xml');
 
-        $books = [];
-        foreach (Book::select('slug', 'updated_at')->get() as $b) {
-            $books[] = [
-                'loc' => route('book.show', $b->slug),
-                'lastmod' => optional($b->updated_at)->toAtomString(),
-            ];
-        }
-        $this->writeSitemap('sitemap-books.xml', $books);
-        $sitemaps[] = url('storage/sitemap-books.xml');
+        $this->generateSection(Book::class, 'book.show', 'sitemap-books.xml', $sitemaps);
+        $this->generateSection(Author::class, 'author.show', 'sitemap-authors.xml', $sitemaps);
+        $this->generateSection(Genre::class, 'genre.show', 'sitemap-genres.xml', $sitemaps);
+        $this->generateSection(Post::class, 'blog.show', 'sitemap-posts.xml', $sitemaps);
+        $this->generateSection(Event::class, 'event.show', 'sitemap-events.xml', $sitemaps);
 
-        $authors = [];
-        foreach (Author::select('slug', 'updated_at')->get() as $a) {
-            $authors[] = [
-                'loc' => route('author.show', $a->slug),
-                'lastmod' => optional($a->updated_at)->toAtomString(),
-            ];
-        }
-        $this->writeSitemap('sitemap-authors.xml', $authors);
-        $sitemaps[] = url('storage/sitemap-authors.xml');
-
-        $genres = [];
-        foreach (Genre::select('slug', 'updated_at')->get() as $g) {
-            $genres[] = [
-                'loc' => route('genre.show', $g->slug),
-                'lastmod' => optional($g->updated_at)->toAtomString(),
-            ];
-        }
-        $this->writeSitemap('sitemap-genres.xml', $genres);
-        $sitemaps[] = url('storage/sitemap-genres.xml');
-
-        $posts = [];
-        foreach (Post::select('slug', 'updated_at')->get() as $p) {
-            $posts[] = [
-                'loc' => route('blog.show', $p->slug),
-                'lastmod' => optional($p->updated_at)->toAtomString(),
-            ];
-        }
-        $this->writeSitemap('sitemap-posts.xml', $posts);
-        $sitemaps[] = url('storage/sitemap-posts.xml');
-
-        $events = [];
-        foreach (Event::select('slug', 'updated_at')->get() as $e) {
-            $events[] = [
-                'loc' => route('event.show', $e->slug),
-                'lastmod' => optional($e->updated_at)->toAtomString(),
-            ];
-        }
-        $this->writeSitemap('sitemap-events.xml', $events);
-        $sitemaps[] = url('storage/sitemap-events.xml');
-
-        $index = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        $index .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+        $index = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
+        $index .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
         foreach ($sitemaps as $s) {
-            $index .= "  <sitemap><loc>{$s}</loc></sitemap>" . PHP_EOL;
+            $index .= "  <sitemap><loc>{$s}</loc></sitemap>".PHP_EOL;
         }
         $index .= '</sitemapindex>';
         Storage::disk('public')->put('sitemap.xml', $index);
+
+        $this->info('✅ Sitemap файловете са обновени.');
+
+        $this->pingSearchEngines(url('storage/sitemap.xml'));
     }
 
-    private function writeSitemap(string $filename, array $urls): void
+    private function generateSection(string $model, string $route, string $filename, array &$sitemaps): void
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
-        foreach ($urls as $url) {
-            $xml .= "  <url>" . PHP_EOL;
-            $xml .= "    <loc>" . e($url['loc']) . "</loc>" . PHP_EOL;
-            if (!empty($url['lastmod'])) {
-                $xml .= "    <lastmod>{$url['lastmod']}</lastmod>" . PHP_EOL;
-            }
-            $xml .= "  </url>" . PHP_EOL;
+        $urls = [];
+        foreach ($model::select('slug', 'updated_at')->get() as $item) {
+            $urls[] = [
+                'loc' => route($route, $item->slug),
+                'lastmod' => optional($item->updated_at)->toAtomString(),
+            ];
         }
+        $this->writeSitemap($filename, $urls);
+        $sitemaps[] = url('storage/'.$filename);
+    }
+
+    private function writeSitemap(string $filename, iterable $urls): void
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
+
+        foreach ($urls as $url) {
+            $xml .= '  <url>'.PHP_EOL;
+            $xml .= '    <loc>'.e($url['loc']).'</loc>'.PHP_EOL;
+            if (! empty($url['lastmod'])) {
+                $xml .= "    <lastmod>{$url['lastmod']}</lastmod>".PHP_EOL;
+            }
+            $xml .= '  </url>'.PHP_EOL;
+        }
+
         $xml .= '</urlset>';
         Storage::disk('public')->put($filename, $xml);
+    }
+
+    private function pingSearchEngines(string $sitemapUrl): void
+    {
+        $this->info('📡 Известяване на търсачките...');
+
+        $engines = [
+            'Google' => "https://www.google.com/ping?sitemap={$sitemapUrl}",
+            'Bing' => "https://www.bing.com/ping?sitemap={$sitemapUrl}",
+        ];
+
+        foreach ($engines as $name => $url) {
+            try {
+                $response = Http::timeout(5)->get($url);
+                if ($response->successful()) {
+                    $this->info("✅ {$name} беше известен успешно.");
+                } else {
+                    $this->warn("⚠️ {$name} върна грешка ({$response->status()}).");
+                }
+            } catch (\Throwable $e) {
+                $this->error("❌ Грешка при пинг към {$name}: ".$e->getMessage());
+            }
+        }
     }
 }

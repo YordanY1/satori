@@ -42,10 +42,10 @@
                             <div class="mt-3 flex items-center justify-between">
                                 <div class="inline-flex items-center gap-2 border rounded-lg px-2 py-1">
                                     <button wire:click="decrement({{ $id }})"
-                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px]">−</button>
+                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px] cursor-pointer">−</button>
                                     <span class="min-w-[2ch] text-center font-medium">{{ $item['quantity'] }}</span>
                                     <button wire:click="increment({{ $id }})"
-                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px]">+</button>
+                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px] cursor-pointer">+</button>
                                 </div>
 
                                 <div class="font-semibold text-right">
@@ -62,7 +62,7 @@
 
                             <div class="mt-3 text-right">
                                 <button wire:click="remove({{ $id }})"
-                                    class="px-3 py-1 rounded-lg border border-red-300 text-red-600 active:translate-y-[1px]">
+                                    class="px-3 py-1 rounded-lg border border-red-300 text-red-600 active:translate-y-[1px] cursor-pointer cursor-pointer">
                                     {{ __('cart.remove') }}
                                 </button>
                             </div>
@@ -114,10 +114,10 @@
                             <td class="p-4">
                                 <div class="inline-flex items-center gap-2 border rounded-lg px-2 py-1">
                                     <button wire:click="decrement({{ $id }})"
-                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px]">−</button>
+                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px] cursor-pointer">−</button>
                                     <span class="min-w-[2ch] text-center font-medium">{{ $item['quantity'] }}</span>
                                     <button wire:click="increment({{ $id }})"
-                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px]">+</button>
+                                        class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px] cursor-pointer">+</button>
                                 </div>
                             </td>
                             <td class="p-4 font-semibold text-accent whitespace-nowrap">
@@ -131,7 +131,7 @@
                             </td>
                             <td class="p-4 text-right">
                                 <button wire:click="remove({{ $id }})"
-                                    class="px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 active:translate-y-[1px]">
+                                    class="px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 active:translate-y-[1px] cursor-pointer">
                                     ✕
                                 </button>
                             </td>
@@ -145,7 +145,7 @@
         {{-- Totals / actions --}}
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <button wire:click="clear"
-                class="px-5 py-2.5 rounded-xl border border-gray-400 text-gray-700 hover:bg-gray-100 active:translate-y-[1px]">
+                class="px-5 py-2.5 rounded-xl border border-gray-400 text-gray-700 hover:bg-gray-100 active:translate-y-[1px] cursor-pointer">
                 {{ __('cart.clear') }}
             </button>
 

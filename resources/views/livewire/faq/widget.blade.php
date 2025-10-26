@@ -12,7 +12,7 @@
 
         <div class="border-b px-4 py-3 flex items-center justify-between">
             <div class="font-semibold">{{ __('help.title') }}</div>
-            <button class="text-neutral-500 hover:text-black" @click="open=false"
+            <button class="text-neutral-500 hover:text-black cursor-pointer" @click="open=false"
                 aria-label="{{ __('help.close') }}">✖</button>
         </div>
 
@@ -43,7 +43,7 @@
                 <div class="flex flex-wrap gap-2">
                     @foreach ($suggested as $s)
                         <button wire:click="fillFromSuggestion({{ $s['id'] }})"
-                            class="rounded-full border px-3 py-1 text-xs hover:bg-neutral-50">
+                            class="rounded-full border px-3 py-1 text-xs hover:bg-neutral-50 cursor-pointer">
                             {{ $s['question'] }}
                         </button>
                     @endforeach

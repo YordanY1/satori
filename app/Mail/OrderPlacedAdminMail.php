@@ -3,14 +3,13 @@
 namespace App\Mail;
 
 use App\Models\Order;
-use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 
 class OrderPlacedAdminMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
     public Order $order;
 
@@ -21,7 +20,9 @@ class OrderPlacedAdminMail extends Mailable
 
     public function build()
     {
-        $mail = $this->subject('Нова поръчка: ' . $this->order->order_number)
+        $mail = $this->subject('🛒 Нова поръчка: '.$this->order->order_number)
+            ->from('support@izdatelstvo-satori.com', 'Издателство Сатори')
+            ->to('info@izdatelstvo-satori.com')
             ->view('emails.orders.admin')
             ->with([
                 'order' => $this->order,
@@ -36,7 +37,7 @@ class OrderPlacedAdminMail extends Mailable
                 if ($response->ok()) {
                     $mail->attachData(
                         $response->body(),
-                        'econt-label-' . $this->order->order_number . '.pdf',
+                        'econt-label-'.$this->order->order_number.'.pdf',
                         ['mime' => 'application/pdf']
                     );
                 }

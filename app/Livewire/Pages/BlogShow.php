@@ -2,13 +2,14 @@
 
 namespace App\Livewire\Pages;
 
-use Livewire\Component;
 use App\Models\Post;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class BlogShow extends Component
 {
     public Post $post;
+
     public array $seo = [];
 
     public function mount(string $slug): void
@@ -24,12 +25,14 @@ class BlogShow extends Component
         $excerpt = $this->post->excerpt
             ?: Str::limit(strip_tags($this->post->content ?? ''), 160);
 
+        $authorName = $this->post->author ?: 'Екипът на Издателство Сатори';
+
         $this->seo = [
-            'title' => "{$this->post->title} — Блог — Сатори Ко",
+            'title' => "{$this->post->title} — Блог — Издателство Сатори",
             'description' => $excerpt,
-            'keywords' => "{$this->post->title}, блог, статия, книги, Сатори",
+            'keywords' => "{$this->post->title}, блог, статия, книги, Издателство Сатори, култура",
             'canonical' => url()->current(),
-            'og:title' => "{$this->post->title} — Сатори Ко",
+            'og:title' => "{$this->post->title} — Издателство Сатори",
             'og:description' => $excerpt,
             'og:url' => url()->current(),
             'og:type' => 'article',
@@ -38,28 +41,52 @@ class BlogShow extends Component
             'twitter:title' => $this->post->title,
             'twitter:description' => $excerpt,
             'twitter:image' => $cover,
+
             'schema' => [
-                "@context" => "https://schema.org",
-                "@type" => "BlogPosting",
-                "headline" => $this->post->title,
-                "description" => $excerpt,
-                "image" => $cover,
-                "author" => [
-                    "@type" => "Person",
-                    "name" => $this->post->author ?: "Екипът на Сатори Ко",
+                '@context' => 'https://schema.org',
+                '@type' => 'BlogPosting',
+                'headline' => $this->post->title,
+                'description' => $excerpt,
+                'image' => [$cover],
+                'author' => [
+                    '@type' => 'Person',
+                    'name' => $authorName,
                 ],
-                "datePublished" => optional($this->post->created_at)->toIso8601String(),
-                "dateModified" => optional($this->post->updated_at)->toIso8601String(),
-                "mainEntityOfPage" => [
-                    "@type" => "WebPage",
-                    "@id" => url()->current(),
+                'datePublished' => optional($this->post->created_at)->toIso8601String(),
+                'dateModified' => optional($this->post->updated_at)->toIso8601String(),
+                'mainEntityOfPage' => [
+                    '@type' => 'WebPage',
+                    '@id' => url()->current(),
                 ],
-                "publisher" => [
-                    "@type" => "Organization",
-                    "name" => "Сатори Ко",
-                    "logo" => [
-                        "@type" => "ImageObject",
-                        "url" => asset('images/logo.png'),
+                'publisher' => [
+                    '@type' => 'Organization',
+                    '@id' => url('#organization'),
+                    'name' => 'Издателство Сатори',
+                    'alternateName' => 'Сатори Ко',
+                    'url' => url('/'),
+                    'logo' => [
+                        '@type' => 'ImageObject',
+                        'url' => asset('images/logo.png'),
+                    ],
+                    'sameAs' => [
+                        'https://www.facebook.com/VBelenski',
+                    ],
+                    'contactPoint' => [
+                        [
+                            '@type' => 'ContactPoint',
+                            'contactType' => 'Customer Support',
+                            'telephone' => '+359 87 849 0782',
+                            'email' => 'satorico@abv.bg',
+                            'areaServed' => 'BG',
+                            'availableLanguage' => ['Bulgarian', 'English'],
+                        ],
+                    ],
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => 'ж.к. Овча Купел 1, бл. 411, магазин 2',
+                        'addressLocality' => 'София',
+                        'postalCode' => '1632',
+                        'addressCountry' => 'BG',
                     ],
                 ],
             ],

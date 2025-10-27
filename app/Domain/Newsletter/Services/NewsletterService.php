@@ -19,22 +19,26 @@ class NewsletterService
     public function subscribe(string $email): void
     {
         $key = 'newsletter:subscribe:'.sha1(request()->ip().'|'.$email);
+
         if (RateLimiter::tooManyAttempts($key, 5)) {
             abort(429, 'Твърде много опити. Опитай отново след малко.');
         }
+
         RateLimiter::hit($key, 60);
 
         $existing = $this->repo->findByEmail($email);
 
-        if (!$existing) {
+        if (! $existing) {
             $sub = $this->repo->createPending($email, Str::random(40));
             $this->sendConfirmEmail($sub);
+
             return;
         }
 
         if ($existing->unsubscribed_at) {
             $sub = $this->repo->reactivate($existing, Str::random(40));
             $this->sendConfirmEmail($sub);
+
             return;
         }
 
@@ -51,7 +55,7 @@ class NewsletterService
         abort_unless($sub, 404, 'Невалиден токен.');
         abort_if($sub->unsubscribed_at, 410, 'Абонаментът е прекратен.');
 
-        if (!$sub->confirmed_at) {
+        if (! $sub->confirmed_at) {
             $this->repo->confirm($sub);
         }
 
@@ -67,6 +71,10 @@ class NewsletterService
 
     protected function sendConfirmEmail(NewsletterSubscriber $sub): void
     {
-        Mail::to($sub->email)->queue(new NewsletterConfirm($sub));
+        try {
+            Mail::to($sub->email)->send(new NewsletterConfirm($sub));
+        } catch (Throwable $e) {
+            report($e);
+        }
     }
 }

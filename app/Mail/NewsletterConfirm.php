@@ -25,10 +25,6 @@ class NewsletterConfirm extends Mailable
                 'brandUrl' => config('app.url'),
                 'confirmUrl' => $confirmUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
-            ])
-            ->text('emails.newsletter-confirm-text', [
-                'confirmUrl' => $confirmUrl,
-                'unsubscribeUrl' => $unsubscribeUrl,
             ]);
     }
 }

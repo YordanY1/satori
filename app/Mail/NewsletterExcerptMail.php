@@ -35,11 +35,6 @@ class NewsletterExcerptMail extends Mailable
                 'brandUrl' => config('app.url'),
                 'downloadUrl' => $downloadUrl,
                 'unsubscribeUrl' => $unsubscribeUrl,
-            ])
-            ->text('emails.newsletter-excerpt-text', [
-                'title' => $this->excerpt->title,
-                'downloadUrl' => $downloadUrl,
-                'unsubscribeUrl' => $unsubscribeUrl,
             ]);
     }
 }

@@ -16,7 +16,7 @@ class OrderPlacedCustomerMail extends Mailable
     {
         return $this->subject('🧾 Вашата поръчка №'.$this->order->order_number)
             ->from('support@izdatelstvo-satori.com', 'Издателство Сатори')
-            ->to($this->order->email)
+            ->to($this->order->customer_email)
             ->view('emails.orders.customer')
             ->with([
                 'order' => $this->order,

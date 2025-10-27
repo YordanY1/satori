@@ -8,7 +8,8 @@
 
     {{-- Dynamic SEO Meta --}}
     <title>{{ $seo['title'] ?? 'Издателство Сатори' }}</title>
-    <meta name="description" content="{{ $seo['description'] ?? 'Открий книги, събития и вдъхновение със Издателство Сатори.' }}">
+    <meta name="description"
+        content="{{ $seo['description'] ?? 'Открий книги, събития и вдъхновение със Издателство Сатори.' }}">
     <meta name="keywords" content="{{ $seo['keywords'] ?? 'сатори, книги, издателство, осъзнатост, събития' }}">
     <meta name="author" content="Издателство Сатори">
     <link rel="canonical" href="{{ $seo['canonical'] ?? url()->current() }}">
@@ -24,18 +25,20 @@
     <meta property="og:title" content="{{ $seo['og:title'] ?? ($seo['title'] ?? 'Издателство Сатори') }}" />
     <meta property="og:description"
         content="{{ $seo['og:description'] ?? ($seo['description'] ?? 'Открий книги и събития от Издателство Сатори.') }}" />
-    <meta property="og:image" content="{{ url($seo['og:image'] ?? asset('images/default-og.jpg')) }}" />
+    <meta property="og:image" content="{{ asset('images/logo.png') }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:url" content="{{ $seo['og:url'] ?? url()->current() }}" />
     <meta property="og:type" content="{{ $seo['og:type'] ?? 'website' }}" />
     <meta property="og:locale" content="bg_BG" />
-    <meta property="og:locale:alternate" content="en_US" />
 
-    {{-- Twitter --}}
+    {{-- Twitter / Viber preview --}}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $seo['twitter:title'] ?? ($seo['title'] ?? 'Издателство Сатори') }}" />
     <meta name="twitter:description"
         content="{{ $seo['twitter:description'] ?? ($seo['description'] ?? 'Открий книги и събития от Издателство Сатори.') }}" />
-    <meta name="twitter:image" content="{{ url($seo['twitter:image'] ?? asset('images/default-og.jpg')) }}" />
+    <meta name="twitter:image" content="{{ asset('images/logo.png') }}" />
 
     {{-- Structured Data: Dynamic Page Schema --}}
     @if (!empty($seo['schema']))

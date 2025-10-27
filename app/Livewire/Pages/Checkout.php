@@ -485,7 +485,7 @@ class Checkout extends Component
             }
 
             Mail::to($order->customer_email)->send(new OrderPlacedCustomerMail($order));
-            Mail::to(config('mail.admin_address', 'admin@example.com'))->send(new OrderPlacedAdminMail($order));
+            Mail::to(config('mail.admin_address', 'support@izdatelstvo-satori.com'))->send(new OrderPlacedAdminMail($order));
 
             // COD => create label (CREATE)
             if ($this->payment_method === 'cod') {

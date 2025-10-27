@@ -5,6 +5,8 @@ namespace App\Mail;
 use App\Models\Order;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OrderPlacedAdminMail extends Mailable
 {
@@ -23,63 +25,46 @@ class OrderPlacedAdminMail extends Mailable
             ->from('support@izdatelstvo-satori.com', 'Издателство Сатори')
             ->to('info@izdatelstvo-satori.com')
             ->view('emails.orders.admin')
-            ->with([
-                'order' => $this->order,
-            ]);
+            ->with(['order' => $this->order]);
 
-        $pdfUrl = data_get($this->order->shipping_payload, 'label.pdfURL');
-
-        \Log::info('📦 Econt PDF DEBUG: build started', [
-            'order' => $this->order->order_number,
-            'pdf_url' => $pdfUrl,
-        ]);
+        $pdfUrl = $this->waitForPdfUrl($this->order);
 
         if ($pdfUrl) {
             try {
-                $pdfData = @file_get_contents($pdfUrl);
-                $size = $pdfData ? strlen($pdfData) : 0;
-                $startsWith = $pdfData ? substr($pdfData, 0, 10) : '';
-
-                \Log::info('📦 Econt PDF DEBUG: file_get_contents result', [
-                    'success' => $pdfData !== false,
-                    'length' => $size,
-                    'starts_with' => $startsWith,
-                ]);
-
-                if ($pdfData !== false && $size > 1000) {
+                $response = Http::get($pdfUrl);
+                if ($response->ok()) {
                     $mail->attachData(
-                        $pdfData,
+                        $response->body(),
                         'econt-label-'.$this->order->order_number.'.pdf',
                         ['mime' => 'application/pdf']
                     );
-
-                    \Log::info('📎 Econt PDF DEBUG: attached successfully', [
-                        'filename' => 'econt-label-'.$this->order->order_number.'.pdf',
-                        'size' => $size,
-                    ]);
-                } else {
-                    \Log::warning('⚠️ Econt PDF DEBUG: PDF not fetched or too small', [
-                        'url' => $pdfUrl,
-                        'length' => $size,
-                    ]);
+                    Log::info('📎 Attached Econt PDF for order '.$this->order->id);
                 }
             } catch (\Throwable $e) {
-                \Log::error('💥 Econt PDF DEBUG: exception', [
-                    'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                ]);
-                report($e);
+                Log::warning('❌ Failed to attach Econt PDF: '.$e->getMessage());
             }
         } else {
-            \Log::warning('⚠️ Econt PDF DEBUG: No pdfURL found in order payload', [
-                'order' => $this->order->order_number,
-            ]);
+            Log::warning('⚠️ No PDF available for order '.$this->order->id);
         }
 
-        \Log::info('✅ Econt PDF DEBUG: build complete', [
-            'order' => $this->order->order_number,
-        ]);
-
         return $mail;
+    }
+
+    /**
+     * Waits briefly for Econt label PDF to appear in DB (up to 2 seconds).
+     */
+    private function waitForPdfUrl(Order $order): ?string
+    {
+        $pdfUrl = data_get($order->shipping_payload, 'label.pdfURL');
+
+        if ($pdfUrl) {
+            return $pdfUrl;
+        }
+
+        // Try again if label might still be saving
+        sleep(2);
+        $order->refresh();
+
+        return data_get($order->shipping_payload, 'label.pdfURL');
     }
 }

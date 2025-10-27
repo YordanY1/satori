@@ -1,7 +1,7 @@
 <section class="relative bg-gradient-to-b from-gray-50 via-white to-gray-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
 
-        {{-- Intro / Mission --}}
+        {{-- Mission --}}
         <div>
             <h1 class="text-3xl font-bold mb-4 text-gray-900">
                 {{ __('about.mission_title') }}
@@ -27,16 +27,13 @@
                 {{ __('about.team_title') }}
             </h2>
 
-            <div class="space-y-6">
-                <div class="text-center">
-                    <h3 class="font-bold text-lg text-gray-900">Валери Беленски</h3>
-                    <p class="text-sm text-gray-600">{{ __('about.role.founder') }}</p>
+            @foreach (__('about.team_members') as $member)
+                <div class="text-center space-y-1">
+                    <h3 class="font-bold text-lg text-gray-900">{{ $member['name'] }}</h3>
+                    <p class="text-sm text-gray-600">{{ $member['role'] }}</p>
+                    <p class="text-gray-700 text-sm max-w-md mx-auto">{{ $member['bio'] }}</p>
                 </div>
-                <div class="text-center">
-                    <h3 class="font-bold text-lg text-gray-900">Тодор Беленски</h3>
-                    <p class="text-sm text-gray-600">{{ __('about.role.editor_in_chief') }}</p>
-                </div>
-            </div>
+            @endforeach
         </div>
 
         {{-- Principles --}}
@@ -44,10 +41,11 @@
             <h2 class="text-2xl font-semibold mb-4 text-gray-900">
                 {{ __('about.principles_title') }}
             </h2>
+
             <ul class="space-y-2 list-disc list-inside text-gray-700">
-                <li>{{ __('about.principle.quality') }}</li>
-                <li>{{ __('about.principle.mindfulness') }}</li>
-                <li>{{ __('about.principle.translations') }}</li>
+                @foreach (__('about.principles') as $principle)
+                    <li>{{ $principle }}</li>
+                @endforeach
             </ul>
         </div>
 

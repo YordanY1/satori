@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Order;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 
 class OrderPlacedAdminMail extends Mailable
 {
@@ -32,14 +31,16 @@ class OrderPlacedAdminMail extends Mailable
 
         if ($pdfUrl) {
             try {
-                $response = Http::get($pdfUrl);
+                $pdfData = @file_get_contents($pdfUrl);
 
-                if ($response->ok()) {
+                if ($pdfData !== false && strlen($pdfData) > 1000) {
                     $mail->attachData(
-                        $response->body(),
+                        $pdfData,
                         'econt-label-'.$this->order->order_number.'.pdf',
                         ['mime' => 'application/pdf']
                     );
+                } else {
+                    \Log::warning('Econt PDF not fetched or empty', ['url' => $pdfUrl]);
                 }
             } catch (\Throwable $e) {
                 report($e);

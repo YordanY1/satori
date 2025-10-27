@@ -17,11 +17,10 @@ class ShippingCalculator
     {
         $result = $this->labelService->submit($labelInput, LabelMode::CALCULATE);
 
-        // Correctly extract the total price from the nested Econt response
         $price =
-            $result['label']['totalPrice'] ??
-            $result['label']['senderDueAmount'] ??
-            $result['label']['services'][0]['price'] ??
+            $result['services']['totalPrice'] ??
+            $result['services']['total'] ??
+            $result['priceList']['total'] ??
             0.00;
 
         return (float) $price;

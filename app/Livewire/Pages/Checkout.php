@@ -320,20 +320,10 @@ class Checkout extends Component
     private function calculateShippingSafely(): void
     {
         if (! $this->canCalculateShipping()) {
-            \Log::debug('ECONT: Skipping shipping calc – insufficient data', [
-                'name' => $this->name,
-                'phone' => $this->phone,
-                'cityId' => $this->cityId,
-                'officeCode' => $this->officeCode,
-                'method' => $this->shipping_method,
-            ]);
-
             $this->shippingCost = 0.00;
 
             return;
         }
-
-        \Log::debug('ECONT: Triggering calculateShipping()...');
         $this->calculateShipping();
     }
 
@@ -389,24 +379,9 @@ class Checkout extends Component
                 'description' => 'Книги',
             ];
 
-            // 💬 Debug input
-            \Log::debug('ECONT: Shipping calculation input', $labelInput);
-
-            $cost = $calculator->calculate($labelInput);
-
-            // 💬 Debug output
-            \Log::debug('ECONT: Shipping calculation result', [
-                'cost' => $cost,
-            ]);
-
-            $this->shippingCost = $cost;
+            $this->shippingCost = $calculator->calculate($labelInput);
         } catch (\Throwable $e) {
-            \Log::error('ECONT: Shipping calculation failed', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
             report($e);
-
             $this->shippingCost = 0.00;
             $this->addError('shipping', 'Не успяхме да изчислим доставка: '.$e->getMessage());
         }

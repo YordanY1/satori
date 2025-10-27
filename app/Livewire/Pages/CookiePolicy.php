@@ -17,7 +17,7 @@ class CookiePolicy extends Component
             'canonical' => url()->current(),
             'og:title' => 'Политика за бисквитки — Издателство Сатори',
             'og:description' => 'Научи как Издателство Сатори използва бисквитки, за да подобри твоето преживяване на сайта и да защити личните ти данни.',
-            'og:image' => asset('images/og/policy.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',

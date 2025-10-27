@@ -58,7 +58,7 @@ class Events extends Component
             'canonical' => url()->current(),
             'og:title' => 'Събития — Издателство Сатори',
             'og:description' => 'Предстоящи и минали събития, организирани от Издателство Сатори.',
-            'og:image' => asset('images/og/events.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',

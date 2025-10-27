@@ -46,11 +46,11 @@ class Contact extends Component
             'og:description' => 'Официални контакти на Издателство Сатори: имейл, телефон, адрес и форма за запитвания.',
             'og:url' => url()->current(),
             'og:type' => 'website',
-            'og:image' => asset('images/og/contact.jpg'),
+            'og:image' => asset('images/logo.png'),
             'twitter:card' => 'summary_large_image',
             'twitter:title' => 'Контакти — Издателство Сатори',
             'twitter:description' => 'Свържи се с Издателство Сатори — адрес, телефон, имейл и контактна форма.',
-            'twitter:image' => asset('images/og/contact.jpg'),
+            'og:image' => asset('images/logo.png'),
 
             'schema' => [
                 '@context' => 'https://schema.org',

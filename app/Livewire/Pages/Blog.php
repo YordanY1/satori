@@ -32,7 +32,7 @@ class Blog extends Component
             'canonical' => url()->current(),
             'og:title' => 'Блог — Издателство Сатори',
             'og:description' => 'Най-новите статии, вдъхновения и културни анализи от Издателство Сатори.',
-            'og:image' => asset('images/og/blog.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'blog',
             'twitter:card' => 'summary_large_image',

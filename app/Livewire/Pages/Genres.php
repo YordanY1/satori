@@ -18,7 +18,7 @@ class Genres extends Component
             'canonical' => url()->current(),
             'og:title' => 'Жанрове и Теми — Издателство Сатори',
             'og:description' => 'Категории и жанрове книги от Издателство Сатори – философия, духовност, литература, психология и още.',
-            'og:image' => asset('images/default-og.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',

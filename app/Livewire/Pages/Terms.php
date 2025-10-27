@@ -17,13 +17,13 @@ class Terms extends Component
             'canonical' => url()->current(),
             'og:title' => 'Общи условия — Издателство Сатори',
             'og:description' => 'Официалните правила за ползване на сайта и услугите на Издателство Сатори.',
-            'og:image' => asset('images/og/terms.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',
             'twitter:title' => 'Общи условия — Издателство Сатори',
             'twitter:description' => 'Политика, правила и условия за използване на сайта на Издателство Сатори.',
-            'twitter:image' => asset('images/og/terms.jpg'),
+            'twitter:image' => asset('images/logo.png'),
 
             'schema' => [
                 '@context' => 'https://schema.org',

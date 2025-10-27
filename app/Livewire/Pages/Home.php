@@ -18,12 +18,12 @@ class Home extends Component
             'og:title' => 'Издателство Сатори — Осъзнати книги и вдъхновение',
             'og:description' => 'Издателство Сатори предлага книги, събития и идеи, които вдъхновяват осъзнатостта и личностното израстване.',
             'og:url' => url('/'),
-            'og:image' => asset('images/default-og.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',
             'twitter:title' => 'Издателство Сатори | Книги, Събития, Осъзнатост',
             'twitter:description' => 'Добре дошли в Издателство Сатори – платформа за книги, събития и вдъхновение.',
-            'twitter:image' => asset('images/default-og.jpg'),
+            'twitter:image' => asset('images/logo.png'),
 
             'schema' => [
                 '@context' => 'https://schema.org',

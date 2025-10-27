@@ -17,13 +17,13 @@ class PrivacyPolicy extends Component
             'canonical' => url()->current(),
             'og:title' => 'Политика за поверителност — Издателство Сатори',
             'og:description' => 'Официална GDPR политика за защита на личните данни от Издателство Сатори.',
-            'og:image' => asset('images/og/privacy.jpg'),
+            'og:image' => asset('images/logo.png'),
             'og:url' => url()->current(),
             'og:type' => 'website',
             'twitter:card' => 'summary_large_image',
             'twitter:title' => 'Политика за поверителност — Издателство Сатори',
             'twitter:description' => 'Прочети как Издателство Сатори обработва и защитава личните данни според GDPR.',
-            'twitter:image' => asset('images/og/privacy.jpg'),
+            'twitter:image' => asset('images/logo.png'),
 
             'schema' => [
                 '@context' => 'https://schema.org',

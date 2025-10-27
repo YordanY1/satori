@@ -49,7 +49,7 @@ class Catalog extends Component
             'og:title' => 'Каталог — Издателство Сатори',
             'og:description' => 'Пълен каталог на книги по жанрове и автори от Издателство Сатори.',
             'og:type' => 'website',
-            'og:image' => asset('images/og/catalog.jpg'),
+            'og:image' => asset('images/logo.png'),
             'twitter:card' => 'summary_large_image',
             'twitter:title' => 'Каталог — Издателство Сатори',
             'twitter:description' => 'Всички книги по жанрове, автори и формати от Издателство Сатори.',

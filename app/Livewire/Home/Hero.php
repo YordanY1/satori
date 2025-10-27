@@ -70,10 +70,18 @@ class Hero extends Component
                 'image_url' => $normUrl($post->cover, 'storage/images/hero-1.jpg'),
                 'alt' => __('hero.post.alt', ['title' => $post->title]),
             ] : null,
-        ])
-            ->filter()
-            ->values()
-            ->toArray();
+        ])->filter()->values()->toArray();
+
+        if (count($this->slides) === 0) {
+            $this->slides = [[
+                'title' => __('hero.empty.title'),
+                'subtitle' => __('hero.empty.subtitle'),
+                'subtitle_url' => null,
+                'cta' => ['label' => __('hero.empty.cta'), 'url' => url('/')],
+                'image_url' => asset('storage/images/hero-1.jpg'),
+                'alt' => __('hero.empty.alt'),
+            ]];
+        }
     }
 
     public function next(): void
@@ -105,12 +113,6 @@ class Hero extends Component
 
     public function render()
     {
-        if (count($this->slides) === 0) {
-            return <<<'blade'
-                {{-- Hero section hidden (no slides) --}}
-            blade;
-        }
-
         return view('livewire.home.hero', ['slides' => $this->slides]);
     }
 }

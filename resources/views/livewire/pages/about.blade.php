@@ -1,52 +1,63 @@
-<section class="relative bg-gradient-to-b from-gray-50 via-white to-gray-50 py-20">
-    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-10 space-y-24">
+<section class="relative overflow-hidden bg-gradient-to-b from-gray-50 via-white to-gray-50 py-28">
+    <div class="max-w-6xl mx-auto px-6 lg:px-12 space-y-32">
 
         {{-- Mission --}}
-        <div class="text-center space-y-6">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+        <div class="text-center space-y-8">
+            <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-gray-900">
                 {{ __('about.mission_title') }}
             </h1>
-            <p class="text-lg sm:text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
+            <p class="max-w-3xl mx-auto text-lg sm:text-xl text-gray-700 leading-relaxed">
                 {{ __('about.mission_body') }}
             </p>
+            <div class="flex justify-center mt-10">
+                <span class="h-1 w-40 bg-accent rounded-full"></span>
+            </div>
         </div>
 
         {{-- History --}}
-        <div class="space-y-4">
-            <h2 class="text-3xl font-bold text-gray-900">
-                {{ __('about.history_title') }}
-            </h2>
-            <p class="text-gray-700 leading-relaxed text-lg">
-                {{ __('about.history_body') }}
-            </p>
+        <div class="relative">
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-accent/10 via-transparent to-accent/10 rounded-3xl blur-3xl">
+            </div>
+            <div class="relative bg-white shadow-sm rounded-2xl p-14 md:p-16 space-y-8">
+                <h2 class="text-3xl font-bold text-gray-900">
+                    {{ __('about.history_title') }}
+                </h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    {{ __('about.history_body') }}
+                </p>
+            </div>
         </div>
 
         {{-- Team --}}
-        <div class="space-y-10">
-            <h2 class="text-3xl font-bold text-gray-900 text-center">
+        <div class="space-y-14">
+            <h2 class="text-4xl font-bold text-center text-gray-900">
                 {{ __('about.team_title') }}
             </h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-14">
                 @foreach (__('about.team_members') as $member)
                     <div
-                        class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 space-y-2">
-                        <h3 class="text-xl font-semibold text-gray-900">{{ $member['name'] }}</h3>
-                        <p class="text-sm font-medium text-accent uppercase tracking-wide">{{ $member['role'] }}</p>
-                        <p class="text-gray-700 text-sm leading-relaxed">{{ $member['bio'] }}</p>
+                        class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 p-10 text-center space-y-4">
+                        <h3 class="text-2xl font-semibold text-gray-900">{{ $member['name'] }}</h3>
+                        <p class="text-sm uppercase font-medium text-accent tracking-wide">{{ $member['role'] }}</p>
+                        <p class="text-gray-700 leading-relaxed text-base">{{ $member['bio'] }}</p>
                     </div>
                 @endforeach
             </div>
         </div>
 
         {{-- Principles --}}
-        <div class="space-y-6">
-            <h2 class="text-3xl font-bold text-gray-900">
+        <div class="space-y-10 relative">
+            <div class="absolute -top-10 left-0 w-64 h-64 bg-accent/10 blur-3xl rounded-full"></div>
+            <div class="absolute bottom-0 right-0 w-80 h-80 bg-accent/10 blur-3xl rounded-full"></div>
+
+            <h2 class="text-4xl font-bold text-gray-900">
                 {{ __('about.principles_title') }}
             </h2>
-            <ul class="space-y-3 list-disc list-inside text-gray-700 leading-relaxed text-lg">
+            <ul class="space-y-4 text-lg text-gray-700 leading-relaxed list-disc list-inside">
                 @foreach (__('about.principles') as $principle)
-                    <li>{{ $principle }}</li>
+                    <li class="hover:text-accent transition-colors duration-200">{{ $principle }}</li>
                 @endforeach
             </ul>
         </div>

@@ -114,7 +114,23 @@ class Contact extends Component
             'message' => $this->message,
         ]);
 
-        Mail::to('satorico@abv.bg')->send(new ContactMessage($contact));
+        // 🪵 Логваме информацията за имейла
+        \Log::info('📧 Contact form submitted', [
+            'to' => 'satorico@abv.bg',
+            'from' => $this->email,
+            'name' => $this->name,
+            'message' => $this->message,
+        ]);
+
+        try {
+            Mail::to('satorico@abv.bg')->send(new ContactMessage($contact));
+            \Log::info('✅ Contact email successfully sent');
+        } catch (\Throwable $e) {
+            \Log::error('❌ Contact email failed to send', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
 
         session()->flash('success', __('contact.success'));
         $this->reset(['name', 'email', 'message', 'recaptcha', 'website']);

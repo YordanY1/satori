@@ -107,13 +107,30 @@ class GenerateSitemap extends Command
     private function copyToPublicHtml(string $filename): void
     {
         $source = public_path($filename);
-        $destination = base_path('../public_html/'.$filename);
+        $destinationDir = '/home/izdatels/public_html';
+        $destination = $destinationDir.'/'.$filename;
 
-        if (file_exists($source)) {
-            copy($source, $destination);
-            $this->line("📂 Копиран: {$filename}");
-        } else {
+        if (! file_exists($source)) {
             $this->warn("⚠️ Пропуснат (не е намерен): {$filename}");
+
+            return;
+        }
+
+        // проверка за достъп
+        if (! is_writable($destinationDir)) {
+            $this->error("❌ Няма права за писане в {$destinationDir}");
+
+            return;
+        }
+
+        try {
+            if (@copy($source, $destination)) {
+                $this->line("📂 Копиран: {$filename}");
+            } else {
+                $this->error("❌ Неуспешно копиране на {$filename}");
+            }
+        } catch (\Throwable $e) {
+            $this->error("💥 Грешка при копиране на {$filename}: ".$e->getMessage());
         }
     }
 

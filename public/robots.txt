@@ -1,2 +1,11 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /checkout
+Disallow: /cart
+Disallow: /dashboard
+
+Allow: /
+
+Sitemap: https://izdatelstvo-satori.com/sitemap.xml

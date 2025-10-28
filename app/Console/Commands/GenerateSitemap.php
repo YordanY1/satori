@@ -9,7 +9,6 @@ use App\Models\Genre;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
 class GenerateSitemap extends Command
 {
@@ -23,6 +22,7 @@ class GenerateSitemap extends Command
 
         $sitemaps = [];
 
+        // --- Static pages ---
         $static = collect([
             '/',
             '/catalog',
@@ -38,25 +38,29 @@ class GenerateSitemap extends Command
         ])->map(fn ($path) => ['loc' => url($path)]);
 
         $this->writeSitemap('sitemap-static.xml', $static);
-        $sitemaps[] = url('storage/sitemap-static.xml');
+        $sitemaps[] = url('sitemap-static.xml'); // ✅ fixed
 
+        // --- Dynamic sections ---
         $this->generateSection(Book::class, 'book.show', 'sitemap-books.xml', $sitemaps);
         $this->generateSection(Author::class, 'author.show', 'sitemap-authors.xml', $sitemaps);
         $this->generateSection(Genre::class, 'genre.show', 'sitemap-genres.xml', $sitemaps);
         $this->generateSection(Post::class, 'blog.show', 'sitemap-posts.xml', $sitemaps);
         $this->generateSection(Event::class, 'event.show', 'sitemap-events.xml', $sitemaps);
 
+        // --- Sitemap index ---
         $index = '<?xml version="1.0" encoding="UTF-8"?>'.PHP_EOL;
         $index .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'.PHP_EOL;
         foreach ($sitemaps as $s) {
             $index .= "  <sitemap><loc>{$s}</loc></sitemap>".PHP_EOL;
         }
         $index .= '</sitemapindex>';
-        Storage::disk('public')->put('sitemap.xml', $index);
+
+        file_put_contents(public_path('sitemap.xml'), $index);
 
         $this->info('✅ Sitemap файловете са обновени.');
 
-        $this->pingSearchEngines(url('storage/sitemap.xml'));
+        // ✅ Correct URL for ping
+        $this->pingSearchEngines(url('sitemap.xml'));
     }
 
     private function generateSection(string $model, string $route, string $filename, array &$sitemaps): void
@@ -68,8 +72,9 @@ class GenerateSitemap extends Command
                 'lastmod' => optional($item->updated_at)->toAtomString(),
             ];
         }
+
         $this->writeSitemap($filename, $urls);
-        $sitemaps[] = url('storage/'.$filename);
+        $sitemaps[] = url($filename); // ✅ fixed
     }
 
     private function writeSitemap(string $filename, iterable $urls): void
@@ -87,7 +92,7 @@ class GenerateSitemap extends Command
         }
 
         $xml .= '</urlset>';
-        Storage::disk('public')->put($filename, $xml);
+        file_put_contents(public_path($filename), $xml);
     }
 
     private function pingSearchEngines(string $sitemapUrl): void

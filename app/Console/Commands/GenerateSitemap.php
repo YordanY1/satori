@@ -38,7 +38,7 @@ class GenerateSitemap extends Command
         ])->map(fn ($path) => ['loc' => url($path)]);
 
         $this->writeSitemap('sitemap-static.xml', $static);
-        $sitemaps[] = url('sitemap-static.xml'); // ✅ fixed
+        $sitemaps[] = url('sitemap-static.xml');
 
         // --- Dynamic sections ---
         $this->generateSection(Book::class, 'book.show', 'sitemap-books.xml', $sitemaps);
@@ -57,9 +57,18 @@ class GenerateSitemap extends Command
 
         file_put_contents(public_path('sitemap.xml'), $index);
 
-        $this->info('✅ Sitemap файловете са обновени.');
+        // 🔁 Автоматично копиране в public_html (Jump.bg)
+        $this->copyToPublicHtml('sitemap.xml');
+        $this->copyToPublicHtml('sitemap-static.xml');
+        $this->copyToPublicHtml('sitemap-books.xml');
+        $this->copyToPublicHtml('sitemap-authors.xml');
+        $this->copyToPublicHtml('sitemap-genres.xml');
+        $this->copyToPublicHtml('sitemap-posts.xml');
+        $this->copyToPublicHtml('sitemap-events.xml');
 
-        // ✅ Correct URL for ping
+        $this->info('✅ Sitemap файловете са обновени и копирани.');
+
+        // Ping engines
         $this->pingSearchEngines(url('sitemap.xml'));
     }
 
@@ -74,7 +83,7 @@ class GenerateSitemap extends Command
         }
 
         $this->writeSitemap($filename, $urls);
-        $sitemaps[] = url($filename); // ✅ fixed
+        $sitemaps[] = url($filename);
     }
 
     private function writeSitemap(string $filename, iterable $urls): void
@@ -93,6 +102,19 @@ class GenerateSitemap extends Command
 
         $xml .= '</urlset>';
         file_put_contents(public_path($filename), $xml);
+    }
+
+    private function copyToPublicHtml(string $filename): void
+    {
+        $source = public_path($filename);
+        $destination = base_path('../public_html/'.$filename);
+
+        if (file_exists($source)) {
+            copy($source, $destination);
+            $this->line("📂 Копиран: {$filename}");
+        } else {
+            $this->warn("⚠️ Пропуснат (не е намерен): {$filename}");
+        }
     }
 
     private function pingSearchEngines(string $sitemapUrl): void

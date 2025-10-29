@@ -49,7 +49,7 @@ class PrivacyPolicy extends Component
                             '@type' => 'ContactPoint',
                             'contactType' => 'Customer Support',
                             'telephone' => '+359 87 849 0782',
-                            'email' => 'satorico@abv.bg',
+                            'email' => 'izdatelstvosatori@gmail.com',
                             'areaServed' => 'BG',
                             'availableLanguage' => ['Bulgarian', 'English'],
                         ],
@@ -86,7 +86,7 @@ class PrivacyPolicy extends Component
                             'name' => 'Как мога да поискам изтриване на личните си данни?',
                             'acceptedAnswer' => [
                                 '@type' => 'Answer',
-                                'text' => 'Всеки потребител може да поиска изтриване на своите данни, като се свърже с нас на имейл satorico@abv.bg.',
+                                'text' => 'Всеки потребител може да поиска изтриване на своите данни, като се свърже с нас на имейл satorico@izdatelstvosatori@gmail.com.',
                             ],
                         ],
                     ],

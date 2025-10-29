@@ -23,6 +23,6 @@ return [
     'contact_info' => 'Contact Information',
     'address' => 'Ovcha Kupel 1, Bl. 411, Shop 2, Sofia, Bulgaria',
     'socials' => 'Follow Satori Publishing',
-    'email_link' => 'satorico@abv.bg',
+    'email_link' => 'satorico@izdatelstvosatori@gmail.com',
     'phone_link' => '+359 87 849 0782',
 ];

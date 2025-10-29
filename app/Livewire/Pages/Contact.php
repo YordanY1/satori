@@ -76,7 +76,7 @@ class Contact extends Component
                             '@type' => 'ContactPoint',
                             'contactType' => 'Customer Support',
                             'telephone' => '+359 87 849 0782',
-                            'email' => 'satorico@abv.bg',
+                            'email' => 'satorico@izdatelstvosatori@gmail.com',
                             'areaServed' => 'BG',
                             'availableLanguage' => ['Bulgarian', 'English'],
                         ],
@@ -116,14 +116,14 @@ class Contact extends Component
 
         // 🪵 Логваме информацията за имейла
         \Log::info('📧 Contact form submitted', [
-            'to' => 'satorico@abv.bg',
+            'to' => 'satorico@izdatelstvosatori@gmail.com',
             'from' => $this->email,
             'name' => $this->name,
             'message' => $this->message,
         ]);
 
         try {
-            Mail::to('satorico@abv.bg')->send(new ContactMessage($contact));
+            Mail::to('satorico@izdatelstvosatori@gmail.com')->send(new ContactMessage($contact));
             \Log::info('✅ Contact email successfully sent');
         } catch (\Throwable $e) {
             \Log::error('❌ Contact email failed to send', [

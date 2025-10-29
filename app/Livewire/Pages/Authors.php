@@ -52,7 +52,7 @@ class Authors extends Component
                             '@type' => 'ContactPoint',
                             'contactType' => 'Customer Support',
                             'telephone' => '+359 87 849 0782',
-                            'email' => 'satorico@abv.bg',
+                            'email' => 'izdatelstvosatori@gmail.com',
                             'areaServed' => 'BG',
                             'availableLanguage' => ['Bulgarian', 'English'],
                         ],

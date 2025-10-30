@@ -51,7 +51,8 @@
                     <a href="{{ route('book.show', $book['slug'] ?? '') }}"
                         aria-label="{{ __('shop.aria.view_details', ['title' => $book['title']]) }}">
                         <img src="{{ $book['cover'] }}" alt="{{ __('shop.alt.cover', ['title' => $book['title']]) }}"
-                            class="w-full h-40 sm:h-48 object-cover rounded-t-xl" loading="lazy" itemprop="image">
+                            class="w-full h-56 sm:h-64 md:h-72 object-cover rounded-t-xl" loading="lazy"
+                            itemprop="image">
                     </a>
 
                     <div class="absolute top-2 right-2">

@@ -14,7 +14,7 @@
                 @php
                     $img = \Illuminate\Support\Str::startsWith($item['cover'], ['http://', 'https://'])
                         ? $item['cover']
-                        : asset($item['cover']);
+                        : asset('storage/' . ltrim($item['cover'], '/'));
                 @endphp
                 <article class="rounded-2xl border bg-white p-4 shadow-sm">
                     <div class="flex gap-3">

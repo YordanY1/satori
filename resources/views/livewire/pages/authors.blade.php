@@ -22,12 +22,15 @@
             <article
                 class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition text-center flex flex-col min-h-[280px]"
                 itemscope itemtype="https://schema.org/Person">
-                <figure>
-                    <a href="{{ route('author.show', $a->slug) }}" itemprop="url"
-                        aria-label="{{ __('authors.aria.view', ['name' => $a->name]) }}">
-                        <img src="{{ $photo }}" alt="{{ __('authors.alt.photo', ['name' => $a->name]) }}"
-                            class="w-full h-90 object-cover rounded-xl mb-3" loading="lazy" itemprop="image">
+
+                <figure class="flex flex-col h-full">
+                    <a href="{{ route('author.show', $a->slug) }}" itemprop="url">
+                        <div class="aspect-[3/4] w-full overflow-hidden rounded-xl mb-3">
+                            <img src="{{ $photo }}" alt="{{ __('authors.alt.photo', ['name' => $a->name]) }}"
+                                class="w-full h-full object-cover" loading="lazy" itemprop="image">
+                        </div>
                     </a>
+
                     <figcaption class="font-semibold text-sm sm:text-base mt-auto" itemprop="name">
                         <a href="{{ route('author.show', $a->slug) }}" class="hover:text-accent transition">
                             {{ $a->name }}

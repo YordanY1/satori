@@ -16,7 +16,6 @@
                     $a->photo && file_exists(public_path('storage/' . $a->photo))
                         ? asset('storage/' . $a->photo)
                         : asset('images/avatar.png');
-
             @endphp
 
             <article

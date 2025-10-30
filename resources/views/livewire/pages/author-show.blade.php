@@ -10,9 +10,12 @@
                     $filename = basename($author['photo']);
                     $photo = asset('storage/authors/' . $filename);
                 @endphp
-
                 <img src="{{ $photo }}" alt="{{ __('author.alt.photo', ['name' => $author['name']]) }}"
                     class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
+            @else
+                <img src="{{ asset('images/avatar.png') }}"
+                    alt="{{ __('author.alt.photo', ['name' => $author['name']]) }}"
+                    class="w-full h-auto rounded-2xl shadow-md mb-4 opacity-80" itemprop="image">
             @endif
 
             <h1 id="author-name" class="text-3xl font-bold" itemprop="name">
@@ -148,7 +151,7 @@
                                         class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy"
                                         itemprop="image">
 
-            
+
                                     <div class="absolute top-2 right-2">
                                         <livewire:favorite-button :book-id="$b['id']"
                                             wire:key="fav-author-{{ $b['id'] }}" />

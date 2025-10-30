@@ -16,7 +16,7 @@
                     ? (Str::startsWith($a->photo, ['http://', 'https://'])
                         ? $a->photo
                         : asset('storage/' . ltrim($a->photo, '/')))
-                    : asset('images/avatar.png');
+                    : asset('storage/authors/default.jpg');
             @endphp
 
             <article

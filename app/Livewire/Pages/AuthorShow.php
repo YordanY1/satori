@@ -30,12 +30,11 @@ class AuthorShow extends Component
                 'media' => fn ($q) => $q->published()->youtube()->ordered(),
             ])->firstOrFail();
 
-        // Photo
         $photo = $a->photo
-    ? (Str::startsWith($a->photo, ['http://', 'https://'])
-         ? $a->photo
-         : asset('storage/'.ltrim($a->photo, '/')))
-    : asset('images/avatar.png');
+            ? (Str::startsWith($a->photo, ['http://', 'https://'])
+                ? $a->photo
+                : asset('storage/'.ltrim($a->photo, '/')))
+            : asset('images/avatar.png');
 
         // Books
         $books = $a->books->map(function ($b) {

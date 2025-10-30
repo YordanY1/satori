@@ -12,11 +12,11 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
         @foreach ($authors as $a)
             @php
-                $photo = $a->photo
-                    ? (Str::startsWith($a->photo, ['http://', 'https://'])
-                        ? $a->photo
-                        : asset('storage/' . ltrim($a->photo, '/')))
-                    : asset('storage/authors/default.jpg');
+                $photo =
+                    $a->photo && file_exists(public_path('storage/' . $a->photo))
+                        ? asset('storage/' . $a->photo)
+                        : asset('images/avatar.png');
+
             @endphp
 
             <article
@@ -24,19 +24,10 @@
                 itemscope itemtype="https://schema.org/Person">
 
                 <figure class="flex flex-col h-full">
-
                     <a href="{{ route('author.show', $a->slug) }}" itemprop="url">
-                        <div class="aspect-[3/4] w-full rounded-xl mb-3 relative overflow-hidden bg-neutral-200">
-
-                            {{-- blurred background filler --}}
-                            <img src="{{ $photo }}"
-                                class="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-60"
-                                alt="" aria-hidden="true">
-
-                            {{-- main image --}}
+                        <div class="aspect-[3/4] w-full overflow-hidden rounded-xl mb-3">
                             <img src="{{ $photo }}" alt="{{ __('authors.alt.photo', ['name' => $a->name]) }}"
-                                class="absolute inset-0 w-full h-full object-contain z-10" loading="lazy"
-                                itemprop="image">
+                                class="w-full h-full object-cover" loading="lazy" itemprop="image">
                         </div>
                     </a>
 

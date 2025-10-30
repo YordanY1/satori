@@ -6,14 +6,11 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-1">
             @php
-                $photo = !empty($author['photo'])
-                    ? asset('storage/authors/' . basename($author['photo']))
-                    : asset('images/avatar.png');
+                $photo = !empty($author['photo']) ? $author['photo'] : asset('images/avatar.png');
             @endphp
 
             <img src="{{ $photo }}" alt="{{ __('author.alt.photo', ['name' => $author['name']]) }}"
                 class="w-full h-auto rounded-2xl shadow-md mb-4" itemprop="image">
-
 
             <h1 id="author-name" class="text-3xl font-bold" itemprop="name">
                 {{ $author['name'] }}

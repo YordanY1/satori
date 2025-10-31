@@ -117,10 +117,87 @@
         </div>
     </div>
 
-    {{-- <!-- Mobile slide filters -->
+    <!-- Mobile Filters Slide-over -->
     <div x-show="filtersOpen" class="fixed inset-0 bg-black/50 z-50 flex md:hidden" x-cloak>
-        <div @click.away="filtersOpen = false" class="bg-white w-80 h-full p-4 overflow-y-auto shadow-xl">
-            @include('livewire.pages.catalog-mobile-filters')
-        </div> --}}
+        <div @click.away="filtersOpen = false"
+            class="mr-auto bg-white w-80 h-full p-4 overflow-y-auto shadow-xl absolute left-0 top-0"
+            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full"
+            x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full">
+
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">{{ __('shop.filters.title') }}</h2>
+                <button @click="filtersOpen = false" class="text-sm underline">
+                    {{ __('shop.filters.close') }}
+                </button>
+            </div>
+
+            <div class="space-y-6">
+
+                {{-- Authors --}}
+                <div>
+                    <h3 class="font-semibold mb-2">{{ __('shop.filters.author') }}</h3>
+                    <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                        @foreach ($authorOptions as $opt)
+                            <label class="flex items-center gap-2 text-sm cursor-pointer">
+                                <input type="checkbox" wire:model.live="authors" value="{{ $opt['slug'] }}"
+                                    class="rounded border-gray-300 text-accent focus:ring-accent">
+                                <span>{{ $opt['name'] }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Genres --}}
+                <div>
+                    <h3 class="font-semibold mb-2">{{ __('shop.filters.genre') }}</h3>
+                    <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                        @foreach ($genreOptions as $opt)
+                            <label class="flex items-center gap-2 text-sm cursor-pointer">
+                                <input type="checkbox" wire:model.live="genres" value="{{ $opt['slug'] }}"
+                                    class="rounded border-gray-300 text-accent focus:ring-accent">
+                                <span>{{ $opt['name'] }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Format --}}
+                <div>
+                    <h3 class="font-semibold mb-2">{{ __('shop.filters.format') }}</h3>
+                    <label class="flex items-center gap-2 text-sm mb-1">
+                        <input type="checkbox" wire:model.live="formats" value="paper"
+                            class="rounded border-gray-300 text-accent focus:ring-accent">
+                        <span>{{ __('shop.filters.format_paper') }}</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" wire:model.live="formats" value="ebook"
+                            class="rounded border-gray-300 text-accent focus:ring-accent">
+                        <span>{{ __('shop.filters.format_ebook') }}</span>
+                    </label>
+                </div>
+
+                {{-- Sort --}}
+                <div>
+                    <h3 class="font-semibold mb-2">{{ __('shop.sort.title') }}</h3>
+                    <select wire:model.live="sort"
+                        class="w-full border rounded px-3 py-2 text-sm focus:ring-accent focus:border-accent">
+                        <option value="popular">{{ __('shop.sort.popular') }}</option>
+                        <option value="new">{{ __('shop.sort.new') }}</option>
+                        <option value="price_asc">{{ __('shop.sort.price_asc') }}</option>
+                        <option value="price_desc">{{ __('shop.sort.price_desc') }}</option>
+                    </select>
+                </div>
+
+                {{-- Reset --}}
+                <button wire:click="resetFilters"
+                    class="w-full bg-neutral-100 hover:bg-neutral-200 text-sm py-2 rounded-lg font-semibold transition">
+                    {{ __('shop.filters.reset') }}
+                </button>
+
+            </div>
+        </div>
+    </div>
+
     </div>
 </section>

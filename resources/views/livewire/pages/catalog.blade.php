@@ -71,7 +71,8 @@
     </div>
 
     <!-- Books Grid -->
-    <div>
+    <div class="mt-20 sm:mt-28 md:mt-32">
+
         <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-5">
             @foreach ($books as $book)
                 <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope
@@ -116,7 +117,7 @@
     <!-- Mobile slide-over stays same -->
     <div x-show="filtersOpen" class="fixed inset-0 bg-black/50 z-50 flex md:hidden" x-cloak>
         <div @click.away="filtersOpen = false"
-            class="mr-auto bg-white w-80 h-full p-4 overflow-y-auto shadow-xl absolute left-0 top-0"
+            class="mr-auto bg-white w-80 h-full p-4 overflow-y-scroll overscroll-contain shadow-xl absolute left-0 top-0"
             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="-translate-x-full"
             x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full">

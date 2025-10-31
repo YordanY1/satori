@@ -8,41 +8,49 @@
         </a>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        @foreach ($posts as $p)
-            <article class="bg-background rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col"
-                itemscope itemtype="https://schema.org/BlogPosting">
+    @if (empty($posts) || count($posts) === 0)
+        <div class="bg-background border border-neutral/40 rounded-xl p-6 text-center text-text">
+            {{ __('blog.empty') }}
+        </div>
+    @else
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            @foreach ($posts as $p)
+                <article
+                    class="bg-background rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col"
+                    itemscope itemtype="https://schema.org/BlogPosting">
 
-                <a href="{{ $p['url'] }}" itemprop="url">
-                    <img src="{{ $p['cover'] }}" alt="{{ __('blog.cover', ['title' => $p['title']]) }}"
-                        class="w-full h-40 object-cover" itemprop="image">
-                </a>
+                    <a href="{{ $p['url'] }}" itemprop="url">
+                        <img src="{{ $p['cover'] }}" alt="{{ __('blog.cover', ['title' => $p['title']]) }}"
+                            class="w-full h-40 object-cover" itemprop="image">
+                    </a>
 
-                <div class="p-4 flex flex-col flex-1">
-                    <h3 class="font-semibold text-text text-base sm:text-lg mb-1" itemprop="headline">
-                        <a href="{{ $p['url'] }}" class="hover:text-accent transition" itemprop="mainEntityOfPage">
-                            {{ $p['title'] }}
-                        </a>
-                    </h3>
+                    <div class="p-4 flex flex-col flex-1">
+                        <h3 class="font-semibold text-text text-base sm:text-lg mb-1" itemprop="headline">
+                            <a href="{{ $p['url'] }}" class="hover:text-accent transition"
+                                itemprop="mainEntityOfPage">
+                                {{ $p['title'] }}
+                            </a>
+                        </h3>
 
-                    <p class="text-sm text-secondary line-clamp-2 mb-3" itemprop="description">
-                        {{ $p['excerpt'] }}
-                    </p>
+                        <p class="text-sm text-secondary line-clamp-2 mb-3" itemprop="description">
+                            {{ $p['excerpt'] }}
+                        </p>
 
-                    @if (!empty($p['date']))
-                        <meta itemprop="datePublished" content="{{ $p['date'] }}">
-                        <meta itemprop="dateModified" content="{{ $p['date'] }}">
-                    @endif
+                        @if (!empty($p['date']))
+                            <meta itemprop="datePublished" content="{{ $p['date'] }}">
+                            <meta itemprop="dateModified" content="{{ $p['date'] }}">
+                        @endif
 
-                    <div class="mt-auto pt-3">
-                        <a href="{{ $p['url'] }}"
-                            class="inline-block w-full text-center px-4 py-2 text-sm font-medium text-text border border-accent rounded-lg hover:bg-accent/10 hover:text-text transition"
-                            aria-label="{{ __('blog.read_more_aria', ['title' => $p['title']]) }}">
-                            {{ __('blog.read_more') }}
-                        </a>
+                        <div class="mt-auto pt-3">
+                            <a href="{{ $p['url'] }}"
+                                class="inline-block w-full text-center px-4 py-2 text-sm font-medium text-text border border-accent rounded-lg hover:bg-accent/10 hover:text-text transition"
+                                aria-label="{{ __('blog.read_more_aria', ['title' => $p['title']]) }}">
+                                {{ __('blog.read_more') }}
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </article>
-        @endforeach
-    </div>
+                </article>
+            @endforeach
+        </div>
+    @endif
 </section>

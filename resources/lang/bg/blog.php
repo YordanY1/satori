@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'section_title' => 'Статии и вдъхновение от блога на Издателство Сатори',
-    'see_all' => 'Виж всички статии',
-    'cover' => 'Корица на статията „:title“ от блога на Издателство Сатори',
-    'read_more' => 'Прочети цялата статия →',
-    'read_more_aria' => 'Прочети повече за „:title“',
+    'section_title' => 'Insights & Articles from Satori Publishing',
+    'see_all' => 'View all articles',
+    'cover' => 'Cover image of the article “:title” from the Satori Publishing Blog',
+    'read_more' => 'Read full article →',
+    'read_more_aria' => 'Read more about “:title”',
 
-    'title' => 'Блог | Издателство Сатори – статии, размисли и вдъхновение',
-    'empty' => 'Все още няма публикувани статии в блога на Издателство Сатори.',
-    'by' => '✍ Автор: :author',
-    'date' => '📅 Публикувано на :date',
-    'unknown_author' => 'Неизвестен автор',
+    'title' => 'Satori Blog — Articles & Reflections',
+    'empty' => 'No articles have been published on the Satori Blog yet.',
+    'by' => '✍ Written by :author',
+    'date' => '📅 Published on :date',
+    'unknown_author' => 'Unknown author',
 ];

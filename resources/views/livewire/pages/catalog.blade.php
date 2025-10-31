@@ -80,7 +80,7 @@
         </aside>
 
         {{-- Books Grid --}}
-        <div class="md:col-span-3"">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($books as $book)
                     <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope

@@ -32,16 +32,25 @@ class Catalog extends Component
     protected $queryString = [
         'sort' => ['except' => 'popular'],
         'page' => ['except' => 1],
+        'filters.genre' => ['except' => null],
+        'filters.author' => ['except' => null],
+        'filters.format' => ['except' => null],
     ];
 
     public function mount(): void
     {
+
         $this->authorOptions = Author::orderBy('name')->get(['id', 'name', 'slug']);
         $this->genreOptions = Genre::orderBy('name')->get(['id', 'name', 'slug']);
 
         $author = request('author');
         $genre = request('genre');
         $format = request('format');
+
+        logger('CATALOG_DEBUG', [
+            'request_genre' => request('genre'),
+            'filters_genre' => $this->filters['genre'] ?? null,
+        ]);
 
         if ($author && ($m = Author::where('slug', $author)->first())) {
             $this->filters['author'] = $m->id;

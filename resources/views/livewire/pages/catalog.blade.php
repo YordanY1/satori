@@ -2,38 +2,32 @@
     <h1 id="catalog-title" class="text-3xl font-bold mb-6">
         {{ __('shop.title') }}
     </h1>
-
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
 
-            <label class="sr-only" for="filter-author">{{ __('shop.filters.author_label') }}</label>
-            <select id="filter-author" wire:model.live="filters.author" class="border rounded px-3 py-2 w-full sm:w-auto">
-                <option value="">{{ __('shop.filters.author_all') }}</option>
+            <select wire:model.live="author" class="border rounded px-3 py-2 w-full sm:w-auto">
+                <option value="0">{{ __('shop.filters.author_all') }}</option>
                 @foreach ($authorOptions as $opt)
-                    <option value="{{ $opt->id }}">{{ $opt->name }}</option>
+                    <option value="{{ $opt['slug'] }}">{{ $opt['name'] }}</option>
                 @endforeach
             </select>
 
-            <label class="sr-only" for="filter-genre">{{ __('shop.filters.genre_label') }}</label>
-            <select id="filter-genre" wire:model.live="filters.genre" class="border rounded px-3 py-2 w-full sm:w-auto">
-                <option value="">{{ __('shop.filters.genre_all') }}</option>
+            <select wire:model.live="genre" class="border rounded px-3 py-2 w-full sm:w-auto">
+                <option value="0">{{ __('shop.filters.genre_all') }}</option>
                 @foreach ($genreOptions as $opt)
-                    <option value="{{ $opt->id }}">{{ $opt->name }}</option>
+                    <option value="{{ $opt['slug'] }}">{{ $opt['name'] }}</option>
                 @endforeach
             </select>
 
-            <label class="sr-only" for="filter-format">{{ __('shop.filters.format_label') }}</label>
-            <select id="filter-format" wire:model.live="filters.format"
-                class="border rounded px-3 py-2 w-full sm:w-auto">
-                <option value="">{{ __('shop.filters.format_all') }}</option>
+            <select wire:model.live="format" class="border rounded px-3 py-2 w-full sm:w-auto">
+                <option value="0">{{ __('shop.filters.format_all') }}</option>
                 <option value="paper">{{ __('shop.filters.format_paper') }}</option>
                 <option value="ebook">{{ __('shop.filters.format_ebook') }}</option>
             </select>
         </div>
 
         <div class="w-full sm:w-auto">
-            <label class="sr-only" for="sort-books">{{ __('shop.sort.label') }}</label>
-            <select id="sort-books" wire:model.live="sort" class="border rounded px-3 py-2 w-full sm:w-auto">
+            <select wire:model.live="sort" class="border rounded px-3 py-2 w-full sm:w-auto">
                 <option value="popular">{{ __('shop.sort.popular') }}</option>
                 <option value="new">{{ __('shop.sort.new') }}</option>
                 <option value="price_asc">{{ __('shop.sort.price_asc') }}</option>
@@ -41,6 +35,7 @@
             </select>
         </div>
     </div>
+
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         @foreach ($books as $book)

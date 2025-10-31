@@ -112,17 +112,6 @@ class Catalog extends Component
     public function updatedFilters()
     {
         $this->resetPage();
-
-        $authorSlug = optional(Author::find($this->filters['author']))->slug;
-        $genreSlug = optional(Genre::find($this->filters['genre']))->slug;
-
-        $query = array_filter([
-            'author' => $authorSlug,
-            'genre' => $genreSlug,
-            'format' => $this->filters['format'],
-        ], fn ($v) => filled($v));
-
-        return redirect()->route('catalog', $query);
     }
 
     public function updatedSort(): void

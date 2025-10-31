@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'title'    => 'Genres / Topics',
+    'title' => 'Genres / Topics',
     'subtitle' => 'Discover books by the topics that inspire you.',
-    'aria'     => 'View books in category :name',
+    'aria' => 'View books in category :name',
+    'back_to_catalog' => '← Back to catalog',
 ];

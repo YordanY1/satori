@@ -10,12 +10,9 @@
         </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-
+    <div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8">
         {{-- Sidebar (desktop only) --}}
-        <aside class="space-y-6 hidden md:block md:col-span-1">
-
-
+        <aside class="hidden md:block w-[220px] space-y-6">
             {{-- Authors --}}
             <div>
                 <h3 class="font-semibold mb-2">{{ __('shop.filters.author') }}</h3>

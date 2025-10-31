@@ -47,11 +47,6 @@ class Catalog extends Component
         $genre = request('genre');
         $format = request('format');
 
-        logger('CATALOG_DEBUG', [
-            'request_genre' => request('genre'),
-            'filters_genre' => $this->filters['genre'] ?? null,
-        ]);
-
         if ($author && ($m = Author::where('slug', $author)->first())) {
             $this->filters['author'] = $m->id;
         }
@@ -63,6 +58,11 @@ class Catalog extends Component
         if ($format) {
             $this->filters['format'] = $format;
         }
+
+        logger('CATALOG_DEBUG', [
+            'request_genre' => $genre,
+            'filters_genre' => $this->filters['genre'],
+        ]);
 
         $this->seo = [
             'title' => 'Каталог — Издателство Сатори',

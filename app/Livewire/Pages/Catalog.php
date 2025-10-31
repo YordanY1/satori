@@ -49,20 +49,6 @@ class Catalog extends Component
     {
         if (in_array($field, ['author', 'genre', 'format', 'sort'])) {
             $this->resetPage();
-
-            // Convert selected ID → slug (Livewire sometimes gives ID on change)
-            if ($field === 'author' && $this->author !== '0') {
-                $this->author = Author::where('slug', $this->author)->exists()
-                    ? $this->author
-                    : (Author::find((int) $this->author)->slug ?? '0');
-            }
-
-            if ($field === 'genre' && $this->genre !== '0') {
-                $this->genre = Genre::where('slug', $this->genre)->exists()
-                    ? $this->genre
-                    : (Genre::find((int) $this->genre)->slug ?? '0');
-            }
-
             $this->generateSeo();
         }
     }

@@ -1,54 +1,41 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Livewire\Pages\Home;
-use App\Livewire\Pages\{
-    Catalog,
-    Authors,
-    Events,
-    Blog,
-    About,
-    Contact,
-    BlogShow,
-    BookShow,
-    AuthorShow,
-    EventShow,
-    Cart,
-    Checkout,
-    OrderShow,
-    Genres,
-    GenreShow,
-    ThankYou
-};
-
 use App\Http\Controllers\Http\Newsletter\ConfirmController;
-use App\Http\Controllers\Http\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Http\Newsletter\ExcerptController;
-
-
+use App\Http\Controllers\Http\Newsletter\UnsubscribeController;
+use App\Livewire\Auth\ForgotPasswordForm;
 use App\Livewire\Auth\LoginPage;
 use App\Livewire\Auth\RegisterPage;
-use App\Livewire\Profile\Overview;
-use Illuminate\Support\Facades\Auth;
-use App\Livewire\Profile\Settings;
-use App\Livewire\Profile\Orders;
-use App\Livewire\Profile\Favorites;
-use App\Livewire\Auth\ForgotPasswordForm;
 use App\Livewire\Auth\ResetPasswordForm;
-use App\Livewire\Pages\PrivacyPolicy;
+use App\Livewire\Pages\About;
+use App\Livewire\Pages\Authors;
+use App\Livewire\Pages\AuthorShow;
+use App\Livewire\Pages\Blog;
+use App\Livewire\Pages\BlogShow;
+use App\Livewire\Pages\BookShow;
+use App\Livewire\Pages\Cart;
+use App\Livewire\Pages\Catalog;
+use App\Livewire\Pages\Checkout;
+use App\Livewire\Pages\Contact;
 use App\Livewire\Pages\CookiePolicy;
+use App\Livewire\Pages\Events;
+use App\Livewire\Pages\EventShow;
+use App\Livewire\Pages\Genres;
+use App\Livewire\Pages\GenreShow;
+use App\Livewire\Pages\Home;
+use App\Livewire\Pages\OrderShow;
+use App\Livewire\Pages\PrivacyPolicy;
 use App\Livewire\Pages\Terms;
-
+use App\Livewire\Pages\ThankYou;
+use App\Livewire\Profile\Favorites;
+use App\Livewire\Profile\Orders;
+use App\Livewire\Profile\Overview;
+use App\Livewire\Profile\Settings;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', Home::class)->name('home');
-
-Route::get('/catalog/{author?}/{genre?}/{format?}', Catalog::class)
-    ->name('catalog')
-    ->where([
-        'author' => '[A-Za-z0-9\-]+',
-        'genre' => '[A-Za-z0-9\-]+',
-        'format' => '(paper|ebook)?'
-    ]);
+Route::get('/catalog', Catalog::class)->name('catalog');
 
 Route::get('/authors', Authors::class)->name('authors');
 Route::get('/events', Events::class)->name('events');
@@ -69,11 +56,9 @@ Route::get('/genres', Genres::class)->name('genres');
 Route::get('/genre/{slug}', GenreShow::class)->name('genre.show');
 Route::get('/thank-you/{order}', ThankYou::class)->name('thankyou');
 
-
 Route::get('/newsletter/confirm/{token}', ConfirmController::class)->name('newsletter.confirm');
 Route::get('/newsletter/unsubscribe/{token}', UnsubscribeController::class)->name('newsletter.unsubscribe');
 Route::get('/newsletter/excerpt/{token}', ExcerptController::class)->name('newsletter.excerpt');
-
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', LoginPage::class)->name('login');
@@ -91,10 +76,10 @@ Route::middleware('auth')->group(function () {
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+
         return redirect()->route('home');
     })->name('logout');
 });
-
 
 Route::get('/privacy-policy', PrivacyPolicy::class)->name('privacy');
 Route::get('/cookie-policy', CookiePolicy::class)->name('cookies');

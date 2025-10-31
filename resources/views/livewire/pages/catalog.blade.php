@@ -109,7 +109,8 @@
                 @endforeach
             </div>
 
-            <div class="mt-6">{{ $booksPaginator->links() }}</div>
+            <x-pagination :paginator="$booksPaginator" />
+
         </div>
     </div>
 

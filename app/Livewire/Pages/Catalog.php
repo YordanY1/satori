@@ -133,6 +133,11 @@ class Catalog extends Component
         ];
     }
 
+    public function paginationView()
+    {
+        return 'components.pagination';
+    }
+
     public function render()
     {
         $q = Book::query()

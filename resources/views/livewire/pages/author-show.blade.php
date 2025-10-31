@@ -125,7 +125,9 @@
                     {{ __('author.books') }}
                     <span class="text-neutral-500">({{ count($author['books']) }})</span>
                 </h2>
-                <a href="{{ route('catalog') }}" class="text-sm text-accent hover:underline transition">
+
+                <a href="{{ route('catalog', ['author' => $author['slug'] ?? null]) }}"
+                    class="text-sm text-accent hover:underline transition">
                     {{ __('author.view_all') }}
                 </a>
             </div>
@@ -133,53 +135,45 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 @foreach ($author['books'] as $b)
                     @continue(empty($b['slug']) || empty($b['title']))
-                    <article class="bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition flex flex-col"
-                        itemscope itemtype="https://schema.org/Book">
 
-                        <a href="{{ route('book.show', $b['slug']) }}"
-                            aria-label="{{ __('author.aria.view_book', ['title' => $b['title']]) }}" itemprop="url">
-                            @if (!empty($b['cover']))
-                                <div class="relative">
-                                    <img src="{{ $b['cover'] }}"
-                                        alt="{{ __('author.alt.cover', ['title' => $b['title']]) }}"
-                                        class="w-full h-40 sm:h-48 object-cover rounded-xl mb-3" loading="lazy"
-                                        itemprop="image">
+                    <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope
+                        itemtype="https://schema.org/Book">
 
+                        <div class="relative">
+                            <a href="{{ route('book.show', $b['slug']) }}" aria-label="{{ $b['title'] }}">
+                                <img src="{{ $b['cover'] }}"
+                                    alt="{{ __('author.alt.cover', ['title' => $b['title']]) }}"
+                                    class="w-full h-56 sm:h-64 md:h-72 object-cover rounded-t-xl" loading="lazy"
+                                    itemprop="image">
+                            </a>
 
-                                    <div class="absolute top-2 right-2">
-                                        <livewire:favorite-button :book-id="$b['id']"
-                                            wire:key="fav-author-{{ $b['id'] }}" />
-                                    </div>
-                                </div>
-                            @else
-                                <div
-                                    class="w-full h-40 sm:h-48 bg-neutral-100 rounded-xl mb-3
-                                            grid place-items-center text-neutral-400">
-                                    {{ __('author.no_cover') }}
-                                </div>
+                            <div class="absolute top-2 right-2">
+                                <livewire:favorite-button :book-id="$b['id']"
+                                    wire:key="fav-author-{{ $b['id'] }}" />
+                            </div>
+                        </div>
+
+                        <div class="p-3 flex flex-col gap-2 flex-1">
+                            <h3 class="font-medium text-sm sm:text-base line-clamp-2" itemprop="name">
+                                {{ $b['title'] }}
+                            </h3>
+
+                            @if (isset($b['price']))
+                                <span class="text-accent font-bold" itemprop="offers" itemscope
+                                    itemtype="https://schema.org/Offer">
+                                    <meta itemprop="priceCurrency" content="BGN">
+                                    <span itemprop="price">{{ number_format($b['price'], 2) }}</span>
+                                    {{ __('shop.currency') }}
+                                </span>
                             @endif
-                        </a>
 
-                        <h3 class="font-medium text-sm sm:text-base line-clamp-2 mb-1" itemprop="name">
-                            {{ $b['title'] }}
-                        </h3>
-
-                        @if (isset($b['price']))
-                            <p class="text-secondary text-sm mb-2" itemprop="offers" itemscope
-                                itemtype="https://schema.org/Offer">
-                                <meta itemprop="priceCurrency" content="BGN">
-                                <span itemprop="price">{{ number_format((float) $b['price'], 2) }}</span>
-                                {{ __('shop.currency') }}
-                            </p>
-                        @endif
-
-                        @if (!empty($b['id']))
-                            <button wire:click="addToCart({{ (int) $b['id'] }})" :key="'author-book-btn-'.$b['id']"
-                                class="mt-auto w-full rounded-xl bg-white text-black py-2 text-sm font-bold shadow-sm
-                                           focus-visible:ring-2 focus-visible:ring-accent/40 transition cursor-pointer border border-black">
+                            <button wire:click="addToCart({{ (int) $b['id'] }})"
+                                class="mt-auto rounded-xl bg-white text-black border border-black font-semibold px-3 py-2 text-sm
+                               transition cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                                aria-label="{{ __('shop.aria.add_to_cart', ['title' => $b['title']]) }}">
                                 {{ __('shop.add_to_cart') }}
                             </button>
-                        @endif
+                        </div>
                     </article>
                 @endforeach
             </div>

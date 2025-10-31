@@ -5,7 +5,7 @@
         {{ __('shop.title') }}
     </h1>
 
-    <!-- Mobile button -->
+    <!-- Mobile filter button -->
     <div class="md:hidden mb-4">
         <button @click="filtersOpen = true" class="w-full bg-black text-white py-3 rounded-lg font-semibold text-sm">
             {{ __('shop.filters.title') }}
@@ -15,7 +15,7 @@
     <!-- Layout -->
     <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-8">
 
-        <!-- Sidebar (desktop) -->
+        <!-- Sidebar Desktop -->
         <aside class="space-y-6 hidden md:block">
 
             {{-- Authors --}}
@@ -102,7 +102,6 @@
 
                             <div class="text-accent font-bold text-sm sm:text-base leading-tight">
                                 {{ number_format($book['price'], 2) }} {{ __('shop.currency') }}
-
                                 @if (!empty($book['price_eur']))
                                     <span class="text-gray-500 text-xs sm:text-sm font-normal">
                                         ({{ number_format($book['price_eur'], 2) }} €)
@@ -125,19 +124,16 @@
         </div>
     </div>
 
-    <!-- Overlay (mobile) -->
+    <!-- MODAL OVERLAY (mobile) -->
     <div x-show="filtersOpen" x-cloak class="fixed inset-0 bg-black/50 z-50 md:hidden" @click="filtersOpen = false"
-        @touchmove.prevent>
+        @touchmove.prevent x-transition.opacity>
     </div>
 
-    <!-- Drawer (mobile) -->
-    <div x-show="filtersOpen" x-cloak
-        class="fixed left-0 top-0 z-50 w-80 h-full bg-white p-4 shadow-xl md:hidden
-                overflow-y-auto overscroll-contain"
-        @click.away="filtersOpen = false" x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
-        x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="-translate-x-full">
+    <!-- FULLSCREEN MOBILE FILTERS -->
+    <div x-show="filtersOpen" x-cloak class="fixed inset-0 bg-white z-50 p-4 md:hidden flex flex-col overflow-y-auto"
+        x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-3"
+        x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-3">
 
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-bold">{{ __('shop.filters.title') }}</h2>
@@ -150,7 +146,7 @@
             {{-- Authors --}}
             <div>
                 <h3 class="font-semibold mb-2">{{ __('shop.filters.author') }}</h3>
-                <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                <div class="space-y-1 max-h-56 overflow-y-auto pr-1">
                     @foreach ($authorOptions as $opt)
                         <label class="flex items-center gap-2 text-sm cursor-pointer">
                             <input type="checkbox" wire:model.live="authors" value="{{ $opt['slug'] }}"
@@ -164,7 +160,7 @@
             {{-- Genres --}}
             <div>
                 <h3 class="font-semibold mb-2">{{ __('shop.filters.genre') }}</h3>
-                <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                <div class="space-y-1 max-h-56 overflow-y-auto pr-1">
                     @foreach ($genreOptions as $opt)
                         <label class="flex items-center gap-2 text-sm cursor-pointer">
                             <input type="checkbox" wire:model.live="genres" value="{{ $opt['slug'] }}"
@@ -175,7 +171,7 @@
                 </div>
             </div>
 
-            {{-- Format --}}
+            {{-- Formats --}}
             <div>
                 <h3 class="font-semibold mb-2">{{ __('shop.filters.format') }}</h3>
                 <label class="flex items-center gap-2 text-sm mb-1">

@@ -7,6 +7,7 @@ use App\Models\Author;
 use App\Models\Book;
 use App\Models\Genre;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,130 +15,113 @@ class Catalog extends Component
 {
     use UsesCart, WithPagination;
 
-    public array $filters = [
-        'author' => null,
-        'genre' => null,
-        'format' => null,
-        'price' => null,
-    ];
+    #[Url]
+    public ?string $author = null; // slug or "0"
 
+    #[Url]
+    public ?string $genre = null;  // slug or "0"
+
+    #[Url]
+    public ?string $format = null;
+
+    #[Url(except: 'popular')]
     public string $sort = 'popular';
 
-    public $authorOptions = [];
+    public array $authorOptions = [];
 
-    public $genreOptions = [];
+    public array $genreOptions = [];
 
     public array $seo = [];
 
-    protected $queryString = [
-        'filters',
-        'sort' => ['except' => 'popular'],
-        'page' => ['except' => 1],
-    ];
-
-    public function mount(?string $author = null, ?string $genre = null, ?string $format = null): void
+    public function mount(): void
     {
-        $this->authorOptions = Author::orderBy('name')->get(['id', 'name', 'slug']);
-        $this->genreOptions = Genre::orderBy('name')->get(['id', 'name', 'slug']);
+        $this->authorOptions = Author::orderBy('name')->get(['id', 'name', 'slug'])->toArray();
+        $this->genreOptions = Genre::orderBy('name')->get(['id', 'name', 'slug'])->toArray();
 
-        // Default SEO
+        $this->author ??= '0';
+        $this->genre ??= '0';
+        $this->format ??= '0';
+
+        $this->generateSeo();
+    }
+
+    public function updated($field): void
+    {
+        if (in_array($field, ['author', 'genre', 'format', 'sort'])) {
+            $this->resetPage();
+
+            $this->author = $this->author !== '0'
+                ? (Author::find((int) $this->author)->slug ?? '0')
+                : '0';
+
+            $this->genre = $this->genre !== '0'
+                ? (Genre::find((int) $this->genre)->slug ?? '0')
+                : '0';
+
+            $this->generateSeo();
+        }
+    }
+
+    protected function generateSeo(): void
+    {
+        $title = 'Каталог — Издателство Сатори';
+        $description = 'Разгледай каталога на Издателство Сатори – книги по жанрове, автори и формати.';
+
+        if ($this->author !== '0') {
+            if ($m = Author::where('slug', $this->author)->first()) {
+                $title = "Книги от {$m->name} — Издателство Сатори";
+                $description = "Открий книги от {$m->name}.";
+            }
+        }
+
+        if ($this->genre !== '0') {
+            if ($g = Genre::where('slug', $this->genre)->first()) {
+                $title = "Книги в жанр {$g->name} — Издателство Сатори";
+                $description = "Разгледай книги в категория {$g->name}.";
+            }
+        }
+
+        if ($this->format !== '0') {
+            $formatName = $this->format === 'paper' ? 'Хартиено издание' : 'Е-книга';
+            $title = "{$formatName} — Издателство Сатори";
+            $description = "Разгледай книги във формат {$formatName}.";
+        }
+
         $this->seo = [
-            'title' => 'Каталог — Издателство Сатори',
-            'description' => 'Разгледай каталога на Издателство Сатори – книги по жанрове, автори и формати. Литература, духовност, философия и вдъхновение за осъзнат живот.',
-            'keywords' => 'издателство сатори, книги, каталог, автори, жанрове, духовност, философия, литература',
+            'title' => $title,
+            'description' => $description,
             'canonical' => url()->current(),
-            'og:title' => 'Каталог — Издателство Сатори',
-            'og:description' => 'Пълен каталог на книги по жанрове и автори от Издателство Сатори.',
+            'og:title' => $title,
+            'og:description' => $description,
             'og:type' => 'website',
             'og:image' => asset('images/og/catalog.jpg'),
             'twitter:card' => 'summary_large_image',
-            'twitter:title' => 'Каталог — Издателство Сатори',
-            'twitter:description' => 'Всички книги по жанрове, автори и формати от Издателство Сатори.',
+            'twitter:title' => $title,
+            'twitter:description' => $description,
             'twitter:image' => asset('images/og/catalog.jpg'),
         ];
 
-        // Dynamic SEO by filter
-        if ($author) {
-            $authorModel = Author::where('slug', $author)->first();
-            if ($authorModel) {
-                $this->seo['title'] = "Книги от {$authorModel->name} — Издателство Сатори";
-                $this->seo['description'] = "Открий книги от {$authorModel->name} в каталога на Издателство Сатори — вдъхновение, философия и духовност.";
-            }
-        }
-
-        if ($genre) {
-            $genreModel = Genre::where('slug', $genre)->first();
-            if ($genreModel) {
-                $this->seo['title'] = "Книги в жанр {$genreModel->name} — Издателство Сатори";
-                $this->seo['description'] = "Разгледай книги в категория {$genreModel->name} от Издателство Сатори — литература, вдъхновение и осъзнат живот.";
-            }
-        }
-
-        if ($format) {
-            $this->filters['format'] = $format;
-        }
-
-        // Base schema
         $this->seo['schema'] = [
             '@context' => 'https://schema.org',
             '@type' => 'CollectionPage',
-            'name' => 'Каталог — Издателство Сатори',
-            'description' => 'Всички книги от Издателство Сатори, подредени по жанрове, автори и формати.',
+            'name' => $this->seo['title'],
+            'description' => $this->seo['description'],
             'url' => url()->current(),
             'publisher' => [
                 '@type' => 'Organization',
-                '@id' => url('#organization'),
                 'name' => 'Издателство Сатори',
-                'alternateName' => 'Сатори Ко',
                 'url' => url('/'),
                 'logo' => asset('images/logo.png'),
-                'sameAs' => [
-                    'https://www.facebook.com/VBelenski',
-                ],
-                'contactPoint' => [
-                    [
-                        '@type' => 'ContactPoint',
-                        'contactType' => 'Customer Support',
-                        'telephone' => '+359 87 849 0782',
-                        'email' => 'satorico@abv.bg',
-                        'areaServed' => 'BG',
-                        'availableLanguage' => ['Bulgarian', 'English'],
-                    ],
-                ],
-                'address' => [
-                    '@type' => 'PostalAddress',
-                    'streetAddress' => 'ж.к. Овча Купел 1, бл. 411, магазин 2',
-                    'addressLocality' => 'София',
-                    'postalCode' => '1632',
-                    'addressCountry' => 'BG',
-                ],
             ],
             'mainEntity' => [
                 '@type' => 'ItemList',
-                'name' => 'Каталог на книги от Издателство Сатори',
-                'itemListElement' => [],
+                'itemListElement' => Book::latest()->take(12)->get()->map(fn ($b) => [
+                    '@type' => 'ListItem',
+                    'name' => $b->title,
+                    'url' => route('book.show', $b->slug),
+                ])->toArray(),
             ],
         ];
-    }
-
-    public function updatedFilters($value, $key): void
-    {
-        $this->resetPage();
-
-        $authorSlug = optional(Author::find($this->filters['author']))->slug;
-        $genreSlug = optional(Genre::find($this->filters['genre']))->slug;
-        $format = $this->filters['format'];
-
-        $this->redirectRoute('catalog', [
-            'author' => $authorSlug,
-            'genre' => $genreSlug,
-            'format' => $format,
-        ]);
-    }
-
-    public function updatedSort(): void
-    {
-        $this->resetPage();
     }
 
     public function render()
@@ -146,34 +130,30 @@ class Catalog extends Component
             ->with(['author:id,name,slug', 'genres:id,name,slug'])
             ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id', 'price_eur']);
 
-        if (! empty($this->filters['author'])) {
-            $q->where('author_id', (int) $this->filters['author']);
+        if ($this->author !== '0') {
+            if ($id = Author::where('slug', $this->author)->value('id')) {
+                $q->where('author_id', $id);
+            }
         }
 
-        if (! empty($this->filters['genre'])) {
-            $q->whereHas('genres', fn ($g) => $g->where('genres.id', (int) $this->filters['genre']));
+        if ($this->genre !== '0') {
+            if ($id = Genre::where('slug', $this->genre)->value('id')) {
+                $q->whereHas('genres', fn ($g) => $g->where('genres.id', $id));
+            }
         }
 
-        if (! empty($this->filters['format'])) {
-            $q->where('format', $this->filters['format']);
+        if ($this->format !== '0') {
+            $q->where('format', $this->format);
         }
 
-        switch ($this->sort) {
-            case 'new':
-                $q->latest();
-                break;
-            case 'price_asc':
-                $q->orderBy('price', 'asc');
-                break;
-            case 'price_desc':
-                $q->orderBy('price', 'desc');
-                break;
-            default:
-                $q->latest();
-                break;
-        }
+        match ($this->sort) {
+            'new' => $q->latest(),
+            'price_asc' => $q->orderBy('price'),
+            'price_desc' => $q->orderBy('price', 'desc'),
+            default => $q->latest(),
+        };
 
-        $booksPaginator = $q->paginate(12)->withQueryString();
+        $booksPaginator = $q->paginate(12);
 
         $books = $booksPaginator->through(function (Book $b) {
             $cover = $b->cover
@@ -192,23 +172,11 @@ class Catalog extends Component
             ];
         });
 
-        // Dynamic ItemList schema
-        $this->seo['schema']['mainEntity']['itemListElement'] = $books->map(function ($b, $i) {
-            return [
-                '@type' => 'ListItem',
-                'position' => $i + 1,
-                'url' => route('book.show', $b['slug']),
-                'name' => $b['title'],
-            ];
-        })->values()->toArray();
-
         return view('livewire.pages.catalog', [
             'books' => $books,
             'booksPaginator' => $booksPaginator,
             'authorOptions' => $this->authorOptions,
             'genreOptions' => $this->genreOptions,
-        ])->layout('layouts.app', [
-            'seo' => $this->seo,
-        ]);
+        ])->layout('layouts.app', ['seo' => $this->seo]);
     }
 }

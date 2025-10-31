@@ -15,14 +15,14 @@ class Catalog extends Component
 {
     use UsesCart, WithPagination;
 
-    #[Url]
-    public ?string $author = null; // slug or "0"
+    #[Url(as: 'authors')]
+    public array $authors = [];
 
-    #[Url]
-    public ?string $genre = null;  // slug or "0"
+    #[Url(as: 'genres')]
+    public array $genres = [];
 
-    #[Url]
-    public ?string $format = null;
+    #[Url(as: 'formats')]
+    public array $formats = [];
 
     #[Url(except: 'popular')]
     public string $sort = 'popular';
@@ -35,22 +35,38 @@ class Catalog extends Component
 
     public function mount(): void
     {
+        $this->authors ??= [];
+        $this->genres ??= [];
+        $this->formats ??= [];
+
         $this->authorOptions = Author::orderBy('name')->get(['id', 'name', 'slug'])->toArray();
         $this->genreOptions = Genre::orderBy('name')->get(['id', 'name', 'slug'])->toArray();
-
-        $this->author ??= '0';
-        $this->genre ??= '0';
-        $this->format ??= '0';
 
         $this->generateSeo();
     }
 
-    public function updated($field): void
+    public function updated(): void
     {
-        if (in_array($field, ['author', 'genre', 'format', 'sort'])) {
-            $this->resetPage();
-            $this->generateSeo();
-        }
+        $this->resetPage();
+        $this->generateSeo();
+    }
+
+    public function resetFilters(): void
+    {
+        $this->authors = [];
+        $this->genres = [];
+        $this->formats = [];
+        $this->sort = 'popular';
+
+        $this->resetPage();
+        $this->generateSeo();
+    }
+
+    public function dehydrate()
+    {
+        $this->authors = array_values($this->authors);
+        $this->genres = array_values($this->genres);
+        $this->formats = array_values($this->formats);
     }
 
     protected function generateSeo(): void
@@ -58,24 +74,26 @@ class Catalog extends Component
         $title = 'Каталог — Издателство Сатори';
         $description = 'Разгледай каталога на Издателство Сатори – книги по жанрове, автори и формати.';
 
-        if ($this->author && $this->author !== '0') {
-            if ($m = Author::where('slug', $this->author)->first()) {
-                $title = "Книги от {$m->name} — Издателство Сатори";
-                $description = "Открий книги от {$m->name}.";
-            }
+        if (! empty($this->authors)) {
+            $names = Author::whereIn('slug', $this->authors)->pluck('name')->join(', ');
+            $title = "Книги от {$names} — Издателство Сатори";
+            $description = "Открий книги от {$names}.";
         }
 
-        if ($this->genre && $this->genre !== '0') {
-            if ($g = Genre::where('slug', $this->genre)->first()) {
-                $title = "Книги в жанр {$g->name} — Издателство Сатори";
-                $description = "Разгледай книги в категория {$g->name}.";
-            }
+        if (! empty($this->genres)) {
+            $names = Genre::whereIn('slug', $this->genres)->pluck('name')->join(', ');
+            $title = "Книги в жанр {$names} — Издателство Сатори";
+            $description = "Разгледай книги в категория {$names}.";
         }
 
-        if ($this->format && $this->format !== '0') {
-            $formatName = $this->format === 'paper' ? 'Хартиено издание' : 'Е-книга';
-            $title = "{$formatName} — Издателство Сатори";
-            $description = "Разгледай книги във формат {$formatName}.";
+        if (! empty($this->formats)) {
+            $map = [
+                'paper' => 'Хартиено издание',
+                'ebook' => 'Е-книга',
+            ];
+            $names = collect($this->formats)->map(fn ($f) => $map[$f] ?? $f)->join(', ');
+            $title = "{$names} — Издателство Сатори";
+            $description = "Разгледай книги във формат {$names}.";
         }
 
         $this->seo = [
@@ -119,23 +137,20 @@ class Catalog extends Component
     {
         $q = Book::query()
             ->with(['author:id,name,slug', 'genres:id,name,slug'])
-            ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id', 'price_eur']);
+            ->select(['id', 'title', 'slug', 'price', 'price_eur', 'cover', 'format', 'author_id']);
 
-        // Filter by slug → id
-        if ($this->author !== '0') {
-            if ($id = Author::where('slug', $this->author)->value('id')) {
-                $q->where('author_id', $id);
-            }
+        if (! empty($this->authors)) {
+            $ids = Author::whereIn('slug', $this->authors)->pluck('id');
+            $q->whereIn('author_id', $ids);
         }
 
-        if ($this->genre !== '0') {
-            if ($id = Genre::where('slug', $this->genre)->value('id')) {
-                $q->whereHas('genres', fn ($g) => $g->where('genres.id', $id));
-            }
+        if (! empty($this->genres)) {
+            $ids = Genre::whereIn('slug', $this->genres)->pluck('id');
+            $q->whereHas('genres', fn ($g) => $g->whereIn('genres.id', $ids));
         }
 
-        if ($this->format !== '0') {
-            $q->where('format', $this->format);
+        if (! empty($this->formats)) {
+            $q->whereIn('format', $this->formats);
         }
 
         match ($this->sort) {
@@ -145,7 +160,7 @@ class Catalog extends Component
             default => $q->latest(),
         };
 
-        $booksPaginator = $q->paginate(12);
+        $booksPaginator = $q->paginate(12)->withQueryString();
 
         $books = $booksPaginator->through(function (Book $b) {
             $cover = $b->cover

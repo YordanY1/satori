@@ -4,18 +4,25 @@ return [
     'title' => 'Book Catalog | Satori Publishing Online Bookstore',
 
     'filters' => [
-        'author_label' => 'Filter by Author',
+        'title' => 'Filters',
+        'open' => 'Filters',
+        'close' => 'Close',
+        'reset' => 'Reset filters',
+
+        'author' => 'Authors',
         'author_all' => 'All Authors',
-        'genre_label' => 'Filter by Genre',
+
+        'genre' => 'Genres',
         'genre_all' => 'All Genres',
-        'format_label' => 'Filter by Format',
+
+        'format' => 'Format',
         'format_all' => 'All Formats',
         'format_paper' => 'Paperback Edition',
         'format_ebook' => 'E-Book',
     ],
 
     'sort' => [
-        'label' => 'Sort By',
+        'title' => 'Sort By',
         'popular' => 'Most Popular',
         'new' => 'Newest First',
         'price_asc' => 'Price: Low to High',

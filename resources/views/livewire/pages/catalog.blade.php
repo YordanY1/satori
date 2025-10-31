@@ -10,10 +10,11 @@
         </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
 
         {{-- Sidebar (desktop only) --}}
-        <aside class="space-y-6 hidden md:block">
+        <aside class="space-y-6 hidden md:block md:col-span-1">
+
 
             {{-- Authors --}}
             <div>
@@ -79,7 +80,7 @@
         </aside>
 
         {{-- Books Grid --}}
-        <div>
+        <div class="md:col-span-3"">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 @foreach ($books as $book)
                     <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope

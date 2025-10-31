@@ -12,7 +12,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8">
         {{-- Sidebar (desktop only) --}}
-        <aside class="hidden md:block w-[220px] space-y-6">
+        <aside class="hidden md:block w-[220px] space-y-6 sticky top-24 h-fit z-10">
             {{-- Authors --}}
             <div>
                 <h3 class="font-semibold mb-2">{{ __('shop.filters.author') }}</h3>
@@ -77,8 +77,8 @@
         </aside>
 
         {{-- Books Grid --}}
-        <div class="md:col-span-3">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-5">
                 @foreach ($books as $book)
                     <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope
                         itemtype="https://schema.org/Book">
@@ -119,7 +119,7 @@
             <div class="mt-6">
                 {{ $booksPaginator->links() }}
             </div>
-        </div>
+        </di>
 
     </div>
 

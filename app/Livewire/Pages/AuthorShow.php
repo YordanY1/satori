@@ -39,8 +39,10 @@ class AuthorShow extends Component
         // Books
         $books = $a->books->map(function ($b) {
             $cover = $b->cover
-                ? (Str::startsWith($b->cover, ['http://', 'https://']) ? $b->cover : asset($b->cover))
-                : asset('storage/images/default-book.jpg');
+    ? (Str::startsWith($b->cover, ['http://', 'https://'])
+        ? $b->cover
+        : asset('storage/'.ltrim($b->cover, '/')))
+    : asset('storage/images/default-book.jpg');
 
             return [
                 'id' => $b->id,

@@ -7,16 +7,20 @@
         {{ __('genres.subtitle') }}
     </p>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         @foreach ($genres as $g)
             <article
-                class="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col items-center text-center"
+                class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col p-4 cursor-pointer group"
                 itemscope itemtype="https://schema.org/CategoryCodeSet">
 
-                <a href="{{ route('genre.show', $g['slug']) }}"
-                    aria-label="{{ __('genres.aria', ['name' => $g['name']]) }}">
-                    <div class="text-4xl mb-3">{{ $g['icon'] }}</div>
-                    <h2 class="font-semibold text-base sm:text-lg" itemprop="name">
+                <a href="{{ route('genre.show', $g['slug']) }}" class="flex-1 flex flex-col">
+                    <div
+                        class="aspect-[3/2] w-full bg-neutral-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-neutral-200 transition">
+                        <span class="text-4xl">{{ $g['icon'] }}</span>
+                    </div>
+
+                    <h2 class="font-medium text-sm sm:text-base line-clamp-2 text-center group-hover:text-accent transition"
+                        itemprop="name">
                         {{ $g['name'] }}
                     </h2>
                 </a>

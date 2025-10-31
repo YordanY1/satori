@@ -59,11 +59,6 @@ class Catalog extends Component
             $this->filters['format'] = $format;
         }
 
-        logger('CATALOG_DEBUG', [
-            'request_genre' => $genre,
-            'filters_genre' => $this->filters['genre'],
-        ]);
-
         $this->seo = [
             'title' => 'Каталог — Издателство Сатори',
             'description' => 'Разгледай каталога на Издателство Сатори – книги по жанрове, автори и формати.',

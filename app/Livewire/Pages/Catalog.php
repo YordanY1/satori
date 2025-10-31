@@ -49,15 +49,6 @@ class Catalog extends Component
     {
         if (in_array($field, ['author', 'genre', 'format', 'sort'])) {
             $this->resetPage();
-
-            $this->author = $this->author !== '0'
-                ? (Author::find((int) $this->author)->slug ?? '0')
-                : '0';
-
-            $this->genre = $this->genre !== '0'
-                ? (Genre::find((int) $this->genre)->slug ?? '0')
-                : '0';
-
             $this->generateSeo();
         }
     }
@@ -67,21 +58,21 @@ class Catalog extends Component
         $title = 'Каталог — Издателство Сатори';
         $description = 'Разгледай каталога на Издателство Сатори – книги по жанрове, автори и формати.';
 
-        if ($this->author !== '0') {
+        if ($this->author && $this->author !== '0') {
             if ($m = Author::where('slug', $this->author)->first()) {
                 $title = "Книги от {$m->name} — Издателство Сатори";
                 $description = "Открий книги от {$m->name}.";
             }
         }
 
-        if ($this->genre !== '0') {
+        if ($this->genre && $this->genre !== '0') {
             if ($g = Genre::where('slug', $this->genre)->first()) {
                 $title = "Книги в жанр {$g->name} — Издателство Сатори";
                 $description = "Разгледай книги в категория {$g->name}.";
             }
         }
 
-        if ($this->format !== '0') {
+        if ($this->format && $this->format !== '0') {
             $formatName = $this->format === 'paper' ? 'Хартиено издание' : 'Е-книга';
             $title = "{$formatName} — Издателство Сатори";
             $description = "Разгледай книги във формат {$formatName}.";
@@ -130,6 +121,7 @@ class Catalog extends Component
             ->with(['author:id,name,slug', 'genres:id,name,slug'])
             ->select(['id', 'title', 'slug', 'price', 'cover', 'format', 'author_id', 'price_eur']);
 
+        // Filter by slug → id
         if ($this->author !== '0') {
             if ($id = Author::where('slug', $this->author)->value('id')) {
                 $q->where('author_id', $id);

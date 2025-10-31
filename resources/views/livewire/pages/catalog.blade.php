@@ -98,15 +98,22 @@
                                 {{ $book['title'] }}
                             </h2>
 
-                            <span class="text-accent font-bold">
+                            <div class="text-accent font-bold text-sm sm:text-base leading-tight">
                                 {{ number_format($book['price'], 2) }} {{ __('shop.currency') }}
-                            </span>
+
+                                @if (!empty($book['price_eur']))
+                                    <span class="text-gray-500 text-xs sm:text-sm font-normal">
+                                        ({{ number_format($book['price_eur'], 2) }} €)
+                                    </span>
+                                @endif
+                            </div>
 
                             <button wire:click="addToCart({{ $book['id'] }})"
                                 class="mt-auto rounded-xl border border-black font-semibold px-3 py-2 text-sm hover:bg-gray-100">
                                 {{ __('shop.add_to_cart') }}
                             </button>
                         </div>
+
                     </article>
                 @endforeach
             </div>

@@ -20,6 +20,8 @@ use Stripe\StripeClient;
 
 class Checkout extends Component
 {
+    const BGN_EUR_RATE = 1.95583;
+
     protected $listeners = ['cart-updated' => 'recalcShipping'];
 
     public function recalcShipping()
@@ -622,10 +624,16 @@ class Checkout extends Component
 
     public function render()
     {
-        $subtotal = (float) Cart::total();
-        $subtotalEur = (float) Cart::totalEur();
+        $subtotal = (float) Cart::total();           // BGN
+        $subtotalEur = (float) Cart::totalEur();     // EUR
+
         $total = round($subtotal + $this->shippingCost, 2);
-        $totalEur = round($subtotalEur + 0, 2);
+
+        $eurShipping = $this->shippingCost > 0
+            ? round($this->shippingCost / self::BGN_EUR_RATE, 2)
+            : 0;
+
+        $totalEur = round($subtotalEur + $eurShipping, 2);
 
         return view('livewire.pages.checkout', [
             'cart' => Cart::all(),

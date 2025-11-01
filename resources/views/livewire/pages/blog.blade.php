@@ -30,9 +30,11 @@
                     </div>
 
                     <a wire:navigate href="{{ route('blog.show', $post['slug']) }}"
-                        class="mt-auto px-4 py-2 rounded-lg bg-accent text-black font-semibold hover:bg-accent/90 transition text-center">
+                        class="mt-auto inline-block w-full text-center px-4 py-2 text-sm font-medium text-text border border-accent rounded-lg hover:bg-accent/10 hover:text-text transition"
+                        aria-label="{{ __('blog.read_more_aria', ['title' => $post['title']]) }}">
                         {{ __('blog.read_more') }}
                     </a>
+
                 </article>
             @endforeach
         </div>

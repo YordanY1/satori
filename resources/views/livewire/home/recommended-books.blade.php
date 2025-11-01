@@ -38,27 +38,25 @@
                             </a>
                         </h3>
 
-                        <p class="text-primary font-bold text-lg sm:text-xl mt-2 leading-tight" itemprop="offers"
-                            itemscope itemtype="https://schema.org/AggregateOffer">
+                        <p class="text-primary text-2xl font-bold mt-4" itemprop="offers" itemscope
+                            itemtype="https://schema.org/AggregateOffer">
 
                             {{-- BGN price --}}
                             <span itemscope itemtype="https://schema.org/Offer">
                                 <span itemprop="price">{{ number_format($b->price, 2) }}</span>
                                 {{ __('catalog.currency') }}
-                                <meta itemprop="priceCurrency" content="BGN">
+                                <meta itemprop="priceCurrency" content="BGN" />
                             </span>
 
                             {{-- EUR price --}}
                             @if (!empty($b->price_eur))
                                 <br>
-                                <span class="text-sm text-gray-500 font-medium" itemscope
-                                    itemtype="https://schema.org/Offer">
+                                <span itemscope itemtype="https://schema.org/Offer" class="text-base text-gray-500">
                                     <span itemprop="price">{{ number_format($b->price_eur, 2) }}</span> €
-                                    <meta itemprop="priceCurrency" content="EUR">
+                                    <meta itemprop="priceCurrency" content="EUR" />
                                 </span>
                             @endif
                         </p>
-
                     </div>
 
                     <button wire:click="addToCart({{ $b->id }})"

@@ -38,19 +38,19 @@
                             </a>
                         </h3>
 
-                        <p class="text-secondary text-sm mt-2 leading-tight" itemprop="offers" itemscope
+                        <p class="text-secondary text-sm mt-1" itemprop="offers" itemscope
                             itemtype="https://schema.org/AggregateOffer">
                             <span itemscope itemtype="https://schema.org/Offer">
                                 <span itemprop="price">{{ number_format($b->price, 2) }}</span>
                                 {{ __('catalog.currency') }}
-                                <meta itemprop="priceCurrency" content="BGN">
+                                <meta itemprop="priceCurrency" content="BGN" />
                             </span>
 
                             @if (!empty($b->price_eur))
-                                <span itemscope itemtype="https://schema.org/Offer"
-                                    class="text-xs text-gray-500 block mt-0.5">
+                                <br>
+                                <span itemscope itemtype="https://schema.org/Offer" class="text-xs text-gray-500">
                                     <span itemprop="price">{{ number_format($b->price_eur, 2) }}</span> €
-                                    <meta itemprop="priceCurrency" content="EUR">
+                                    <meta itemprop="priceCurrency" content="EUR" />
                                 </span>
                             @endif
                         </p>

@@ -124,7 +124,9 @@ class Blog extends Component
 
         $posts = $paginator->through(function (Post $p) {
             $cover = $p->cover
-                ? (Str::startsWith($p->cover, ['http://', 'https://']) ? $p->cover : asset($p->cover))
+                ? (Str::startsWith($p->cover, ['http://', 'https://'])
+                    ? $p->cover
+                    : asset('storage/'.ltrim($p->cover, '/')))
                 : asset('storage/images/hero-1.jpg');
 
             return [

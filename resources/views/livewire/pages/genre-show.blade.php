@@ -38,9 +38,25 @@
                         {{ $b['title'] }}
                     </h2>
 
-                    <span class="text-accent font-bold" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                        <meta itemprop="priceCurrency" content="BGN">
-                        <span itemprop="price">{{ number_format($b['price'], 2) }}</span> {{ __('shop.currency') }}
+                    <span class="text-accent font-bold" itemprop="offers" itemscope
+                        itemtype="https://schema.org/AggregateOffer">
+
+                        {{-- BGN --}}
+                        <span itemscope itemtype="https://schema.org/Offer">
+                            <meta itemprop="priceCurrency" content="BGN">
+                            <span itemprop="price">{{ number_format($b['price'], 2) }}</span>
+                            {{ __('shop.currency') }}
+                        </span>
+
+                        @if (!empty($b['price_eur']))
+                            <br>
+                            {{-- EUR --}}
+                            <span class="text-gray-500 text-xs font-semibold" itemscope
+                                itemtype="https://schema.org/Offer">
+                                <meta itemprop="priceCurrency" content="EUR">
+                                <span itemprop="price">{{ number_format($b['price_eur'], 2) }}</span> €
+                            </span>
+                        @endif
                     </span>
 
                     <button wire:click="addToCart({{ (int) $b['id'] }})"

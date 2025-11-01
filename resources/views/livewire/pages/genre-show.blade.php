@@ -24,14 +24,18 @@
                 <div class="relative">
                     <a href="{{ route('book.show', $b['slug']) }}"
                         aria-label="{{ __('shop.aria.view_details', ['title' => $b['title']]) }}">
-                        <img src="{{ $b['cover'] }}" alt="{{ __('book.cover', ['title' => $b['title']]) }}"
-                            class="w-full h-64 object-cover rounded-t-xl" loading="lazy" itemprop="image">
+
+                        <div class="aspect-[3/4] w-full overflow-hidden rounded-t-xl">
+                            <img src="{{ $b['cover'] }}" alt="{{ __('book.cover', ['title' => $b['title']]) }}"
+                                class="w-full h-full object-cover" loading="lazy" itemprop="image">
+                        </div>
                     </a>
 
                     <div class="absolute top-2 right-2">
                         <livewire:favorite-button :book-id="$b['id']" wire:key="fav-genre-{{ $b['id'] }}" />
                     </div>
                 </div>
+
 
                 <div class="p-4 flex flex-col gap-2 flex-1">
                     <h2 class="font-medium text-sm sm:text-base line-clamp-2" itemprop="name">

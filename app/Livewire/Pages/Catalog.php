@@ -15,27 +15,42 @@ class Catalog extends Component
 {
     use UsesCart, WithPagination;
 
-    #[Url(as: 'authors')]
+    #[Url(as: 'author')]
+    public ?string $authorQuery = null;
+
     public array $authors = [];
 
-    #[Url(as: 'genres')]
+    #[Url(as: 'genre')]
+    public ?string $genreQuery = null;
+
     public array $genres = [];
 
-    #[Url(as: 'formats')]
+    #[Url(as: 'format')]
+    public ?string $formatQuery = null;
+
     public array $formats = [];
 
     #[Url(except: 'popular')]
     public string $sort = 'popular';
 
     public array $authorOptions = [];
-
     public array $genreOptions = [];
-
     public array $seo = [];
 
     public function mount(): void
     {
-        $this->authors ??= [];
+        if ($this->authorQuery) {
+            $this->authors = explode(',', $this->authorQuery);
+        }
+
+        if ($this->genreQuery) {
+            $this->genres = explode(',', $this->genreQuery);
+        }
+
+        if ($this->formatQuery) {
+            $this->formats = explode(',', $this->formatQuery);
+        }
+
         $this->genres ??= [];
         $this->formats ??= [];
 
@@ -44,6 +59,28 @@ class Catalog extends Component
 
         $this->generateSeo();
     }
+
+    public function updatedAuthors(): void
+    {
+        $this->authorQuery = implode(',', $this->authors);
+        $this->resetPage();
+        $this->generateSeo();
+    }
+
+    public function updatedGenres(): void
+    {
+        $this->genreQuery = implode(',', $this->genres);
+        $this->resetPage();
+        $this->generateSeo();
+    }
+
+    public function updatedFormats(): void
+    {
+        $this->formatQuery = implode(',', $this->formats);
+        $this->resetPage();
+        $this->generateSeo();
+    }
+
 
     public function updated(): void
     {
@@ -56,18 +93,15 @@ class Catalog extends Component
         $this->authors = [];
         $this->genres = [];
         $this->formats = [];
+        $this->authorQuery = null;
+        $this->genreQuery = null;
+        $this->formatQuery = null;
         $this->sort = 'popular';
 
         $this->resetPage();
         $this->generateSeo();
     }
 
-    public function dehydrate()
-    {
-        $this->authors = array_values($this->authors);
-        $this->genres = array_values($this->genres);
-        $this->formats = array_values($this->formats);
-    }
 
     protected function generateSeo(): void
     {
@@ -91,7 +125,7 @@ class Catalog extends Component
                 'paper' => 'Хартиено издание',
                 'ebook' => 'Е-книга',
             ];
-            $names = collect($this->formats)->map(fn ($f) => $map[$f] ?? $f)->join(', ');
+            $names = collect($this->formats)->map(fn($f) => $map[$f] ?? $f)->join(', ');
             $title = "{$names} — Издателство Сатори";
             $description = "Разгледай книги във формат {$names}.";
         }
@@ -124,7 +158,7 @@ class Catalog extends Component
             ],
             'mainEntity' => [
                 '@type' => 'ItemList',
-                'itemListElement' => Book::latest()->take(12)->get()->map(fn ($b) => [
+                'itemListElement' => Book::latest()->take(12)->get()->map(fn($b) => [
                     '@type' => 'ListItem',
                     'name' => $b->title,
                     'url' => route('book.show', $b->slug),
@@ -151,7 +185,7 @@ class Catalog extends Component
 
         if (! empty($this->genres)) {
             $ids = Genre::whereIn('slug', $this->genres)->pluck('id');
-            $q->whereHas('genres', fn ($g) => $g->whereIn('genres.id', $ids));
+            $q->whereHas('genres', fn($g) => $g->whereIn('genres.id', $ids));
         }
 
         if (! empty($this->formats)) {
@@ -171,7 +205,7 @@ class Catalog extends Component
             $cover = $b->cover
                 ? (Str::startsWith($b->cover, ['http://', 'https://'])
                     ? $b->cover
-                    : asset('storage/'.ltrim($b->cover, '/')))
+                    : asset('storage/' . ltrim($b->cover, '/')))
                 : asset('storage/images/default-book.jpg');
 
             return [

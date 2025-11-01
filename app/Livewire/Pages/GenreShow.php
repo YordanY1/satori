@@ -34,7 +34,7 @@ class GenreShow extends Component
             'slug' => $b->slug,
             'title' => $b->title,
             'price' => (float) $b->price,
-            'price_eur' => (float) $b->price_eur, // ✅ добавено
+            'price_eur' => (float) $b->price_eur,
             'cover' => $b->cover
                 ? (str_starts_with($b->cover, 'http')
                     ? $b->cover

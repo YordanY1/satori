@@ -16,16 +16,16 @@
         </p>
     @endif
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         @foreach ($genre['books'] as $b)
             <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col" itemscope
                 itemtype="https://schema.org/Book">
+
                 <div class="relative">
                     <a href="{{ route('book.show', $b['slug']) }}"
                         aria-label="{{ __('shop.aria.view_details', ['title' => $b['title']]) }}">
                         <img src="{{ $b['cover'] }}" alt="{{ __('book.cover', ['title' => $b['title']]) }}"
-                            class="w-full h-56 sm:h-64 md:h-72 object-cover rounded-t-xl" loading="lazy"
-                            itemprop="image">
+                            class="w-full h-64 object-cover rounded-t-xl" loading="lazy" itemprop="image">
                     </a>
 
                     <div class="absolute top-2 right-2">
@@ -33,15 +33,14 @@
                     </div>
                 </div>
 
-                <div class="p-3 flex flex-col gap-2 flex-1">
+                <div class="p-4 flex flex-col gap-2 flex-1">
                     <h2 class="font-medium text-sm sm:text-base line-clamp-2" itemprop="name">
                         {{ $b['title'] }}
                     </h2>
 
-                    <span class="text-accent font-bold" itemprop="offers" itemscope
+                    <div class="text-accent font-bold text-sm sm:text-base leading-tight" itemprop="offers" itemscope
                         itemtype="https://schema.org/AggregateOffer">
 
-                        {{-- BGN --}}
                         <span itemscope itemtype="https://schema.org/Offer">
                             <meta itemprop="priceCurrency" content="BGN">
                             <span itemprop="price">{{ number_format($b['price'], 2) }}</span>
@@ -49,19 +48,15 @@
                         </span>
 
                         @if (!empty($b['price_eur']))
-                            <br>
-                            {{-- EUR --}}
-                            <span class="text-gray-500 text-xs font-semibold" itemscope
-                                itemtype="https://schema.org/Offer">
-                                <meta itemprop="priceCurrency" content="EUR">
-                                <span itemprop="price">{{ number_format($b['price_eur'], 2) }}</span> €
+                            <span class="text-gray-500 text-xs sm:text-sm">
+                                ({{ number_format($b['price_eur'], 2) }} €)
                             </span>
                         @endif
-                    </span>
+                    </div>
 
                     <button wire:click="addToCart({{ (int) $b['id'] }})"
-                        class="mt-auto rounded-xl bg-white text-black border border-black font-semibold px-3 py-2 text-sm
-                               transition cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                        class="mt-auto rounded-xl border border-black font-semibold px-3 py-2 text-sm hover:bg-gray-100
+                               transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/40"
                         aria-label="{{ __('shop.aria.add_to_cart', ['title' => $b['title']]) }}">
                         {{ __('shop.add_to_cart') }}
                     </button>

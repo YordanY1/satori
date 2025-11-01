@@ -1,30 +1,33 @@
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" aria-labelledby="genres-title">
-    <h1 id="genres-title" class="text-3xl font-bold mb-6">
-        {{ __('genres.title') }}
-    </h1>
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" aria-labelledby="genres-title">
+    <div class="text-center mb-10">
+        <h1 id="genres-title" class="text-3xl sm:text-4xl font-bold">
+            {{ __('genres.title') }}
+        </h1>
+        <p class="text-neutral-700 mt-2 text-lg">
+            {{ __('genres.subtitle') }}
+        </p>
+    </div>
 
-    <p class="text-neutral-700 mb-6">
-        {{ __('genres.subtitle') }}
-    </p>
-
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         @foreach ($genres as $g)
-            <article
-                class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col p-4 cursor-pointer group"
-                itemscope itemtype="https://schema.org/CategoryCodeSet">
+            <a href="{{ route('genre.show', $g['slug']) }}"
+                class="block rounded-2xl border border-neutral-300 bg-neutral-50 shadow-sm p-6">
 
-                <a href="{{ route('genre.show', $g['slug']) }}" class="flex-1 flex flex-col">
+                {{-- Corners --}}
+                <div class="relative">
+                    <div class="absolute -top-1 -left-1 w-8 h-8 border-t-2 border-l-2 border-neutral-400 rounded-tl-xl">
+                    </div>
                     <div
-                        class="aspect-[3/2] w-full bg-neutral-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-neutral-200 transition">
-                        <span class="text-4xl">{{ $g['icon'] }}</span>
+                        class="absolute -bottom-1 -right-1 w-8 h-8 border-b-2 border-r-2 border-neutral-400 rounded-br-xl">
                     </div>
 
-                    <h2 class="font-medium text-sm sm:text-base line-clamp-2 text-center group-hover:text-accent transition"
-                        itemprop="name">
+                    {{-- Title --}}
+                    <h2 class="text-center font-serif font-bold text-base sm:text-lg text-neutral-900">
                         {{ $g['name'] }}
                     </h2>
-                </a>
-            </article>
+
+                </div>
+            </a>
         @endforeach
     </div>
 </section>

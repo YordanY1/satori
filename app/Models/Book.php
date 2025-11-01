@@ -36,7 +36,7 @@ class Book extends Model
     {
         return $this->belongsTo(Genre::class, 'genre_id');
     }
-    
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -68,5 +68,14 @@ class Book extends Model
     public function getExcerptUrlAttribute()
     {
         return $this->excerpt ? asset('storage/' . ltrim($this->excerpt, '/')) : null;
+    }
+
+    protected static function booted()
+    {
+        static::saved(function ($book) {
+            if ($book->genre_id) {
+                $book->genres()->syncWithoutDetaching([$book->genre_id]);
+            }
+        });
     }
 }

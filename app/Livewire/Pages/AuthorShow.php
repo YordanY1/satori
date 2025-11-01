@@ -25,15 +25,15 @@ class AuthorShow extends Component
             ->where('slug', $slug)
             ->with([
                 'books:id,title,slug,price,cover,author_id',
-                'quotes' => fn ($q) => $q->published()->ordered(),
-                'links' => fn ($q) => $q->published()->ordered(),
-                'media' => fn ($q) => $q->published()->youtube()->ordered(),
+                'quotes' => fn($q) => $q->published()->ordered(),
+                'links' => fn($q) => $q->published()->ordered(),
+                'media' => fn($q) => $q->published()->youtube()->ordered(),
             ])->firstOrFail();
 
         $photo = $a->photo
             ? (Str::startsWith($a->photo, ['http://', 'https://'])
                 ? $a->photo
-                : asset('storage/'.ltrim($a->photo, '/')))
+                : asset('storage/' . ltrim($a->photo, '/')))
             : asset('images/avatar.png');
 
         // Books
@@ -41,7 +41,7 @@ class AuthorShow extends Component
             $cover = $b->cover
                 ? (Str::startsWith($b->cover, ['http://', 'https://'])
                     ? $b->cover
-                    : asset('storage/'.ltrim($b->cover, '/')))
+                    : asset('storage/' . ltrim($b->cover, '/')))
                 : asset('storage/images/default-book.jpg');
 
             return [
@@ -56,13 +56,13 @@ class AuthorShow extends Component
         // Quotes, videos, interviews
         $quotes = $a->quotes->pluck('quote')->all();
 
-        $videos = $a->media->map(fn ($m) => [
+        $videos = $a->media->map(fn($m) => [
             'type' => 'youtube',
             'id' => $m->youtube_id,
             'title' => $m->title ?? 'Видео',
         ])->toArray();
 
-        $interviews = $a->links->map(fn ($l) => [
+        $interviews = $a->links->map(fn($l) => [
             'title' => $l->title,
             'url' => $l->url,
         ])->toArray();
@@ -70,6 +70,7 @@ class AuthorShow extends Component
         // Author info
         $this->author = [
             'name' => $a->name,
+            'slug' => $a->slug,
             'photo' => $photo,
             'bio' => $a->bio ?? '',
             'quotes' => $quotes,
@@ -79,7 +80,7 @@ class AuthorShow extends Component
         ];
 
         // SEO + Schema
-        $description = Str::limit(strip_tags($a->bio ?? 'Открий книги и интервюта от '.$a->name), 160);
+        $description = Str::limit(strip_tags($a->bio ?? 'Открий книги и интервюта от ' . $a->name), 160);
 
         $this->seo = [
             'title' => "{$a->name} — Автор — Издателство Сатори",
@@ -131,7 +132,7 @@ class AuthorShow extends Component
                         'addressCountry' => 'BG',
                     ],
                 ],
-                'hasWritten' => collect($books)->map(fn ($b) => [
+                'hasWritten' => collect($books)->map(fn($b) => [
                     '@type' => 'Book',
                     'name' => $b['title'],
                     'url' => route('book.show', $b['slug']),

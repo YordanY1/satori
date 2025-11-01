@@ -126,10 +126,11 @@
                     <span class="text-neutral-500">({{ count($author['books']) }})</span>
                 </h2>
 
-                <a href="{{ route('catalog', ['author' => $author['slug'] ?? null]) }}"
-                    class="text-sm text-accent hover:underline transition">
+                <a href="{{ url('/catalog?' . http_build_query(['authors' => [$author['slug']]])) }}"
+                    class="text-sm text-accent hover:underline">
                     {{ __('author.view_all') }}
                 </a>
+
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

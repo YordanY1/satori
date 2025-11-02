@@ -8,7 +8,7 @@
         </a>
 
         <!-- Desktop menu -->
-        <nav class="hidden md:flex items-center gap-6 text-sm font-medium"
+        <nav class="hidden md:flex items-center gap-4 text-[15px] font-medium"
             aria-label="{{ __('navigation.main_menu') }}">
             @php
                 $items = [
@@ -24,7 +24,7 @@
 
             @foreach ($items as $item)
                 <a wire:navigate href="{{ route($item['route']) }}"
-                    class="relative flex items-center gap-1.5 text-neutral-800 transition-colors hover:text-black
+                    class="relative flex items-center text-neutral-800 transition-colors hover:text-black
                           after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:w-0
                           after:h-[2px] after:bg-black after:transition-all after:duration-300
                           hover:after:w-full whitespace-nowrap">

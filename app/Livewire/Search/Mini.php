@@ -34,13 +34,14 @@ class Mini extends Component
                     'title' => $book->title,
                     'url'   => route('book.show', $book->slug),
                     'cover' => $book->cover
-                        ? (Str::startsWith($book->cover, ['http://', 'https://']) ? $book->cover : asset($book->cover))
-                        : null,
+                        ? (Str::startsWith($book->cover, ['http://', 'https://'])
+                            ? $book->cover
+                            : asset('storage/' . ltrim($book->cover, '/')))
+                        : asset('storage/images/default-book.jpg'),
                 ];
             })->toArray();
 
             $this->dispatch('lw:debug', type: 'results', q: $query, count: count($this->suggestions));
-            Log::debug('MiniSearch: results', ['count' => count($this->suggestions)]);
         } catch (\Throwable $e) {
             Log::error('MiniSearch error: ' . $e->getMessage());
             $this->suggestions = [];

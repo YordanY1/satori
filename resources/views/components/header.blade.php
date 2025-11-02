@@ -27,7 +27,7 @@
                     class="relative flex items-center gap-1.5 text-neutral-800 transition-colors hover:text-black
                           after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:w-0
                           after:h-[2px] after:bg-black after:transition-all after:duration-300
-                          hover:after:w-full">
+                          hover:after:w-full whitespace-nowrap">
                     <span>{{ $item['icon'] }}</span>
                     <span>{{ $item['label'] }}</span>
                 </a>

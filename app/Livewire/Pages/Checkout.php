@@ -385,7 +385,7 @@ class Checkout extends Component
         } catch (\Throwable $e) {
             report($e);
             $this->shippingCost = 0.00;
-            $this->addError('shipping', 'Не успяхме да изчислим доставка: '.$e->getMessage());
+            $this->addError('shipping', 'Не успяхме да изчислим доставка: ' . $e->getMessage());
         }
     }
 
@@ -561,6 +561,17 @@ class Checkout extends Component
                         ];
                     }, $normalized);
 
+                    if ($this->shippingCost > 0) {
+                        $lineItems[] = [
+                            'price_data' => [
+                                'currency' => 'bgn',
+                                'product_data' => ['name' => 'Доставка'],
+                                'unit_amount' => (int) round($this->shippingCost * 100),
+                            ],
+                            'quantity' => 1,
+                        ];
+                    }
+
                     $session = $stripe->checkout->sessions->create([
                         'mode' => 'payment',
                         'payment_method_types' => ['card'],
@@ -571,7 +582,7 @@ class Checkout extends Component
                             'order_number' => $order->order_number,
                             'order_id' => (string) $order->id,
                         ],
-                        'success_url' => route('thankyou', $order->id).'?session_id={CHECKOUT_SESSION_ID}',
+                        'success_url' => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
                         'cancel_url' => route('checkout'),
                     ]);
 
@@ -651,6 +662,6 @@ class Checkout extends Component
     {
         $seq = (int) ((Order::max('id') ?? 0) + 1);
 
-        return 'SO-'.now()->format('Y').'-'.str_pad((string) $seq, 6, '0', STR_PAD_LEFT);
+        return 'SO-' . now()->format('Y') . '-' . str_pad((string) $seq, 6, '0', STR_PAD_LEFT);
     }
 }

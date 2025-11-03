@@ -100,14 +100,14 @@
 
             <p class="flex items-center gap-3">
                 <span aria-hidden="true">📧</span>
-                <a href="mailto:satorico@izdatelstvosatori@gmail.com" class="text-accent hover:underline">
+                <a href="mailto:izdatelstvosatori@gmail.com" class="text-accent hover:underline">
                     {{ __('contact.email_link') }}
                 </a>
             </p>
 
             <p class="flex items-center gap-3">
                 <span aria-hidden="true">📞</span>
-                <a href="tel:+359878490782" class="text-accent hover:underline">
+                <a href="tel:0878490782" class="text-accent hover:underline">
                     {{ __('contact.phone_link') }}
                 </a>
             </p>

@@ -16,8 +16,8 @@ return [
     'contact_info' => 'Информация за контакт',
     'address' => 'София, ул. „Примерна“ 42',
     'socials' => 'Последвайте ни',
-    'email_link' => 'support@izdatelstvo-satori.com',
-    'phone_link' => '+359 888 123 456',
+    'email_link' => 'izdatelstvosatori@gmail.com',
+    'phone_link' => '0878490782',
 
     'rate_limit' => 'Твърде много опити. Опитайте след :sec сек.',
 

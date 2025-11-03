@@ -46,7 +46,6 @@ class ThankYou extends Component
 
         $sessionTotal = (int) $session->amount_total;
         $orderTotal   = (int) round($this->order->total * 100);
-
         if ($sessionTotal !== $orderTotal) {
             return;
         }
@@ -57,65 +56,20 @@ class ThankYou extends Component
             'status'         => $this->order->status === 'pending' ? 'ready' : $this->order->status,
         ])->save();
 
-        $this->maybeCreateEcontLabelFromStripeSession($session);
-        Cart::clear();
-    }
+        $this->createEcontLabelFromLocalOrder();
 
-    protected function maybeCreateEcontLabelFromStripeSession($session): void
-    {
+        // Send emails after payment success
         try {
-            if (($this->order->shipping_provider === 'econt') && !empty($this->order->shipping_payload)) {
-                return;
-            }
+            \Mail::to($this->order->customer_email)
+                ->send(new \App\Mail\OrderPlacedCustomerMail($this->order));
 
-            $md = $session->metadata ?? null;
-            if (!$md) return;
-
-            $shippingMethod = (string) ($md->shipping_method ?? '');
-            $receiver = [
-                'name'         => $this->order->customer_name ?: ($md->customer_name ?? ''),
-                'phone'        => preg_replace('/\s+/', '', $this->order->customer_phone ?: ($md->customer_phone ?? '')),
-                'city_id'      => $shippingMethod === 'address' ? ($md->city_id ?: null) : null,
-                'office_code'  => $shippingMethod === 'econt_office' ? ($md->office_code ?: null) : null,
-                'street_label' => $md->street_label ?: null,
-                'street_num'   => $md->street_num ?: null,
-            ];
-
-            if (!$receiver['city_id'] && !$receiver['office_code']) {
-                \Log::warning('THANKYOU:Econt skip - missing destination', [
-                    'order_id' => $this->order->id,
-                    'metadata' => $md,
-                ]);
-                return;
-            }
-
-            $weight = isset($md->weight) ? (float) $md->weight : 0.5;
-
-            $labelInput = [
-                'sender' => [
-                    'name'      => config('shipping.econt.sender_name'),
-                    'phone'     => config('shipping.econt.sender_phone'),
-                    'city_name' => config('shipping.econt.sender_city'),
-                    'post_code' => config('shipping.econt.sender_post'),
-                    'street'    => config('shipping.econt.sender_street'),
-                    'num'       => config('shipping.econt.sender_num'),
-                ],
-                'receiver'     => $receiver,
-                'pack_count'   => 1,
-                'weight'       => $weight,
-                'description'  => 'Книги',
-            ];
-
-            $labelService = app(\App\Services\Shipping\EcontLabelService::class);
-            $label = $labelService->validateThenCreate($labelInput);
-
-            $this->order->update([
-                'shipping_provider' => 'econt',
-                'shipping_payload'  => $label,
-            ]);
+            \Mail::to(config('mail.admin_address', 'support@izdatelstvo-satori.com'))
+                ->send(new \App\Mail\OrderPlacedAdminMail($this->order));
         } catch (\Throwable $e) {
-            report($e);
+            \Log::error('Email fail: ' . $e->getMessage());
         }
+
+        Cart::clear();
     }
 
     protected function confirmPayPalOrder(string $paypalOrderId): void
@@ -139,7 +93,6 @@ class ThankYou extends Component
             $cap = $pu['payments']['captures'][0] ?? [];
 
             $localId = $pu['custom_id'] ?? null;
-
             if (!$localId && !empty($pu['reference_id']) && str_starts_with($pu['reference_id'], 'order-')) {
                 $localId = substr($pu['reference_id'], 6);
             }
@@ -229,13 +182,10 @@ class ThankYou extends Component
         }
     }
 
-
-
     private function toEur(float $bgn): float
     {
         return round($bgn / 1.95583, 2);
     }
-
 
     public function render()
     {

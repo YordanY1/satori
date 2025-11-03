@@ -398,7 +398,6 @@ class Checkout extends Component
 
         if (Cart::count() === 0) {
             $this->addError('cart', 'The cart is empty.');
-
             return;
         }
 
@@ -407,6 +406,7 @@ class Checkout extends Component
         }
 
         return DB::transaction(function () {
+
             // --- Prepare order data ---
             $items = Cart::all();
             $bookIds = array_keys($items);
@@ -416,8 +416,8 @@ class Checkout extends Component
             $normalized = [];
 
             foreach ($books as $book) {
-                $qty = max(1, (int) ($items[$book->id]['quantity'] ?? 1));
-                $unit = (float) $book->price;
+                $qty = max(1, (int)($items[$book->id]['quantity'] ?? 1));
+                $unit = (float)$book->price;
                 $line = $unit * $qty;
 
                 $subtotal += $line;
@@ -436,7 +436,7 @@ class Checkout extends Component
             $tax = 0.00;
             $total = $subtotal - $discount + $shipping + $tax;
 
-            // --- Create order record ---
+            // Create order
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'public_id' => (string) Str::uuid(),
@@ -457,6 +457,7 @@ class Checkout extends Component
                 'terms_accepted_at' => now(),
             ]);
 
+            // Save shipping draft
             $order->shipping_draft = [
                 'carrier' => 'econt',
                 'method' => $this->shipping_method,
@@ -484,154 +485,138 @@ class Checkout extends Component
                 ]);
             }
 
-            // --- Generate Econt label (for all payment methods) ---
-            try {
-                $labelService = app(\App\Services\Shipping\EcontLabelService::class);
+            /**
+             * COD (Cash on Delivery)
+             * Generate Econt label + Send emails immediately
+             */
+            if ($this->payment_method === 'cod') {
+                try {
+                    $labelService = app(\App\Services\Shipping\EcontLabelService::class);
 
-                $labelInput = [
-                    'sender' => [
-                        'name' => config('shipping.econt.sender_name'),
-                        'phone' => config('shipping.econt.sender_phone'),
-                        'city_name' => config('shipping.econt.sender_city'),
-                        'post_code' => config('shipping.econt.sender_post'),
-                        'street' => config('shipping.econt.sender_street'),
-                        'num' => config('shipping.econt.sender_num'),
-                    ],
-                    'receiver' => [
-                        'name' => $this->name,
-                        'phone' => preg_replace('/\s+/', '', $this->phone),
-                        'city_id' => $this->shipping_method === 'address' ? $this->cityId : null,
-                        'office_code' => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
-                        'street_label' => $this->streetLabel ?: null,
-                        'street_num' => $this->streetNum ?: null,
-                    ],
-                    'pack_count' => 1,
-                    'weight' => $this->computeCartWeight(),
-                    'description' => 'Книги',
-                ];
+                    $labelInput = [
+                        'sender' => [
+                            'name' => config('shipping.econt.sender_name'),
+                            'phone' => config('shipping.econt.sender_phone'),
+                            'city_name' => config('shipping.econt.sender_city'),
+                            'post_code' => config('shipping.econt.sender_post'),
+                            'street' => config('shipping.econt.sender_street'),
+                            'num' => config('shipping.econt.sender_num'),
+                        ],
+                        'receiver' => [
+                            'name' => $this->name,
+                            'phone' => preg_replace('/\s+/', '', $this->phone),
+                            'city_id' => $this->shipping_method === 'address' ? $this->cityId : null,
+                            'office_code' => $this->shipping_method === 'econt_office' ? $this->officeCode : null,
+                            'street_label' => $this->streetLabel ?: null,
+                            'street_num' => $this->streetNum ?: null,
+                        ],
+                        'pack_count' => 1,
+                        'weight' => $this->computeCartWeight(),
+                        'description' => 'Книги',
+                        'cod' => [
+                            'amount' => $order->total,
+                            'type' => 'get',
+                            'currency' => 'BGN',
+                        ],
+                    ];
 
-                // Add COD only for "cash on delivery"
-                if ($this->payment_method === 'cod') {
-                    $labelInput['cod'] = [
-                        'amount' => $order->total,
-                        'type' => 'get',
-                        'currency' => 'BGN',
+                    $label = $labelService->validateThenCreate($labelInput);
+
+                    $order->update([
+                        'shipping_provider' => 'econt',
+                        'shipping_payload' => $label,
+                    ]);
+
+                    // Send emails
+                    Mail::to($order->customer_email)->send(new OrderPlacedCustomerMail($order));
+                    Mail::to(config('mail.admin_address', 'support@izdatelstvo-satori.com'))
+                        ->send(new OrderPlacedAdminMail($order));
+                } catch (\Throwable $e) {
+                    report($e);
+                    \Log::warning('COD label/email error: ' . $e->getMessage());
+                }
+
+                Cart::clear();
+                return $this->redirectRoute('thankyou', $order->id);
+            }
+
+            /**
+             * Stripe redirect
+             */
+            if ($this->payment_method === 'stripe') {
+                $stripe = new StripeClient(config('services.stripe.secret'));
+
+                $lineItems = array_map(function ($n) {
+                    return [
+                        'price_data' => [
+                            'currency' => 'bgn',
+                            'product_data' => ['name' => $n['title']],
+                            'unit_amount' => (int) round($n['unit_price'] * 100),
+                        ],
+                        'quantity' => $n['quantity'],
+                    ];
+                }, $normalized);
+
+                if ($this->shippingCost > 0) {
+                    $lineItems[] = [
+                        'price_data' => [
+                            'currency' => 'bgn',
+                            'product_data' => ['name' => 'Доставка'],
+                            'unit_amount' => (int) round($this->shippingCost * 100),
+                        ],
+                        'quantity' => 1,
                     ];
                 }
 
-                $label = $labelService->validateThenCreate($labelInput);
+                $session = $stripe->checkout->sessions->create([
+                    'mode' => 'payment',
+                    'payment_method_types' => ['card'],
+                    'line_items' => $lineItems,
+                    'currency' => 'bgn',
+                    'customer_email' => $this->email,
+                    'metadata' => [
+                        'order_number' => $order->order_number,
+                        'order_id' => (string) $order->id,
+                    ],
+                    'success_url' => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => route('checkout'),
+                ]);
 
-                $order->update([
-                    'shipping_provider' => 'econt',
-                    'shipping_payload' => $label,
-                ]);
-            } catch (\Throwable $e) {
-                report($e);
-                \Log::warning('❌ Failed to create Econt label', [
-                    'order_id' => $order->id,
-                    'error' => $e->getMessage(),
-                ]);
+                return $this->redirect($session->url);
             }
 
-            // --- Send emails (always after label generation) ---
-            try {
-                Mail::to($order->customer_email)->send(new OrderPlacedCustomerMail($order));
-                Mail::to(config('mail.admin_address', 'support@izdatelstvo-satori.com'))
-                    ->send(new OrderPlacedAdminMail($order));
-            } catch (\Throwable $e) {
-                \Log::error('❌ Failed to send order emails', [
-                    'order_id' => $order->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-
-            // --- Payment handling ---
-            if ($this->payment_method === 'stripe') {
-                try {
-                    $stripe = new StripeClient(config('services.stripe.secret'));
-
-                    $lineItems = array_map(function ($n) {
-                        return [
-                            'price_data' => [
-                                'currency' => 'bgn',
-                                'product_data' => ['name' => $n['title']],
-                                'unit_amount' => (int) round($n['unit_price'] * 100),
-                            ],
-                            'quantity' => $n['quantity'],
-                        ];
-                    }, $normalized);
-
-                    if ($this->shippingCost > 0) {
-                        $lineItems[] = [
-                            'price_data' => [
-                                'currency' => 'bgn',
-                                'product_data' => ['name' => 'Доставка'],
-                                'unit_amount' => (int) round($this->shippingCost * 100),
-                            ],
-                            'quantity' => 1,
-                        ];
-                    }
-
-                    $session = $stripe->checkout->sessions->create([
-                        'mode' => 'payment',
-                        'payment_method_types' => ['card'],
-                        'line_items' => $lineItems,
-                        'currency' => 'bgn',
-                        'customer_email' => $this->email,
-                        'metadata' => [
-                            'order_number' => $order->order_number,
-                            'order_id' => (string) $order->id,
-                        ],
-                        'success_url' => route('thankyou', $order->id) . '?session_id={CHECKOUT_SESSION_ID}',
-                        'cancel_url' => route('checkout'),
-                    ]);
-
-                    return $this->redirect($session->url);
-                } catch (\Throwable $e) {
-                    report($e);
-                    $this->addError('cart', 'Stripe is temporarily unavailable. Please try again later.');
-
-                    return;
-                }
-            }
-
+            /**
+             * PayPal redirect
+             */
             if ($this->payment_method === 'paypal') {
-                try {
-                    $pp = new PayPal;
-                    $eurTotal = round($order->total / 1.95583, 2);
+                $pp = new PayPal;
+                $eurTotal = round($order->total / 1.95583, 2);
 
-                    $created = $pp->createOrder(
-                        currency: 'EUR',
-                        amount: $eurTotal,
-                        returnUrl: route('thankyou', $order->id),
-                        cancelUrl: route('checkout'),
-                        metadata: ['local_order_id' => $order->id],
-                        brandName: config('app.name', 'Store')
-                    );
+                $created = $pp->createOrder(
+                    currency: 'EUR',
+                    amount: $eurTotal,
+                    returnUrl: route('thankyou', $order->id),
+                    cancelUrl: route('checkout'),
+                    metadata: ['local_order_id' => $order->id],
+                    brandName: config('app.name', 'Store')
+                );
 
-                    $approveUrl = PayPal::extractApproveLink($created);
-                    if (! $approveUrl) {
-                        $this->addError('cart', 'PayPal is temporarily unavailable.');
+                $approveUrl = PayPal::extractApproveLink($created);
 
-                        return;
-                    }
-
-                    return $this->redirect($approveUrl);
-                } catch (\Throwable $e) {
-                    report($e);
-                    $this->addError('cart', 'PayPal is temporarily unavailable. Please try again later.');
-
+                if (! $approveUrl) {
+                    $this->addError('cart', 'PayPal is temporarily unavailable.');
                     return;
                 }
+
+                return $this->redirect($approveUrl);
             }
 
-            // --- Fallback / COD redirect ---
+            // Just in case
             Cart::clear();
-            $this->dispatch('notify', message: 'Благодарим! Поръчката е направена.');
-
             return $this->redirectRoute('thankyou', $order->id);
         });
     }
+
 
     public function render()
     {

@@ -17,8 +17,9 @@
         <img src="{{ $cover }}" alt="{{ $post->title }}" class="w-full rounded-lg mb-6">
     @endif
 
-    <article class="prose prose-lg max-w-none">
+    <article class="prose prose-lg max-w-none [&_p]:mb-6 [&_p+ p]:mt-4">
         {!! $post->content !!}
     </article>
+
 
 </section>

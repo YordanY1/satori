@@ -269,6 +269,90 @@
                     <p class="mt-2 text-red-600 text-sm">{{ $message }}</p>
                 @enderror
 
+                {{-- Invoice request --}}
+                <div
+                    class="mt-8 rounded-2xl border border-black/10 bg-gradient-to-br from-neutral-50 to-neutral-100 p-6 shadow-inner">
+                    <div class="flex items-center justify-between">
+                        <label class="inline-flex items-center gap-2">
+                            <input type="checkbox" wire:model.live="needs_invoice"
+                                class="accent-black w-5 h-5 rounded-md border-gray-300 focus:ring-black/20">
+                            <span class="font-semibold text-[15px] text-neutral-800">Желая да получа фактура</span>
+                        </label>
+
+                        <span class="text-xs text-neutral-500 italic">
+                            (Попълнете само ако поръчката е за фирма)
+                        </span>
+                    </div>
+
+                    {{-- Animated expand --}}
+                    <div x-show="$wire.get('needs_invoice')" x-collapse x-cloak
+                        class="mt-5 transition-all duration-300 ease-in-out">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+                            {{-- Company Name --}}
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">Фирма <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" wire:model.lazy="invoice_company_name"
+                                    class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm placeholder-neutral-400
+                           focus:outline-none focus:ring-4 focus:ring-black/10 @error('invoice_company_name') border-red-500 @enderror"
+                                    placeholder="напр. Компания ЕООД">
+                                @error('invoice_company_name')
+                                    <span class="text-red-600 text-xs mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            {{-- EIK --}}
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">ЕИК <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" wire:model.lazy="invoice_eik"
+                                    class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm placeholder-neutral-400
+                           focus:outline-none focus:ring-4 focus:ring-black/10 @error('invoice_eik') border-red-500 @enderror"
+                                    placeholder="напр. 123456789">
+                                @error('invoice_eik')
+                                    <span class="text-red-600 text-xs mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            {{-- VAT Number --}}
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">ЗДДС № (ако има)</label>
+                                <input type="text" wire:model.lazy="invoice_vat_number"
+                                    class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm placeholder-neutral-400
+                           focus:outline-none focus:ring-4 focus:ring-black/10"
+                                    placeholder="напр. BG123456789">
+                            </div>
+
+                            {{-- MOL --}}
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">МОЛ <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" wire:model.lazy="invoice_mol"
+                                    class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm placeholder-neutral-400
+                           focus:outline-none focus:ring-4 focus:ring-black/10 @error('invoice_mol') border-red-500 @enderror"
+                                    placeholder="напр. Иван Иванов">
+                                @error('invoice_mol')
+                                    <span class="text-red-600 text-xs mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            {{-- Address --}}
+                            <div class="sm:col-span-2">
+                                <label class="block text-sm font-medium text-neutral-700 mb-1">Адрес по регистрация
+                                    <span class="text-red-500">*</span></label>
+                                <textarea wire:model.lazy="invoice_address" rows="2"
+                                    class="w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-[15px] shadow-sm resize-none placeholder-neutral-400
+                           focus:outline-none focus:ring-4 focus:ring-black/10 @error('invoice_address') border-red-500 @enderror"
+                                    placeholder="напр. 1530 София, ж.к. Красна поляна II"></textarea>
+                                @error('invoice_address')
+                                    <span class="text-red-600 text-xs mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Actions --}}
                 <div class="mt-4 flex flex-col sm:flex-row gap-3">
                     <button type="submit"

@@ -78,6 +78,14 @@ class Checkout extends Component
 
     public string $streetNum = '';       // e.g. "12A"
 
+    // Invoice fields
+    public bool $needs_invoice = false;
+    public string $invoice_company_name = '';
+    public string $invoice_eik = '';
+    public string $invoice_vat_number = '';
+    public string $invoice_mol = '';
+    public string $invoice_address = '';
+
     // Shipping
     public float $shippingCost = 0.00;
 
@@ -106,6 +114,14 @@ class Checkout extends Component
             'shipping_method' => 'required|in:econt_office,address',
             'accept_terms' => 'accepted',
         ];
+
+        if ($this->needs_invoice) {
+            $base['invoice_company_name'] = 'required|string|min:3';
+            $base['invoice_eik'] = 'required|string|min:5';
+            $base['invoice_mol'] = 'required|string|min:2';
+            $base['invoice_address'] = 'required|string|min:5';
+            $base['invoice_vat_number'] = 'nullable|string|max:20';
+        }
 
         if ($this->shipping_method === 'address') {
             $base['cityId'] = 'required|integer|min:1';
@@ -454,6 +470,12 @@ class Checkout extends Component
                 'status' => 'pending',
                 'payment_method' => $this->payment_method,
                 'payment_status' => 'pending',
+                'needs_invoice' => $this->needs_invoice,
+                'invoice_company_name' => $this->invoice_company_name ?: null,
+                'invoice_eik' => $this->invoice_eik ?: null,
+                'invoice_vat_number' => $this->invoice_vat_number ?: null,
+                'invoice_mol' => $this->invoice_mol ?: null,
+                'invoice_address' => $this->invoice_address ?: null,
                 'terms_accepted_at' => now(),
             ]);
 
@@ -528,7 +550,7 @@ class Checkout extends Component
                     ]);
 
                     // Send emails
-                    Mail::to($order->customer_email)->send(new OrderPlacedCustomerMail($order));
+                    // Mail::to($order->customer_email)->send(new OrderPlacedCustomerMail($order));
                     Mail::to(config('mail.admin_address', 'support@izdatelstvo-satori.com'))
                         ->send(new OrderPlacedAdminMail($order));
                 } catch (\Throwable $e) {

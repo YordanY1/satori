@@ -51,7 +51,7 @@ window.addEventListener('keydown', handleKey);" @mouseenter="stop()" @mouseleave
                                 {{ __('slider.download_pdf') }}
                             </a>
                         @elseif (!empty($slide['subtitle']))
-                            <p class="mt-2 text-white/90 text-xs sm:text-base drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+                            <p class="mt-2 text-white text-xs sm:text-base drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
                                 {{ $slide['subtitle'] }}
                             </p>
                         @endif

@@ -25,10 +25,12 @@
                     <a href="{{ route('book.show', $b['slug']) }}"
                         aria-label="{{ __('shop.aria.view_details', ['title' => $b['title']]) }}">
 
-                        <div class="aspect-[3/4] w-full overflow-hidden rounded-t-xl">
+                        <div class="relative w-full h-94 overflow-hidden rounded-t-xl bg-gray-50">
                             <img src="{{ $b['cover'] }}" alt="{{ __('book.cover', ['title' => $b['title']]) }}"
-                                class="w-full h-full object-cover" loading="lazy" itemprop="image">
+                                class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+                                loading="lazy" itemprop="image">
                         </div>
+
                     </a>
 
                     <div class="absolute top-2 right-2">

@@ -84,7 +84,7 @@
                     <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition flex flex-col">
                         <div class="relative">
                             <a href="{{ route('book.show', $book['slug']) }}">
-                                <img src="{{ $book['cover'] }}" class="w-full h-64 object-cover rounded-t-xl"
+                                <img src="{{ $book['cover'] }}" class="w-full h-94 object-cover rounded-t-xl"
                                     loading="lazy">
                             </a>
                         </div>

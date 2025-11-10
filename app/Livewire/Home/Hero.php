@@ -7,6 +7,8 @@ use App\Models\Event;
 use App\Models\Post;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use App\Models\SiteSetting;
+
 
 class Hero extends Component
 {
@@ -18,9 +20,27 @@ class Hero extends Component
 
     public function mount(): void
     {
-        $book = Book::latest()->first();
-        $event = Event::whereDate('date', '>=', now())->orderBy('date')->first();
-        $post = Post::latest()->first();
+
+        $featuredBookId = SiteSetting::get('featured_book_id');
+        $featuredEventId = SiteSetting::get('featured_event_id');
+        $featuredPostId = SiteSetting::get('featured_post_id');
+
+
+        $book = $featuredBookId ? Book::find($featuredBookId) : null;
+        if (! $book) {
+            $book = Book::latest()->first();
+        }
+
+        $event = $featuredEventId ? Event::find($featuredEventId) : null;
+        if (! $event) {
+            $event = Event::whereDate('date', '>=', now())->orderBy('date')->first();
+        }
+
+        $post = $featuredPostId ? Post::find($featuredPostId) : null;
+        if (! $post) {
+            $post = Post::latest()->first();
+        }
+
 
         $normUrl = function (?string $path, string $fallback) {
             if (! $path) {
@@ -29,7 +49,7 @@ class Hero extends Component
 
             return Str::startsWith($path, ['http://', 'https://'])
                 ? $path
-                : asset('storage/'.ltrim($path, '/'));
+                : asset('storage/' . ltrim($path, '/'));
         };
 
         $this->slides = collect([

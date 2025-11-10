@@ -144,8 +144,8 @@
                             <a href="{{ route('book.show', $b['slug']) }}" aria-label="{{ $b['title'] }}">
                                 <img src="{{ $b['cover'] }}"
                                     alt="{{ __('author.alt.cover', ['title' => $b['title']]) }}"
-                                    class="w-full h-56 sm:h-64 md:h-72 object-cover rounded-t-xl" loading="lazy"
-                                    itemprop="image">
+                                    class="w-full h-94 object-cover rounded-t-xl transition-transform duration-500 hover:scale-105"
+                                    loading="lazy" itemprop="image">
                             </a>
 
                             <div class="absolute top-2 right-2">

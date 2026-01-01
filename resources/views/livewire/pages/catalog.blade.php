@@ -93,13 +93,17 @@
                                 {{ $book['title'] }}
                             </h2>
                             <div class="text-accent font-bold text-sm sm:text-base leading-tight">
-                                {{ number_format($book['price'], 2) }} {{ __('shop.currency') }}
-                                @if ($book['price_eur'])
+                                {{-- EUR price (primary) --}}
+                                @if (!empty($book['price_eur']))
+                                    {{ number_format($book['price_eur'], 2) }} €
                                     <span class="text-gray-500 text-xs sm:text-sm">
-                                        ({{ number_format($book['price_eur'], 2) }} €)
+                                        ({{ number_format($book['price'], 2) }} {{ __('shop.currency') }})
                                     </span>
+                                @else
+                                    {{ number_format($book['price'], 2) }} {{ __('shop.currency') }}
                                 @endif
                             </div>
+
                             <button wire:click="addToCart({{ $book['id'] }})"
                                 class="mt-auto rounded-xl border border-black font-semibold px-3 py-2 text-sm hover:bg-gray-100">
                                 {{ __('shop.add_to_cart') }}

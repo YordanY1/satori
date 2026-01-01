@@ -25,19 +25,26 @@
                                 class="font-semibold text-text leading-snug line-clamp-2">
                                 {{ $item['title'] }}
                             </a>
-
                             <div class="mt-2 text-sm text-neutral-600">
                                 {{ __('cart.price') }}:
                                 <span class="font-medium text-text">
-                                    {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
+                                    {{-- EUR price (primary) --}}
+                                    @if (!empty($item['price_eur']))
+                                        {{ number_format($item['price_eur'], 2) }} €
+                                    @else
+                                        {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
+                                    @endif
                                 </span>
+
+                                {{-- BGN price (secondary) --}}
                                 @if (!empty($item['price_eur']))
                                     <br>
                                     <span class="text-xs text-gray-500">
-                                        {{ number_format($item['price_eur'], 2) }} €
+                                        {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
                                     </span>
                                 @endif
                             </div>
+
 
                             <div class="mt-3 flex items-center justify-between">
                                 <div class="inline-flex items-center gap-2 border rounded-lg px-2 py-1">
@@ -47,17 +54,22 @@
                                     <button wire:click="increment({{ $id }})"
                                         class="px-3 py-1 rounded-lg bg-gray-100 active:translate-y-[1px] cursor-pointer">+</button>
                                 </div>
-
                                 <div class="font-semibold text-right">
-                                    {{ number_format($item['price'] * $item['quantity'], 2) }}
-                                    {{ __('cart.currency') }}
+                                    {{-- EUR line total (primary) --}}
                                     @if (!empty($item['price_eur']))
+                                        {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
                                         <br>
                                         <span class="text-xs text-gray-500">
-                                            {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
+                                            {{ number_format($item['price'] * $item['quantity'], 2) }}
+                                            {{ __('cart.currency') }}
                                         </span>
+                                    @else
+                                        {{-- BGN fallback --}}
+                                        {{ number_format($item['price'] * $item['quantity'], 2) }}
+                                        {{ __('cart.currency') }}
                                     @endif
                                 </div>
+
                             </div>
 
                             <div class="mt-3 text-right">
@@ -103,14 +115,19 @@
                                 </div>
                             </td>
                             <td class="p-4 font-medium whitespace-nowrap">
-                                {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
+                                {{-- EUR unit price (primary) --}}
                                 @if (!empty($item['price_eur']))
+                                    {{ number_format($item['price_eur'], 2) }} €
                                     <br>
                                     <span class="text-xs text-gray-500">
-                                        {{ number_format($item['price_eur'], 2) }} €
+                                        {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
                                     </span>
+                                @else
+                                    {{-- BGN fallback --}}
+                                    {{ number_format($item['price'], 2) }} {{ __('cart.currency') }}
                                 @endif
                             </td>
+
                             <td class="p-4">
                                 <div class="inline-flex items-center gap-2 border rounded-lg px-2 py-1">
                                     <button wire:click="decrement({{ $id }})"
@@ -121,14 +138,21 @@
                                 </div>
                             </td>
                             <td class="p-4 font-semibold text-accent whitespace-nowrap">
-                                {{ number_format($item['price'] * $item['quantity'], 2) }} {{ __('cart.currency') }}
+                                {{-- EUR line total (primary) --}}
                                 @if (!empty($item['price_eur']))
+                                    {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
                                     <br>
                                     <span class="text-xs text-gray-500">
-                                        {{ number_format($item['price_eur'] * $item['quantity'], 2) }} €
+                                        {{ number_format($item['price'] * $item['quantity'], 2) }}
+                                        {{ __('cart.currency') }}
                                     </span>
+                                @else
+                                    {{-- BGN fallback --}}
+                                    {{ number_format($item['price'] * $item['quantity'], 2) }}
+                                    {{ __('cart.currency') }}
                                 @endif
                             </td>
+
                             <td class="p-4 text-right">
                                 <button wire:click="remove({{ $id }})"
                                     class="px-3 py-1 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 active:translate-y-[1px] cursor-pointer">

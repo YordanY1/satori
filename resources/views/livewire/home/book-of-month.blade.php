@@ -22,20 +22,24 @@
 
                 <p class="text-primary text-2xl font-bold mt-4" itemprop="offers" itemscope
                     itemtype="https://schema.org/AggregateOffer">
-                    <span itemscope itemtype="https://schema.org/Offer">
+
+                    {{-- EUR first --}}
+                    @if (!empty($book->price_eur))
+                        <span itemscope itemtype="https://schema.org/Offer">
+                            <span itemprop="price">{{ number_format($book->price_eur, 2) }}</span> €
+                            <meta itemprop="priceCurrency" content="EUR" />
+                        </span>
+                        <br>
+                    @endif
+
+                    {{-- BGN second --}}
+                    <span itemscope itemtype="https://schema.org/Offer" class="text-base text-gray-500">
                         <span itemprop="price">{{ number_format($book->price, 2) }}</span>
                         {{ __('catalog.currency') }}
                         <meta itemprop="priceCurrency" content="BGN" />
                     </span>
-
-                    @if (!empty($book->price_eur))
-                        <br>
-                        <span itemscope itemtype="https://schema.org/Offer" class="text-base text-gray-500">
-                            <span itemprop="price">{{ number_format($book->price_eur, 2) }}</span> €
-                            <meta itemprop="priceCurrency" content="EUR" />
-                        </span>
-                    @endif
                 </p>
+
 
                 <div class="mt-4 flex flex-wrap items-center gap-3">
                     <button wire:click="addToCart({{ $book->id }})"

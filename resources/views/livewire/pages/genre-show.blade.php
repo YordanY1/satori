@@ -47,15 +47,22 @@
                     <div class="text-accent font-bold text-sm sm:text-base leading-tight" itemprop="offers" itemscope
                         itemtype="https://schema.org/AggregateOffer">
 
-                        <span itemscope itemtype="https://schema.org/Offer">
-                            <meta itemprop="priceCurrency" content="BGN">
-                            <span itemprop="price">{{ number_format($b['price'], 2) }}</span>
-                            {{ __('shop.currency') }}
-                        </span>
-
+                        {{-- EUR price (primary) --}}
                         @if (!empty($b['price_eur']))
+                            <span itemscope itemtype="https://schema.org/Offer">
+                                <meta itemprop="priceCurrency" content="EUR">
+                                <span itemprop="price">{{ number_format($b['price_eur'], 2) }}</span> €
+                            </span>
+
                             <span class="text-gray-500 text-xs sm:text-sm">
-                                ({{ number_format($b['price_eur'], 2) }} €)
+                                ({{ number_format($b['price'], 2) }} {{ __('shop.currency') }})
+                            </span>
+                        @else
+                            {{-- BGN fallback --}}
+                            <span itemscope itemtype="https://schema.org/Offer">
+                                <meta itemprop="priceCurrency" content="BGN">
+                                <span itemprop="price">{{ number_format($b['price'], 2) }}</span>
+                                {{ __('shop.currency') }}
                             </span>
                         @endif
                     </div>
